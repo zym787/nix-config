@@ -19,7 +19,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
     openssh.authorizedKeys.keys = [
     # replace with your own public key
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
+      "ssh-ed25519 AAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
     ];
   };
 
@@ -167,6 +167,10 @@
   # 启用 Flakes 特性以及配套的船新 nix 命令行工具
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
+
+  nixpkgs.config.permittedInsecurePackages = [
+    "dotnet-runtime_6"
+  ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

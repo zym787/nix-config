@@ -185,6 +185,8 @@
     gnumake
     # Embedded
     gcc-arm-embedded
+    # .NET6 for EIDE
+    # dotnet-sdk
 
     #    # zen browser
     # # system: only 'x86_64-linux' and 'aarch64-linux' are supported
