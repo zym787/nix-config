@@ -49,27 +49,36 @@
     "zh_CN/GB2312"
   ];
   # 字体
-  fonts = {
-    fonts = with pkgs; [
-      nerd-fonts.jetbrains-mono
-      noto-fonts
-      noto-fonts-cjk-sans
-      noto-fonts-cjk-serif
-      # sarasa-gothic  #更纱黑体
-      source-code-pro
-      hack-font
-      jetbrains-mono
-    ];
-  };
+  fonts.packages = with pkgs; [
+    # Maple Mono (Ligature TTF unhinted)
+    maple-mono.truetype
+    # Maple Mono NF (Ligature unhinted)
+    maple-mono.NF-unhinted
+    # Maple Mono NF CN (Ligature unhinted)
+    maple-mono.NF-CN-unhinted
+    # Maple Mono CN (Ligature hinted)
+    maple-mono.CN
+    nerd-fonts.jetbrains-mono
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-cjk-serif
+    sarasa-gothic  #更纱黑体
+    source-code-pro
+    hack-font
+    jetbrains-mono
+    nerd-fonts.caskaydia-cove
+  ];
 
   # 简单配置一下 fontconfig 字体顺序，以免 fallback 到不想要的字体
   fonts.fontconfig = {
     defaultFonts = {
-      emoji = [ 
+      emoji = [
+        "Maple Mono CN"
         "JetBrainsMono Nerd Font"
         "Noto Color Emoji" 
       ];
       monospace = [
+        "Maple Mono CN"
         "JetBrainsMono Nerd Font"
         "Noto Sans Mono CJK SC"
         "Sarasa Mono SC"
@@ -113,6 +122,8 @@
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
   environment.sessionVariables.WLR_NO_HARDWARE_CURSORS = "1";
   services.xserver.displayManager.gdm.enable = true; 
+
+  
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;

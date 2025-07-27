@@ -5,17 +5,17 @@
   nixConfig = {
     # override the default substituters
     substituters = [
-      "https://mirrors.ustc.edu.cn/nix-channels/store"
       # cache mirror located in China
+      # status: https://mirrors.ustc.edu.cn/status/
+      "https://mirrors.ustc.edu.cn/nix-channels/store"
       # status: https://mirror.sjtu.edu.cn/
       "https://mirror.sjtu.edu.cn/nix-channels/store"
-      # status: https://mirrors.ustc.edu.cn/status/
-      # "https://mirrors.ustc.edu.cn/nix-channels/store"
+      # https://mirrors.tuna.tsinghua.edu.cn/status/#server-status
+      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
 
-      # "https://cache.nixos.org"
-
+      "https://cache.nixos.org"
       # nix community's cache server
-      # "https://nix-community.cachix.org"
+      "https://nix-community.cachix.org"
     ];
 #     trusted-public-keys = [
 #       # nix community's cache server public key
@@ -25,12 +25,11 @@
   };
 
   inputs = {
-    # NixOS 官方软件源，这里使用 nixos-25.05 分支
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # home-manager, used for managing user configuration
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager";
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with
       # the `inputs.nixpkgs` of the current flake,
@@ -46,10 +45,14 @@
     };
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, zen-browser, ... }: {
-    # 因此请将下面的 my-nixos 替换成你的主机名称
+  outputs = inputs@{
+    self,
+    nixpkgs,
+    home-manager,
+    zen-browser,
+    ...
+}: {
     nixosConfigurations = {
-      # 这里的 my-nixos 替换成你的主机名称
       nixos = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [

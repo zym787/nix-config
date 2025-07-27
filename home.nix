@@ -1,9 +1,30 @@
-{ input, config, pkgs, ... }:
-
 {
-  # 注意修改这里的用户名与用户目录
-  home.username = "drinkto";
-  home.homeDirectory = "/home/drinkto";
+  inputs,
+  outputs,
+  config,
+  pkgs,
+  ...
+}: {
+  # You can import other home-manager modules here
+  # imports = [
+    # If you want to use modules your own flake exports (from modules/home-manager):
+    # outputs.homeManagerModules.example
+
+    # Or modules exported from other flakes (such as nix-colors):
+    # inputs.nix-colors.homeManagerModules.default
+    # inputs.zen-browser.homeModules.beta
+    # or inputs.zen-browser.homeModules.twilight
+    # or inputs.zen-browser.homeModules.twilight-official
+
+    # You can also split up your configuration and import pieces of it here:
+    # ./nvim.nix
+  # ];
+
+  # 
+  home = {
+    username = "drinkto";
+    homeDirectory = "/home/drinkto";
+  };
 
   # 直接将当前文件夹的配置文件，链接到 Home 目录下的指定位置
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
@@ -22,7 +43,7 @@
 
   # 设置鼠标指针大小以及字体 DPI（适用于 4K 显示器）
   xresources.properties = {
-    "Xcursor.size" = 16;
+    "Xcursor.size" = 18;
     "Xft.dpi" = 172;
   };
 
@@ -90,6 +111,16 @@
     # Beauty
     waybar
     mako
+    waypaper
+    hyprlock
+    swaybg
+    swaylock-effects
+    swayidle
+    wlogout
+    wlsunset
+    fuzzel
+    uwsm
+    # hyprpanel
 
     # DevTools
     direnv
@@ -119,6 +150,7 @@
     btop  # replacement of htop/nmon
     iotop # io monitoring
     iftop # network monitoring
+    ipcalc  # it is a calculator for the IPv4/v6 addresses
     nmap
     netcat
     aircrack-ng
@@ -138,11 +170,21 @@
     usbutils # lsusb
     ntfs3g   # ntfs tools
     polkit
+
     # nix related
-    #
     # it provides the command `nom` works just like `nix`
     # with more details log output
     nix-output-monitor
+
+    # For Work
+    # C/C++
+    llvm
+    clang-tools
+    cmake
+    ninja
+    gnumake
+    # Embedded
+    gcc-arm-embedded
 
     #    # zen browser
     # # system: only 'x86_64-linux' and 'aarch64-linux' are supported
@@ -163,6 +205,11 @@
     # }
   ];
 
+
+
+  # # zen browser.enable
+  # programs.zen-browser.enable = true;
+
   # git 相关配置
   programs.git = {
     enable = true;
@@ -171,16 +218,16 @@
   };
 
   # 启用 starship，这是一个漂亮的 shell 提示符
-#   programs.starship = {
-#     enable = true;
-#     # 自定义配置
-#     settings = {
-#       add_newline = false;
-#       aws.disabled = true;
-#       gcloud.disabled = true;
-#       line_break.disabled = true;
-#     };
-#   };
+  programs.starship = {
+    enable = true;
+    # 自定义配置
+    settings = {
+      add_newline = false;
+      aws.disabled = true;
+      gcloud.disabled = true;
+      line_break.disabled = true;
+    };
+  };
 
   # alacritty - 一个跨平台终端，带 GPU 加速功能
 #   programs.alacritty = {
@@ -212,6 +259,51 @@
 # #       urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
 #     };
 #   };
+
+  # # Enable hyprpanel
+  # programs.hyprpanel.enable = true;
+  # # hyprpanel
+  # programs.hyprpanel = {
+  #   # Configure and theme almost all options from the GUI.
+  #   # See 'https://hyprpanel.com/configuration/settings.html'.
+  #   # Default: <same as gui>
+  #   settings = {
+
+  #     # Configure bar layouts for monitors.
+  #     # See 'https://hyprpanel.com/configuration/panel.html'.
+  #     # Default: null
+  #     layout = {
+  #       bar.layouts = {
+  #         "0" = {
+  #           left = [ "dashboard" "workspaces" ];
+  #           middle = [ "media" ];
+  #           right = [ "volume" "systray" "notifications" ];
+  #         };
+  #       };
+  #     };
+
+  #     bar.launcher.autoDetectIcon = true;
+  #     bar.workspaces.show_icons = true;
+
+  #     menus.clock = {
+  #       time = {
+  #         military = true;
+  #         hideSeconds = true;
+  #       };
+  #       weather.unit = "metric";
+  #     };
+
+  #     menus.dashboard.directories.enabled = false;
+  #     menus.dashboard.stats.enable_gpu = true;
+
+  #     theme.bar.transparent = true;
+
+  #     theme.font = {
+  #       name = "CaskaydiaCove NF";
+  #       size = "16px";
+  #     };
+  #   };
+  # };
 
   # This value determines the Home Manager release that your
   # configuration is compatible with. This helps avoid breakage
