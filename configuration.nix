@@ -19,7 +19,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
     openssh.authorizedKeys.keys = [
     # replace with your own public key
-      "ssh-ed25519 AAAA3NzaC1lZDI1NTE5AAAAIL5K0aS+N7SLJZtImf7hrRWQY1ovReI/BLnrXIeEwihB drinkto@nixos"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
     ];
   };
 
