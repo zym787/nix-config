@@ -1,10 +1,10 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
-{ config, lib, pkgs, ... }:
-
 {
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}: {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -118,17 +118,15 @@
   # };
 
   # Enable Hyprland
-  programs.hyprland.enable = true;
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
-  environment.sessionVariables.WLR_NO_HARDWARE_CURSORS = "1";
-  services.xserver.displayManager.gdm.enable = true; 
-
-  
+  # programs.hyprland.enable = true;
+  # environment.sessionVariables.NIXOS_OZONE_WL = "1";
+  # environment.sessionVariables.WLR_NO_HARDWARE_CURSORS = "1";
+  # services.xserver.displayManager.gdm.enable = true;
 
   # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-  # services.displayManager.sddm.enable = true;
-  # services.desktopManager.plasma6.enable = true;
+  services.xserver.enable = true;
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # GPU Driver
   # services.xserver.videoDrivers = [ "modesetting" ];
@@ -185,6 +183,7 @@
     firefox
 
     # zen browser
+    # inputs.zen-browser.packages."${system}".default
 
     # inputs.zen-browser.packages."${system}".default # beta
     # inputs.zen-browser.packages."${system}".beta # or "beta-unwrapped"

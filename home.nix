@@ -120,6 +120,8 @@
     wlsunset
     fuzzel
     uwsm
+    catppuccin
+    catppuccin-fcitx5
     # hyprpanel
 
     # DevTools
