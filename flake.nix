@@ -71,7 +71,8 @@
               home-manager.users.drinkto = {
                 imports = [
                   ./home.nix
-                  catppuccin.homeManagerModules.catppuccin
+                  # catppuccin.homeManagerModules.catppuccin
+                  catppuccin.homeModules.catppuccin
                 ];
               };
 
@@ -102,25 +103,31 @@
       # override the default substituters
       substituters = [
         # cache mirror located in China
-        # status: https://mirrors.ustc.edu.cn/status/
-        "https://mirrors.ustc.edu.cn/nix-channels/store"
         # status: https://mirror.sjtu.edu.cn/
         "https://mirror.sjtu.edu.cn/nix-channels/store"
         # https://mirrors.tuna.tsinghua.edu.cn/status/#server-status
         "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+        # status: https://mirrors.ustc.edu.cn/status/
+        "https://mirrors.ustc.edu.cn/nix-channels/store"
 
-        "https://cache.nixos.org"
+        # "https://cache.nixos.org"
         # nix community's cache server
-        "https://nix-community.cachix.org"
+        # "https://nix-community.cachix.org"
         # hyprland
-        "https://hyprland.cachix.org"
+        # "https://hyprland.cachix.org"
       ];
-      trusted-public-keys = [
-        # nix community's cache server public key
-        # "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        # "nix-community.cachix.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-      ];
+      # trusted-public-keys = [
+      #   # nix community's cache server public key
+      #   # "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      #   # "nix-community.cachix.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      #   # "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      # ];
+      # trusted-public-keys = [
+      #   "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      #   "mirror.sjtu.edu.cn/nix-channels/store-1:rHTSQ80kHq27g7pRc2Qk5M5G5V3VvXkDw="
+      #   "mirrors.ustc.edu.cn/nix-channels/store-1:ajXR9v+PiP9x63rM2ktGjLtM1F3pwQa5yf5H8tG6yY="
+      #   "mirrors.tuna.tsinghua.edu.cn/nix-channels/store-1:o49HOs9Y2Nl4X2yXyf5H8tG6yY="
+      # ];
     };
 
 }

@@ -10,6 +10,8 @@
       ./hardware-configuration.nix
       # import home-manager
       # ./home.nix
+      # ./modules/fcitx5
+      # ./modules/catppuccin
     ];
 
   # 新增用户 drinkto
@@ -19,7 +21,7 @@
     extraGroups = [ "networkmanager" "wheel" ];
     openssh.authorizedKeys.keys = [
     # replace with your own public key
-      "ssh-ed25519 AAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
     ];
   };
 
@@ -75,7 +77,7 @@
       emoji = [
         "Maple Mono CN"
         "JetBrainsMono Nerd Font"
-        "Noto Color Emoji" 
+        "Noto Color Emoji"
       ];
       monospace = [
         "Maple Mono CN"

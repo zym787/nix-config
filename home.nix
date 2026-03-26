@@ -120,8 +120,8 @@
     wlsunset
     fuzzel
     uwsm
-    catppuccin
-    catppuccin-fcitx5
+    # catppuccin
+    # catppuccin-fcitx5
     # hyprpanel
 
     # DevTools
@@ -143,6 +143,9 @@
     gawk
     zstd
     gnupg
+
+    # Surfing
+    telegram-desktop
 
     # productivity
     # hugo # static site generator
@@ -189,6 +192,8 @@
     gcc-arm-embedded
     # .NET6 for EIDE
     # dotnet-sdk
+    # Nix
+    alejandra
 
     #    # zen browser
     # # system: only 'x86_64-linux' and 'aarch64-linux' are supported
