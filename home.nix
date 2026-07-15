@@ -222,8 +222,10 @@
   # git 相关配置
   programs.git = {
     enable = true;
-    userName = "drinkto";
-    userEmail = "z_one787@163.com";
+    # userName = "drinkto";
+    settings.user.name = "drinkto";
+    # userEmail = "z_one787@163.com";
+    settings.user.email = "z_one787@163.com";
   };
 
   # 启用 starship，这是一个漂亮的 shell 提示符
