@@ -110,7 +110,8 @@
       qt6Packages.fcitx5-configtool
       qt6Packages.fcitx5-chinese-addons
       # fcitx5-mozc    # japanese input method
-      # qt6Packages.fcitx5-gtk # gtk im module
+      qt6Packages.fcitx5-qt
+      fcitx5-gtk # gtk im module
     ];
   };
   # console = {
@@ -240,7 +241,7 @@
   # Substituters Set sjtu Mirro
   # nix.settings.substituters = [ "https://mirrors.ustc.edu.cn/nix-channels/store" ];
   # 只启用指定的二进制缓存源,记得导入 lib
-  nix.settings.substituters = lib.mkForce [ "https://mirrors.cernet.edu.cn/nix-channels/store" ];
+  # nix.settings.substituters = lib.mkForce [ "https://mirrors.cernet.edu.cn/nix-channels/store" ];
 
 
   # Copy the NixOS configuration file and link it from the resulting system

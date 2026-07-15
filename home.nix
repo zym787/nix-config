@@ -42,10 +42,10 @@
   # '';
 
   # 设置鼠标指针大小以及字体 DPI（适用于 4K 显示器）
-  xresources.properties = {
-    "Xcursor.size" = 18;
-    "Xft.dpi" = 172;
-  };
+  # xresources.properties = {
+  #   "Xcursor.size" = 18;
+  #   "Xft.dpi" = 172;
+  # };
 
   # 通过 home.packages 安装一些常用的软件
   # 这些软件将仅在当前用户下可用，不会影响系统级别的配置
@@ -88,8 +88,8 @@
 
     # editor
     vscode
-    helix
-    zed-editor
+    # helix
+    # zed-editor
     neovim
 
     # Note && Learn
@@ -132,6 +132,8 @@
     mihomo
     clash-nyanpasu
     clash-rs
+    v2raya
+    flclash
 
     # misc
     cowsay

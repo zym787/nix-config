@@ -15,12 +15,12 @@
       };
 
       # zen browser
-      zen-browser = {
-        url = "github:0xc000022070/zen-browser-flake";
-        # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
-        # to have it up-to-date or simply don't specify the nixpkgs input
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
+      # zen-browser = {
+      #   url = "github:0xc000022070/zen-browser-flake";
+      #   # IMPORTANT: we're using "libgbm" and is only available in unstable so ensure
+      #   # to have it up-to-date or simply don't specify the nixpkgs input
+      #   inputs.nixpkgs.follows = "nixpkgs";
+      # };
       
       # Catppuccin
       catppuccin = {
@@ -109,6 +109,8 @@
         "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
         # status: https://mirrors.ustc.edu.cn/status/
         "https://mirrors.ustc.edu.cn/nix-channels/store"
+        "https://mirrors.cernet.edu.cn/nix-channels/store"
+        "https://cache.nixos.org"
 
         # "https://cache.nixos.org"
         # nix community's cache server
