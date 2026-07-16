@@ -174,6 +174,17 @@
     "dotnet-runtime_6"
   ];
 
+  # nixpkgs.overlays = [
+  #   (final: prev: {
+  #     vscode = prev.vscode.overrideAttrs (old: {
+  #       src = prev.fetchurl {
+  #         url = "https://mirrors.tuna.tsinghua.edu.cn/.../VSCode_1.112.0_linux-x64.tar.gz";  # 需替换为实际镜像地址
+  #         sha256 = "0000000000000000000000000000000000000000000000000000";  # 需要正确的 hash
+  #       };
+  #     });
+  #   })
+  # ];
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [

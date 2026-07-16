@@ -33,7 +33,7 @@
         self,
         nixpkgs,
         home-manager,
-        zen-browser,
+        # zen-browser,
         catppuccin,
         ...
     } @ inputs: let 
