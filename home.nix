@@ -148,6 +148,7 @@
 
     # Surfing
     telegram-desktop
+    brave
 
     # productivity
     # hugo # static site generator
