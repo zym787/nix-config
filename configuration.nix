@@ -103,6 +103,8 @@
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";
+    # 显式启用 Wayland 前端支持
+    fcitx5.waylandFrontend = true;
     fcitx5.addons = with pkgs; [
       # for flypy chinese input method
       fcitx5-rime
@@ -154,7 +156,27 @@
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
-  # services.libinput.enable = true;
+  services.libinput = {
+    enable = true;
+
+    # 鼠标设置
+    mouse = {
+      accelProfile = "adaptive";    # 自适应加速，也可设为 "flat" 关闭加速
+      naturalScrolling = false;     # 鼠标滚动方向（false 为传统方向）
+      middleEmulation = false;      # 是否用左右键模拟中键
+    };
+
+    # 触控板设置
+    touchpad = {
+      naturalScrolling = true;      # 自然滚动（类似 macOS）
+      tapping = true;               # 允许点击（轻触）
+      tappingButtonMap = "lrm";     # 轻触映射：左、右、中（lrm）
+      clickMethod = "clickfinger";  # 双指右键、三指中键（更适合触控板）
+      accelProfile = "adaptive";    # 自适应加速
+      disableWhileTyping = true;    # 打字时禁用触控板，防止误触
+      scrollMethod = "twofinger";   # 双指滚动
+    };
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   # users.users.alice = {

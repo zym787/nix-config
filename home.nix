@@ -198,6 +198,10 @@
     # Nix
     alejandra
 
+    # Agent
+    # opencode
+    opencode-desktop
+
     #    # zen browser
     # # system: only 'x86_64-linux' and 'aarch64-linux' are supported
     # inputs.zen-browser.packages."${system}".default # beta
