@@ -194,6 +194,7 @@
 
   nixpkgs.config.permittedInsecurePackages = [
     "dotnet-runtime_6"
+    "pnpm-10.29.2"
   ];
 
   # nixpkgs.overlays = [

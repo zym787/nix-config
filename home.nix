@@ -71,7 +71,7 @@
     yq-go # yaml processor https://github.com/mikefarah/yq
     eza # A modern replacement for ‘ls’
     fzf # A command-line fuzzy finder
-    rofi  # Window switcher, run dialog 
+    rofi  # Window switcher, run dialog
     tofi
 
     # networking tools
@@ -99,14 +99,17 @@
     # pot # translation
 
     # AI
-    # cherry-studio
+    cherry-studio
+    cc-switch
+    codex
+    # claude-code
+    claude-monitor
 
-# terminal emulator
+    # terminal emulator
     kitty
     ghostty
     zsh
     fzf # A command-line fuzzy finder
-    kitty
     libreoffice
 
     # front
