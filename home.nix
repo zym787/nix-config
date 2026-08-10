@@ -101,6 +101,9 @@
     # AI
     # cherry-studio
 
+# terminal emulator
+    kitty
+    ghostty
     zsh
     fzf # A command-line fuzzy finder
     kitty
