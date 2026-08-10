@@ -95,6 +95,7 @@
     # Note && Learn
     obsidian
     zotero
+    texstudio # TeX and LaTeX editor
     # pot # translation
 
     # AI
@@ -201,6 +202,9 @@
     # Agent
     # opencode
     opencode-desktop
+
+    # Digital Circul
+    logisim-evolution
 
     #    # zen browser
     # # system: only 'x86_64-linux' and 'aarch64-linux' are supported
