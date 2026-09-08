@@ -212,6 +212,9 @@
     # Digital Circul
     logisim-evolution
 
+    # Gaming
+    steam
+
     #    # zen browser
     # # system: only 'x86_64-linux' and 'aarch64-linux' are supported
     # inputs.zen-browser.packages."${system}".default # beta
