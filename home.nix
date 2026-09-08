@@ -212,6 +212,12 @@
     # Digital Circul
     logisim-evolution
 
+    # Music
+    splayer
+    go-musicfox
+    netease-cloud-music-gtk
+    waylyrics
+
     # Gaming
     steam
 

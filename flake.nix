@@ -1,6 +1,10 @@
 {
   description = "Drinkto's Nix configuration ";
 
+  # ============================================================================
+  # inputs:所有外部“原料”(nixpkgs / home-manager / DMS 等)
+  # 想升级版本时,改这里的 URL 即可;改完执行 `nix flake update`
+  # ============================================================================
   inputs = {
       nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -28,7 +32,6 @@
       };
     };
 
-
     outputs = {
         self,
         nixpkgs,
@@ -36,22 +39,18 @@
         # zen-browser,
         catppuccin,
         ...
-    } @ inputs: let 
+    } @ inputs: let
       inherit (self) outputs;
     in {
       # NixOS configuration entrypoint
       # Available through 'nixos-rebuild --flake .#your-hostname'
-      # for nixos module home-manager installations
       nixosConfigurations = {
         nixos = nixpkgs.lib.nixosSystem {
           specialArgs = {inherit inputs outputs;};
-          # > Our main nixos configuration file <
           system = "x86_64-linux";
           modules = [
-            # 这里导入之前我们使用的 configuration.nix，
-            # 这样旧的配置文件仍然能生效
-            # ./host/nixos/configuration.nix
-            ./configuration.nix
+            # > Our main nixos configuration file <
+            ./nixos/configuration.nix
             {
               users.users.drinkto.home = "/home/drinkto";
               # given the users in this list the right to specify additional substituters via:
@@ -60,7 +59,7 @@
             }
             catppuccin.nixosModules.catppuccin
 
-            # 将 home-manager 配置为 nixos 的一个 module
+            # 将 home-manager 配置为 NixOS 的一个 module
             # 这样在 nixos-rebuild switch 时，home-manager 配置也会被自动部署
             home-manager.nixosModules.home-manager
             {

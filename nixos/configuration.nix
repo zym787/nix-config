@@ -192,6 +192,12 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
+  # lader
+  # nix.settings = {
+  #   http_proxy = "http://127.0.0.1:7890";
+  #   https_proxy = "http://127.0.0.1:7890";
+  # };
+
   nixpkgs.config.permittedInsecurePackages = [
     "dotnet-runtime_6"
     "pnpm-10.29.2"
