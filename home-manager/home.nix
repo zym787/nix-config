@@ -12,15 +12,11 @@
 
     # Or modules exported from other flakes (such as nix-colors):
     # inputs.nix-colors.homeManagerModules.default
-    # inputs.zen-browser.homeModules.beta
-    # or inputs.zen-browser.homeModules.twilight
-    # or inputs.zen-browser.homeModules.twilight-official
 
     # You can also split up your configuration and import pieces of it here:
     # ./nvim.nix
   # ];
 
-  # 
   home = {
     username = "drinkto";
     homeDirectory = "/home/drinkto";
@@ -220,30 +216,7 @@
 
     # Gaming
     steam
-
-    #    # zen browser
-    # # system: only 'x86_64-linux' and 'aarch64-linux' are supported
-    # inputs.zen-browser.packages."${system}".default # beta
-    # inputs.zen-browser.packages."${system}".beta # or "beta-unwrapped"
-    # inputs.zen-browser.packages."${system}".twilight # or "twilight-unwrapped"
-    # # IMPORTANT: this package relies on the twilight release artifacts from the
-    # # official zen repo and no new release is created, the artifacts are replaced
-    # inputs.zen-browser.packages."${system}".twilight-official # or "twilight-official-unwrapped"
-
-    # # you can even override the package policies
-    # inputs.zen-browser.packages."${system}".default.override {
-    #   policies = {
-    #       DisableAppUpdate = true;
-    #       DisableTelemetry = true;
-    #       # find more options here: https://mozilla.github.io/policy-templates/
-    #   };
-    # }
   ];
-
-
-
-  # # zen browser.enable
-  # programs.zen-browser.enable = true;
 
   # git 相关配置
   programs.git = {

@@ -1,38 +1,139 @@
+# configuration.nix —— 系统主配置文件（入口）
+# =============================================================================
+# 这个文件是 NixOS 的“总开关”，本身几乎不写具体配置，只做两件事：
+#   1. 引入硬件配置（安装时自动生成的 hardware-configuration.nix）
+#   2. 引入我们拆分好的各个模块（modules/、desktop/）和用户级配置（home/）
+#
+# 设计原则：把“系统级(root)”和“用户级(你的家目录)”分开，
+# 把每一类配置拆到独立文件，方便单独阅读、修改、排查问题。
+# 改完任意文件后，在终端执行 `sudo nixos-rebuild switch` 即可生效。
+# =============================================================================
+
 {
-  config,
-  lib,
-  pkgs,
   inputs,
+  lib,
+  config,
+  pkgs,
   ...
 }: {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      # import home-manager
-      # ./home.nix
-      # ./modules/fcitx5
-      # ./modules/catppuccin
-    ];
+  # You can import other NixOS modules here
+  imports = [
+    # If you want to use modules your own flake exports (from modules/nixos):
+    # inputs.self.nixosModules.example
 
-  # 新增用户 drinkto
-  users.users.drinkto = {
-    isNormalUser = true;
-    description = "drinkto";
-    extraGroups = [ "networkmanager" "wheel" ];
-    openssh.authorizedKeys.keys = [
-    # replace with your own public key
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
+    # Or modules from other flakes (such as nixos-hardware):
+    # inputs.hardware.nixosModules.common-cpu-amd
+    # inputs.hardware.nixosModules.common-ssd
+
+    # You can also split up your configuration and import pieces of it here:
+    # ./users.nix
+    # import home-manager
+    # ./home.nix
+    # ./modules/fcitx5
+    # ./modules/catppuccin
+
+    # Import your generated (nixos-generate-config) hardware configuration
+    ./hardware-configuration.nix
+  ];
+
+  # Configure your nixpkgs instance
+  nixpkgs = {
+    # You can add overlays here
+    overlays = [
+      # Add overlays your own flake exports (from overlays and pkgs dir):
+      # inputs.self.overlays.additions
+      # inputs.self.overlays.modifications
+      # inputs.self.overlays.unstable-packages
+
+      # You can also add overlays exported from other flakes:
+      # neovim-nightly-overlay.overlays.default
+
+      # Or define it inline, for example:
+      # (final: prev: {
+      #   hi = final.hello.overrideAttrs (oldAttrs: {
+      #     patches = [ ./change-hello-to-hi.patch ];
+      #   });
+      #   vscode = prev.vscode.overrideAttrs (old: {
+      #     src = prev.fetchurl {
+      #       url = "https://mirrors.tuna.tsinghua.edu.cn/.../VSCode_1.112.0_linux-x64.tar.gz";  # 需替换为实际镜像地址
+      #       sha256 = "0000000000000000000000000000000000000000000000000000";  # 需要正确的 hash
+      #     };
+      #   });
+      # })
     ];
+    config = {
+      # Disable if you don't want unfree packages
+      allowUnfree = true;
+      permittedInsecurePackages = [
+        "dotnet-runtime_6"
+        "pnpm-10.29.2"
+      ];
+    };
   };
+
+  nix = {
+    settings = {
+      # Enable flakes and new 'nix' command
+      # 启用 Flakes 特性以及配套的船新 nix 命令行工具
+      experimental-features = "nix-command flakes";
+      # Opinionated: disable global registry
+      # flake-registry = "";
+
+      trusted-users = [
+        "drinkto"
+      ];
+    };
+    # Opinionated: disable channels
+    # channel.enable = false;
+  };
+
+  networking = {
+    hostName = "nixos"; # Define your hostname.
+
+    # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+    networkmanager.enable = true; # Easiest to use and most distros use this by default.
+  };
+  # networking.hostName = "nixos"; # Define your hostname.
+  # # Pick only one of the below networking options.
+  # # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+
+
+  # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
+  users.users = {
+    # FIXME: Replace with your username
+    drinkto = {
+      # TODO: You can set an initial password for your user.
+      # If you do, you can skip setting a root password by passing '--no-root-passwd' to nixos-install.
+      # Be sure to change it (using passwd) after rebooting!
+      # initialPassword = "correcthorsebatterystaple";
+      isNormalUser = true;
+      description = "drinkto";
+      openssh.authorizedKeys.keys = [
+        # replace with your own public key
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
+      ];
+      # TODO: Be sure to add any other groups you need (such as networkmanager, audio, docker, etc)
+      extraGroups = [ "networkmanager" "wheel" ];
+    };
+  };
+  # # 新增用户 drinkto
+  # users.users.drinkto = {
+  #   isNormalUser = true;
+  #   description = "drinkto";
+  #   extraGroups = [ "networkmanager" "wheel" ];
+  #   openssh.authorizedKeys.keys = [
+  #   # replace with your own public key
+  #     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
+  #   ];
+  # };
+
+  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
+  system.stateVersion = "26.11";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  networking.hostName = "nixos"; # Define your hostname.
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
   # Set your time zone.
   time.timeZone = "Asia/Shanghai";
@@ -189,8 +290,8 @@
   # };
 
   # 启用 Flakes 特性以及配套的船新 nix 命令行工具
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree = true;
+  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # nixpkgs.config.allowUnfree = true;
 
   # lader
   # nix.settings = {
@@ -198,10 +299,10 @@
   #   https_proxy = "http://127.0.0.1:7890";
   # };
 
-  nixpkgs.config.permittedInsecurePackages = [
-    "dotnet-runtime_6"
-    "pnpm-10.29.2"
-  ];
+  # nixpkgs.config.permittedInsecurePackages = [
+  #   "dotnet-runtime_6"
+  #   "pnpm-10.29.2"
+  # ];
 
   # nixpkgs.overlays = [
   #   (final: prev: {
@@ -227,25 +328,6 @@
     firefox
 
     # appimage-run
-
-    # zen browser
-    # inputs.zen-browser.packages."${system}".default
-
-    # inputs.zen-browser.packages."${system}".default # beta
-    # inputs.zen-browser.packages."${system}".beta # or "beta-unwrapped"
-    # inputs.zen-browser.packages."${system}".twilight # or "twilight-unwrapped"
-    # # IMPORTANT: this package relies on the twilight release artifacts from the
-    # # official zen repo and no new release is created, the artifacts are replaced
-    # inputs.zen-browser.packages."${system}".twilight-official # or "twilight-official-unwrapped"
-
-    # # you can even override the package policies
-    # inputs.zen-browser.packages."${system}".default.override {
-    #   policies = {
-    #       DisableAppUpdate = true;
-    #       DisableTelemetry = true;
-    #       # find more options here: https://mozilla.github.io/policy-templates/
-    #   };
-    # }
   ];
 
 #   systemd.services.clash-verge-rev = {
@@ -306,7 +388,7 @@
   # and migrated your data accordingly.
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "25.05"; # Did you read the comment?
+  # system.stateVersion = "25.05"; # Did you read the comment?
 
 }
 
