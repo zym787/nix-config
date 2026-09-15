@@ -6,16 +6,41 @@
   ...
 }: {
   # You can import other home-manager modules here
-  # imports = [
+  imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
-    # outputs.homeManagerModules.example
+    # inputs.self.homeManagerModules.example
 
     # Or modules exported from other flakes (such as nix-colors):
     # inputs.nix-colors.homeManagerModules.default
 
     # You can also split up your configuration and import pieces of it here:
     # ./nvim.nix
-  # ];
+  ];
+
+  # nixpkgs = {
+  #   # You can add overlays here
+  #   overlays = [
+  #     # Add overlays your own flake exports (from overlays and pkgs dir):
+  #     # inputs.self.overlays.additions
+  #     # inputs.self.overlays.modifications
+  #     # inputs.self.overlays.unstable-packages
+
+  #     # You can also add overlays exported from other flakes:
+  #     # neovim-nightly-overlay.overlays.default
+
+  #     # Or define it inline, for example:
+  #     # (final: prev: {
+  #     #   hi = final.hello.overrideAttrs (oldAttrs: {
+  #     #     patches = [ ./change-hello-to-hi.patch ];
+  #     #   });
+  #     # })
+  #   ];
+  #   # Configure your nixpkgs instance
+  #   config = {
+  #     # Disable if you don't want unfree packages
+  #     allowUnfree = true;
+  #   };
+  # };
 
   home = {
     username = "drinkto";
@@ -24,18 +49,6 @@
 
   # 直接将当前文件夹的配置文件，链接到 Home 目录下的指定位置
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
-
-  # 递归将某个文件夹中的文件，链接到 Home 目录下的指定位置
-  # home.file.".config/i3/scripts" = {
-  #   source = ./scripts;
-  #   recursive = true;   # 递归整个文件夹
-  #   executable = true;  # 将其中所有文件添加「执行」权限
-  # };
-
-  # 直接以 text 的方式，在 nix 配置文件中硬编码文件内容
-  # home.file.".xxx".text = ''
-  #     xxx
-  # '';
 
   # 设置鼠标指针大小以及字体 DPI（适用于 4K 显示器）
   # xresources.properties = {
@@ -327,6 +340,7 @@
   # You can update Home Manager without changing this value. See
   # the Home Manager release notes for a list of state version
   # changes in each release.
+  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "25.05";
 
   # Let Home Manager install and manage itself.

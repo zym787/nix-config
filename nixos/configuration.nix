@@ -8,7 +8,6 @@
 # 把每一类配置拆到独立文件，方便单独阅读、修改、排查问题。
 # 改完任意文件后，在终端执行 `sudo nixos-rebuild switch` 即可生效。
 # =============================================================================
-
 {
   inputs,
   lib,
@@ -36,7 +35,6 @@
     ./hardware-configuration.nix
   ];
 
-  # Configure your nixpkgs instance
   nixpkgs = {
     # You can add overlays here
     overlays = [
@@ -61,9 +59,10 @@
       #   });
       # })
     ];
+    # Configure your nixpkgs instance
     config = {
-      # Disable if you don't want unfree packages
       allowUnfree = true;
+      # 安装不安全的包
       permittedInsecurePackages = [
         "dotnet-runtime_6"
         "pnpm-10.29.2"
@@ -85,23 +84,42 @@
     };
     # Opinionated: disable channels
     # channel.enable = false;
+
+    # lader
+    # http_proxy = "http://127.0.0.1:7890";
+    # https_proxy = "http://127.0.0.1:7890";
+
+    # Substituters Set sjtu Mirro
+    # substituters = [ "https://mirrors.ustc.edu.cn/nix-channels/store" ];
+    # 只启用指定的二进制缓存源,记得导入 lib
+    # substituters = lib.mkForce [ "https://mirrors.cernet.edu.cn/nix-channels/store" ];
   };
 
+  # Configure network
   networking = {
     hostName = "nixos"; # Define your hostname.
 
+    # Pick only one of the below networking options.
     # wireless.enable = true;  # Enables wireless support via wpa_supplicant.
     networkmanager.enable = true; # Easiest to use and most distros use this by default.
-  };
-  # networking.hostName = "nixos"; # Define your hostname.
-  # # Pick only one of the below networking options.
-  # # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
+    # Proxy
+    # proxy = {
+    #   default = "http://user:password@proxy:port/";
+    #   noProxy = "127.0.0.1,localhost,internal.domain";
+    # };
+
+    # Open ports in the firewall.
+    # firewall = {
+    #   # allowedTCPPorts = [ ... ];
+    #   # allowedUDPPorts = [ ... ];
+    #   # Or disable the firewall altogether.
+    #   # enable = false;
+    # };
+  };
 
   # TODO: Configure your system-wide user settings (groups, etc), add more users as needed.
   users.users = {
-    # FIXME: Replace with your username
     drinkto = {
       # TODO: You can set an initial password for your user.
       # If you do, you can skip setting a root password by passing '--no-root-passwd' to nixos-install.
@@ -114,43 +132,68 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
       ];
       # TODO: Be sure to add any other groups you need (such as networkmanager, audio, docker, etc)
-      extraGroups = [ "networkmanager" "wheel" ];
+      extraGroups = [ "networkmanager" "wheel" ]; # Enable ‘sudo’ for the user.
+      # packages = with pkgs; [
+      #   firefox
+      #   tree
+      # ];
     };
   };
-  # # 新增用户 drinkto
-  # users.users.drinkto = {
-  #   isNormalUser = true;
-  #   description = "drinkto";
-  #   extraGroups = [ "networkmanager" "wheel" ];
-  #   openssh.authorizedKeys.keys = [
-  #   # replace with your own public key
-  #     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
-  #   ];
+
+  # # This setups a SSH server. Very important if you're setting up a headless system.
+  # # Feel free to remove if you don't need it.
+  # services.openssh = {
+  #   enable = true;
+  #   settings = {
+  #     # Opinionated: forbid root login through SSH.
+  #     PermitRootLogin = "no";
+  #     # Opinionated: use keys only.
+  #     # Remove if you want to SSH using passwords
+  #     PasswordAuthentication = false;
+  #   };
   # };
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  system.stateVersion = "26.11";
+  system.stateVersion = "25.05";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Set your time zone.
-  time.timeZone = "Asia/Shanghai";
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+  time = {
+    # Set your time zone.
+    timeZone = "Asia/Shanghai";
+  };
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.supportedLocales = [
-    "en_US.UTF-8/UTF-8"
-    "zh_CN.UTF-8/UTF-8"
-    "zh_CN.GB18030/GB18030"
-    "zh_CN.GBK/GBK"
-    "zh_CN/GB2312"
-  ];
+  i18n = {
+    defaultLocale = "en_US.UTF-8";
+    supportedLocales = [
+      "en_US.UTF-8/UTF-8"
+      "zh_CN.UTF-8/UTF-8"
+      "zh_CN.GB18030/GB18030"
+      "zh_CN.GBK/GBK"
+      "zh_CN/GB2312"
+    ];
+    # 输入法支援
+    inputMethod = {
+      enable = true;
+      type = "fcitx5";
+      # 显式启用 Wayland 前端支持
+      fcitx5.waylandFrontend = true;
+      fcitx5.addons = with pkgs; [
+        # for flypy chinese input method
+        fcitx5-rime
+        # needed enable rime using configtool after installed
+        qt6Packages.fcitx5-configtool
+        qt6Packages.fcitx5-chinese-addons
+        # fcitx5-mozc    # japanese input method
+        qt6Packages.fcitx5-qt
+        fcitx5-gtk # gtk im module
+      ];
+    };
+  };
+
   # 字体
   fonts.packages = with pkgs; [
     # Maple Mono (Ligature TTF unhinted)
@@ -201,22 +244,7 @@
       ];
     };
   };
-  i18n.inputMethod = {
-    enable = true;
-    type = "fcitx5";
-    # 显式启用 Wayland 前端支持
-    fcitx5.waylandFrontend = true;
-    fcitx5.addons = with pkgs; [
-      # for flypy chinese input method
-      fcitx5-rime
-      # needed enable rime using configtool after installed
-      qt6Packages.fcitx5-configtool
-      qt6Packages.fcitx5-chinese-addons
-      # fcitx5-mozc    # japanese input method
-      qt6Packages.fcitx5-qt
-      fcitx5-gtk # gtk im module
-    ];
-  };
+
   # console = {
   #   font = "Lat2-Terminus16";
   #   keyMap = "us";
@@ -279,47 +307,12 @@
     };
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # users.users.alice = {
-  #   isNormalUser = true;
-  #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  #   packages = with pkgs; [
-  #     firefox
-  #     tree
-  #   ];
-  # };
-
-  # 启用 Flakes 特性以及配套的船新 nix 命令行工具
-  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  # nixpkgs.config.allowUnfree = true;
-
-  # lader
-  # nix.settings = {
-  #   http_proxy = "http://127.0.0.1:7890";
-  #   https_proxy = "http://127.0.0.1:7890";
-  # };
-
-  # nixpkgs.config.permittedInsecurePackages = [
-  #   "dotnet-runtime_6"
-  #   "pnpm-10.29.2"
-  # ];
-
-  # nixpkgs.overlays = [
-  #   (final: prev: {
-  #     vscode = prev.vscode.overrideAttrs (old: {
-  #       src = prev.fetchurl {
-  #         url = "https://mirrors.tuna.tsinghua.edu.cn/.../VSCode_1.112.0_linux-x64.tar.gz";  # 需替换为实际镜像地址
-  #         sha256 = "0000000000000000000000000000000000000000000000000000";  # 需要正确的 hash
-  #       };
-  #     });
-  #   })
-  # ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # essential pkgs
-    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    vim
     wget
     git
     curl
@@ -352,43 +345,6 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-#   services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Substituters Set sjtu Mirro
-  # nix.settings.substituters = [ "https://mirrors.ustc.edu.cn/nix-channels/store" ];
-  # 只启用指定的二进制缓存源,记得导入 lib
-  # nix.settings.substituters = lib.mkForce [ "https://mirrors.cernet.edu.cn/nix-channels/store" ];
-
-
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  # system.copySystemConfiguration = true;
-
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
-  # to actually do that.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  #
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  # system.stateVersion = "25.05"; # Did you read the comment?
-
+  # services.openssh.enable = true;
 }
 
