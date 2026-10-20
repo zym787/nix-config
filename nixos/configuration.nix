@@ -159,6 +159,7 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # boot.supportedFilesystems = [ "ntfs" ];
 
   time = {
     # Set your time zone.
@@ -272,7 +273,18 @@
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  services.printing.enable = true;
+  # 添加 Brother 打印机驱动
+  services.printing.drivers = with pkgs; [
+    brlaser
+    # 如果 brlaser 效果不佳，可以同时加入以下通用驱动作为备选
+    brgenml1lpr
+    brgenml1cupswrapper
+    gutenprint
+    gutenprintBin
+  ];
+  # 如果你的打印机通过 USB 连接，且需要自动发现，启用 IPP-over-USB
+  services.ipp-usb.enable = true;
 
   # Enable sound.
   # sound.enable = true;
