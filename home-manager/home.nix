@@ -112,7 +112,9 @@
     cc-switch
     codex
     # claude-code
-    claude-monitor
+    # claude-monitor
+    # opencode
+    # opencode-desktop
 
     # terminal emulator
     kitty
@@ -214,10 +216,6 @@
     # Nix
     alejandra
 
-    # Agent
-    # opencode
-    opencode-desktop
-
     # Digital Circul
     logisim-evolution
 
@@ -228,7 +226,10 @@
     waylyrics
 
     # Gaming
-    steam
+    # steam
+
+    # Baidu NetDisk
+    baidupcs-go
   ];
 
   # git 相关配置
@@ -251,6 +252,11 @@
       line_break.disabled = true;
     };
   };
+
+  # Steam
+  # programs.steam = {
+  #   enable = true;
+  # };
 
   # alacritty - 一个跨平台终端，带 GPU 加速功能
 #   programs.alacritty = {
