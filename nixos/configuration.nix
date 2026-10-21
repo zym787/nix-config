@@ -66,6 +66,8 @@
       permittedInsecurePackages = [
         "dotnet-runtime_6"
         "pnpm-10.29.2"
+        "firefox-esr-140-bin-unwrapped-140.17.0esr"
+        "electron-40.10.5"
       ];
     };
   };
@@ -74,7 +76,7 @@
     settings = {
       # Enable flakes and new 'nix' command
       # 启用 Flakes 特性以及配套的船新 nix 命令行工具
-      experimental-features = "nix-command flakes";
+      experimental-features = [ "nix-command" "flakes" ];
       # Opinionated: disable global registry
       # flake-registry = "";
 
@@ -335,6 +337,11 @@
     # appimage-run
   ];
 
+  # 确保 fwupd 本身可用，但屏蔽自动刷新的定时器和服务
+  # 屏蔽fwupd后，使用命令 `sudo fwupdmgr refresh && sudo fwupdmgr update` 手动检查并更新固件
+  systemd.services.fwupd-refresh.enable = false;
+  systemd.timers.fwupd-refresh.enable = false;
+
 #   systemd.services.clash-verge-rev = {
 #     enable = true;
 #     description = "clash verge rev";
@@ -358,5 +365,18 @@
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
+
+  # Clash Verge Rev
+  programs.clash-verge = {
+    enable = true;
+    # 可选：指定使用的包，默认是 pkgs.clash-verge-rev
+    # package = pkgs.clash-verge-rev;
+    # 系统服务模式（推荐，允许TUN等系统级功能）
+    serviceMode = true;
+    # TUN 模式（全局代理，性能更好）
+    tunMode = true;
+    # 开机自启
+    autoStart = true;
+  };
 }
 

@@ -7,8 +7,10 @@
   # ============================================================================
   inputs = {
       # Nixpkgs
-      # nixpkgs.url = "github:nixos/nixpkgs/nixos-26.11";
-      nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+      # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # 系统主体使用 unstable
+      nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-unstable&shallow=1";
+      # nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05"; # 保留稳定版作为备用
+      nixpkgs-stable.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-26.05&shallow=1";
       # You can access packages and modules from different nixpkgs revs
       # at the same time. Here's an working example:
       # nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -25,16 +27,16 @@
       };
 
       # Catppuccin
-      catppuccin = {
-        url = "github:catppuccin/nix";
-      };
+      # catppuccin = {
+      #   url = "github:catppuccin/nix";
+      # };
     };
 
   outputs = {
       self,
       nixpkgs,
       home-manager,
-      catppuccin,
+      # catppuccin,
       ...
   } @ inputs: let
     # Supported systems for your flake packages, shell, etc.
@@ -76,7 +78,7 @@
             #    1. `nixConfig.substituters` in `flake.nix`
             # nix.settings.trusted-users = [ "drinkto" ];
           }
-          catppuccin.nixosModules.catppuccin
+          # catppuccin.nixosModules.catppuccin
 
           # # Standalone home-manager configuration entrypoint
           # # Available through 'home-manager --flake .#your-username@your-hostname'
@@ -105,7 +107,7 @@
               imports = [
                 ./home-manager/home.nix
                 # catppuccin.homeManagerModules.catppuccin
-                catppuccin.homeModules.catppuccin
+                # catppuccin.homeModules.catppuccin
               ];
             };
 
@@ -125,16 +127,12 @@
       # override the default substituters
       substituters = [
         # cache mirror located in China
-        # status: https://mirror.sjtu.edu.cn/
+        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store?priority=10" # 清华源优先
         "https://mirror.sjtu.edu.cn/nix-channels/store"
-        # https://mirrors.tuna.tsinghua.edu.cn/status/#server-status
-        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
-        # status: https://mirrors.ustc.edu.cn/status/
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://mirrors.cernet.edu.cn/nix-channels/store"
-        "https://cache.nixos.org"
+        "https://cache.nixos.org" # 官方源作为备用
 
-        # "https://cache.nixos.org"
         # nix community's cache server
         # "https://nix-community.cachix.org"
         # hyprland

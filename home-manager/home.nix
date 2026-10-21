@@ -103,18 +103,20 @@
 
     # Note && Learn
     obsidian
-    zotero
+    # zotero
     texstudio # TeX and LaTeX editor
     # pot # translation
+    evince
+    wpsoffice-cn
 
     # AI
     cherry-studio
     cc-switch
     codex
     # claude-code
-    # claude-monitor
+    claude-monitor
     # opencode
-    # opencode-desktop
+    opencode-desktop
 
     # terminal emulator
     kitty
@@ -151,7 +153,7 @@
     clash-nyanpasu
     clash-rs
     v2raya
-    flclash
+    # flclash
 
     # misc
     cowsay
@@ -220,7 +222,7 @@
     logisim-evolution
 
     # Music
-    splayer
+    splayer-next
     go-musicfox
     netease-cloud-music-gtk
     waylyrics
