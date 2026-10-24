@@ -8,9 +8,6 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # Phase 1 先保留，P5 删除；避免在迁移中途同时改 lock。
-    nixpkgs-stable.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-26.05&shallow=1";
   };
 
   outputs = { nixpkgs, home-manager, ... } @ inputs:

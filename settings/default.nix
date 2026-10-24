@@ -14,16 +14,11 @@
     "https://cache.nixos.org"
   ];
 
-  # P1 先保留原列表并补注释；P5 再删除确认不用的条目。
   permittedInsecurePackages = [
+    # Codex / opencode 相关工具链的构建依赖
+    "pnpm-10.29.2"
     # Cherry Studio / VS Code 依赖的 Electron
     "electron-40.10.5"
-    # Codex 相关工具依赖
-    "pnpm-10.29.2"
-    # Zotero 依赖；当前未安装 zotero
-    "firefox-esr-140-bin-unwrapped-140.17.0esr"
-    # .NET 6 运行时；当前未安装 dotnet-sdk
-    "dotnet-runtime_6"
   ];
 
   # 包分组入口：settings.packages { inherit pkgs; }
