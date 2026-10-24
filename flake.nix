@@ -42,10 +42,7 @@
       # 不能直接是 derivation，否则 nix flake check 会把它当成 system 名。
       formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
 
-      nixosConfigurations = configs // {
-        # 迁移期间临时别名；P4 改完主机名后删除。
-        nixos = configs.e490;
-      };
+      nixosConfigurations = configs;
     };
 
   # nixConfig 是顶层属性，不能写在 outputs 的 attrset 里，
