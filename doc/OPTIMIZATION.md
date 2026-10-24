@@ -467,3 +467,4 @@ P0（清理，零风险）
 sudo nixos-rebuild build --flake .#pc-main
 git add -A && git commit -m "refactor: <本步说明>"
 ```
+> 原子化修改，每步完成后，尝试修改以通过构建

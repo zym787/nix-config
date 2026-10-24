@@ -4,23 +4,28 @@
 
 ## 设备
 
-| 主机名 | 类型 | 说明 |
-| :--- | :--- | :--- |
-| `pc-main` | 桌面 PC | 主力工作机 |
-| `laptop-work` | 笔记本 | 移动办公 |
-| `sbc-home` | SBC | 家用服务 |
+目前只启用1台主机 `e490`
+
+| 是否启用 | 主机名 | 类型 | 说明 |
+| :--- | :--- | :--- | :--- |
+| 启用 | `e490` | 笔记本（laptop-work） | 主力工作机 |
+| 停用 | `a200i-dk` | SBC（sbc-home） | 推理服务器 |
+| 停用 | `bikini` | 桌面 PC（pc-main） | 主力工作机 |
 
 > 新增设备时按 `OPTIMIZATION.md` P2-4 操作。
 
 ## 用户
 
-| 用户名 | 说明 |
-| :--- | :--- |
-| `alice` | 日常使用 |
-| `alice-dev` | 嵌入式开发专用账号 |
-| `bob` | 家庭成员 |
+目前只启用1个用户 `drinkto`
 
-> 同一设备上的多个账号用后缀区分用途，如 `alice` / `alice-dev` / `alice-game`。
+| 是否启用 | 用户名 | 说明 |
+| :--- | :--- | :--- |
+| 启用 | `drinkto` | 日常使用 |
+| 停用 | `drinkto-dev` | 嵌入式开发专用账号 |
+| 停用 | `sega` | 家庭成员 |
+
+> 同一设备上的多个账号用后缀区分用途，如 `drinkto` / `drinkto-dev` / `drinkto-game`。
+> 新增用户时按 `OPTIMIZATION.md` P2-4 操作。
 
 ## 技术栈
 
@@ -37,14 +42,11 @@
 ## 快速开始
 
 ```bash
-git clone <仓库地址> ~/Documents/nixos
-cd ~/Documents/nixos
-
-# 首次构建（不切换）
-sudo nixos-rebuild build --flake .#pc-main
+# 首次构建/调试配置（仅构建，不切换）
+sudo nixos-rebuild build --flake .#e490
 
 # 切换
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild switch --flake .#e490
 ```
 
 ## 常用命令
@@ -52,8 +54,8 @@ sudo nixos-rebuild switch --flake .#pc-main
 ### 构建与切换
 
 ```bash
-sudo nixos-rebuild build --flake .#pc-main    # 只构建，验证配置
-sudo nixos-rebuild switch --flake .#pc-main   # 构建并切换
+sudo nixos-rebuild build --flake .#e490       # 只构建，验证配置
+sudo nixos-rebuild switch --flake .#e490      # 构建并切换
 sudo nixos-rebuild switch --rollback          # 回滚到上一个代际
 ```
 
@@ -62,7 +64,7 @@ sudo nixos-rebuild switch --rollback          # 回滚到上一个代际
 ```bash
 sudo nix flake update                 # 更新所有输入
 sudo nix flake update nixpkgs         # 只更新 nixpkgs
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild switch --flake .#e490
 ```
 
 ### 查看代际
@@ -75,8 +77,8 @@ nh os info                            # 带闭包大小
 ### 清理
 
 ```bash
-sudo nix-collect-garbage --delete-older-than 14d   # 清理 14 天前的代际
-sudo nix-collect-garbage -d                        # 清理所有旧代际（慎用）
+sudo nix-collect-garbage --delete-older-than 365d   # 清理 365 天前的代际
+sudo nix-collect-garbage -d                         # 清理所有旧代际（慎用）
 ```
 
 ### 格式化

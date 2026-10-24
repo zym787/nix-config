@@ -6,7 +6,7 @@
 
 - 配置正在从「单文件」迁移到 `hosts/` + `users/` + `common/` + `modules/` + `settings/` 架构
 - 迁移进度见 `OPTIMIZATION.md`
-- 当前主机名待从 `nixos` 改为描述性名称（如 `pc-main`）
+- 当前主机名待从 `nixos` 改为描述性名称（`e490`）
 
 ## 修改配置时的硬性规则
 
@@ -15,7 +15,7 @@
 3. **系统级选项**（`services.*`、`users.*`、`boot.*`）→ `hosts/` 或 `common/nixos/`
 4. **用户级选项**（`home.*`、`programs.*` 中的用户配置）→ `users/` 或 `common/home/`
 5. **主机名**禁用 `nixos`、`default`、`localhost`
-6. **每次只改一件事**，改完先 `nixos-rebuild build` 再 `switch`
+6. **每次只改一件事**，改完先 `nixos-rebuild build` ，最后有用户确认是否 `switch`
 7. **删除软件时**同步清理配置引用和 `~/.config/autostart/` 残留
 
 ## 新增文件的落点
