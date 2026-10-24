@@ -21,9 +21,11 @@
   # SSD 定期 TRIM，维持长期写入性能。
   services.fstrim.enable = true;
 
-  # Intel 温度管理，减少过热导致的降频。
-  services.thermald.enable = true;
-
+  # 不在 E490 上启用 thermald：
+  # 该机的 thinkpad_acpi dytc_lapmode 会让 thermald 报
+  # "Unsupported cpu model or platform" 并直接退出。
+  # 温度/频率由 intel_pstate + power-profiles-daemon 管理。
+  #
   # 电源配置由 PPD 管理，KDE 可切换 balanced / performance / power-saver。
   # 默认保持 balanced，不在这里强制 performance。
   services.power-profiles-daemon.enable = true;

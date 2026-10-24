@@ -42,7 +42,7 @@
 │   │   ├── fonts.nix
 │   │   ├── ime.nix               # fcitx5
 │   │   ├── printing.nix          # CUPS + Brother 驱动
-│   │   ├── performance.nix       # zram / sysctl / thermald / fstrim
+│   │   ├── performance.nix       # zram / sysctl / fstrim（E490 不用 thermald）
 │   │   └── systemd.nix           # fwupd；不覆盖 kde-baloo
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块

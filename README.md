@@ -39,7 +39,7 @@
 | 文件系统 | Btrfs（`root` / `home` / `nix` 子卷，zstd 压缩） |
 | 打印 | CUPS + brlaser（Brother DCP-7057） |
 | 蓝牙 | BlueZ + BlueDevil（Realtek RTL8822BE） |
-| 性能 | zram + sysctl 调优 + thermald + fstrim；PPD 默认 balanced |
+| 性能 | zram + sysctl 调优 + fstrim；PPD 默认 balanced（E490 不使用 thermald） |
 
 ## 蓝牙与性能
 
@@ -60,8 +60,12 @@ powerprofilesctl set balanced      # 恢复
 ```
 
 性能调优在 `common/nixos/performance.nix`：zram 压缩交换、`vm.swappiness=10`、
-`vm.vfs_cache_pressure=50`、SSD 定期 TRIM、thermald 温度管理。
-没有强制 `performance` governor，避免笔记本发热和续航变差。
+`vm.vfs_cache_pressure=50`、SSD 定期 TRIM。没有强制 `performance` governor，
+避免笔记本发热和续航变差。
+
+E490 上 **不启用 thermald**：该机的 `thinkpad_acpi dytc_lapmode` 会让 thermald
+报 `Unsupported cpu model or platform` 并退出；温度/频率由 `intel_pstate` +
+`power-profiles-daemon` 管理。
 
 ## 快速开始
 

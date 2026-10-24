@@ -69,7 +69,7 @@
 │   │   ├── fonts.nix
 │   │   ├── ime.nix
 │   │   ├── printing.nix
-│   │   ├── performance.nix       # zram / sysctl / thermald / fstrim
+│   │   ├── performance.nix       # zram / sysctl / fstrim（E490 不用 thermald）
 │   │   └── systemd.nix
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块
