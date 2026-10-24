@@ -38,6 +38,30 @@
 | 引导 | systemd-boot（保留 10 个代际） |
 | 文件系统 | Btrfs（`root` / `home` / `nix` 子卷，zstd 压缩） |
 | 打印 | CUPS + brlaser（Brother DCP-7057） |
+| 蓝牙 | BlueZ + BlueDevil（Realtek RTL8822BE） |
+| 性能 | zram + sysctl 调优 + thermald + fstrim；PPD 默认 balanced |
+
+## 蓝牙与性能
+
+```bash
+# 蓝牙状态 / 配对
+systemctl status bluetooth --no-pager
+bluetoothctl
+# KDE 托盘里也可以直接用 BlueDevil 配对
+
+# 查看 zram 和 TRIM
+zramctl
+systemctl status fstrim.timer --no-pager
+
+# 电源配置（默认 balanced）
+powerprofilesctl get
+powerprofilesctl set performance   # 需要高性能时
+powerprofilesctl set balanced      # 恢复
+```
+
+性能调优在 `common/nixos/performance.nix`：zram 压缩交换、`vm.swappiness=10`、
+`vm.vfs_cache_pressure=50`、SSD 定期 TRIM、thermald 温度管理。
+没有强制 `performance` governor，避免笔记本发热和续航变差。
 
 ## 快速开始
 

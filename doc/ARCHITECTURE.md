@@ -36,11 +36,13 @@
 │   ├── nixos/                    # 所有主机共享的系统级配置
 │   │   ├── core.nix              # nix.settings / nixpkgs.config / gc / boot / locale
 │   │   ├── network.nix
+│   │   ├── bluetooth.nix         # BlueZ + 开机上电
 │   │   ├── desktop.nix           # X11 / SDDM / Plasma / libinput
 │   │   ├── audio.nix             # PipeWire
 │   │   ├── fonts.nix
 │   │   ├── ime.nix               # fcitx5
 │   │   ├── printing.nix          # CUPS + Brother 驱动
+│   │   ├── performance.nix       # zram / sysctl / thermald / fstrim
 │   │   └── systemd.nix           # fwupd；不覆盖 kde-baloo
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块

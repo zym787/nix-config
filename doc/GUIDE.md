@@ -63,11 +63,13 @@
 │   ├── nixos/                    # 所有主机共享的系统级配置
 │   │   ├── core.nix              # nix.settings / nixpkgs.config / gc / boot
 │   │   ├── network.nix
+│   │   ├── bluetooth.nix         # BlueZ + 开机上电
 │   │   ├── desktop.nix           # X11 / SDDM / Plasma
 │   │   ├── audio.nix
 │   │   ├── fonts.nix
 │   │   ├── ime.nix
 │   │   ├── printing.nix
+│   │   ├── performance.nix       # zram / sysctl / thermald / fstrim
 │   │   └── systemd.nix
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块

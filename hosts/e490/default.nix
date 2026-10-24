@@ -8,12 +8,14 @@ in {
     ./hardware-configuration.nix
     ../../common/nixos/core.nix
     ../../common/nixos/network.nix
+    ../../common/nixos/bluetooth.nix
     ../../common/nixos/desktop.nix
     ../../common/nixos/audio.nix
     ../../common/nixos/fonts.nix
     ../../common/nixos/ime.nix
     ../../common/nixos/printing.nix
     ../../common/nixos/systemd.nix
+    ../../common/nixos/performance.nix
   ];
 
   # 主机名来自 variables.nix，保证磁盘/SSH/mDNS 名称一致。
