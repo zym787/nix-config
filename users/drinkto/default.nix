@@ -1,9 +1,11 @@
-{ settings, pkgs, ... }:
-let
-  packages = settings.packages { inherit pkgs; };
-in
 {
-  imports = [ ../../common/home ];
+  settings,
+  pkgs,
+  ...
+}: let
+  packages = settings.packages {inherit pkgs;};
+in {
+  imports = [../../common/home];
 
   home = {
     username = "drinkto";

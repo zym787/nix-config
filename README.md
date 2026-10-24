@@ -9,10 +9,10 @@
 | 是否启用 | 主机名 | 类型 | 说明 |
 | :--- | :--- | :--- | :--- |
 | 启用 | `e490` | 笔记本（laptop-work） | 主力工作机 |
-| 停用 | `a200i-dk` | SBC（sbc-home） | 推理服务器 |
-| 停用 | `bikini` | 桌面 PC（pc-main） | 主力工作机 |
+| 未配置 | `a200i-dk` | SBC（sbc-home） | 推理服务器（计划） |
+| 未配置 | `bikini` | 桌面 PC（pc-main） | 桌面机（计划） |
 
-> 新增设备时按 `OPTIMIZATION.md` P2-4 操作。
+> 新增设备时按 `doc/OPTIMIZATION.md` P2-4 操作：复制 `hosts/e490/`。
 
 ## 用户
 
@@ -21,11 +21,11 @@
 | 是否启用 | 用户名 | 说明 |
 | :--- | :--- | :--- |
 | 启用 | `drinkto` | 日常使用 |
-| 停用 | `drinkto-dev` | 嵌入式开发专用账号 |
-| 停用 | `sega` | 家庭成员 |
+| 未配置 | `drinkto-dev` | 嵌入式开发专用账号（计划） |
+| 未配置 | `sega` | 家庭成员（计划） |
 
 > 同一设备上的多个账号用后缀区分用途，如 `drinkto` / `drinkto-dev` / `drinkto-game`。
-> 新增用户时按 `OPTIMIZATION.md` P2-4 操作。
+> 新增用户时按 `doc/OPTIMIZATION.md` P2-4 操作：复制 `users/drinkto/`。
 
 ## 技术栈
 
@@ -36,7 +36,7 @@
 | 音频 | PipeWire（PulseAudio 兼容层） |
 | 输入法 | fcitx5 + Rime，启用 Wayland 前端 |
 | 引导 | systemd-boot（保留 10 个代际） |
-| 文件系统 | Btrfs（`@root` / `@home` / `@nix` 子卷，zstd 压缩） |
+| 文件系统 | Btrfs（`root` / `home` / `nix` 子卷，zstd 压缩） |
 | 打印 | CUPS + brlaser（Brother DCP-7057） |
 
 ## 快速开始
@@ -84,14 +84,14 @@ sudo nix-collect-garbage -d                         # 清理所有旧代际（�
 ### 格式化
 
 ```bash
-nix fmt                               # 需要 flake.nix 中有 formatter
+nix fmt                               # 使用 flake formatter（alejandra）
 ```
 
 ## 镜像与网络
 
 - **Git 源**：`https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git`
 - **二进制缓存**：清华 / 中科大 / 官方（在 `settings/default.nix` 和 `common/nixos/core.nix` 中配置）
-- **代理**：如需为 `nix-daemon` 配置代理，参考 `common/nixos/core.nix` 注释
+- **代理**：如需为 `nix-daemon` 配置代理，参考下方 `systemd.services.nix-daemon.environment` 示例
 
 > 注意：`flake.nix` 中的 `nixConfig` 只影响 flake 自身评估，`sudo nixos-rebuild` 构建时使用系统 `nix.settings.substituters`。
 
@@ -114,7 +114,7 @@ nix fmt                               # 需要 flake.nix 中有 formatter
 
 ### 报 `The option ... does not exist`
 
-选项层级写错了。系统级选项（如 `programs.clash-verge`）不能写在 `users/` 里。
+选项层级写错了。系统级选项（如 `services.*`、`boot.*`）不能写在 `users/` 里。
 查选项：`https://search.nixos.org/options` 和 `https://nix-community.github.io/home-manager/options.xhtml`
 
 ### 软件已从配置删除，但开机仍自启
@@ -129,16 +129,19 @@ ls ~/.config/autostart/ | grep -i 软件名
 
 ### Avahi 过时选项警告
 
-在 `common/nixos/avahi.nix` 中显式设置 `services.avahi.settings.publish.*`（见 `OPTIMIZATION.md` P1-3）。
+警告来自 `services.ipp-usb`：它内部仍设置旧的 `services.avahi.publish.enable`。
+`common/nixos/printing.nix` 现在保留 `ipp-usb`（同时保留 sane/扫描功能），
+用 `lib.mkForce null` 清空旧选项，并以 `services.avahi.settings.publish.*` 等价表达，
+因此警告消失。仅设置 `settings.publish.*` 而不清空旧选项是无效的。
 
 ## 目录结构
 
-详见 `ARCHITECTURE.md`。
+详见 `doc/ARCHITECTURE.md`。
 
 ## 相关文档
 
-- `ARCHITECTURE.md`：架构设计 + 编码规则（改配置前必读）
-- `OPTIMIZATION.md`：优化与迁移路线（P0/P1/P2）
+- `doc/ARCHITECTURE.md`：架构设计 + 编码规则（改配置前必读）
+- `doc/OPTIMIZATION.md`：迁移记录与长期维护
 - NixOS 选项搜索：https://search.nixos.org/options
 - Home Manager 选项：https://nix-community.github.io/home-manager/options.xhtml
 - NixOS Wiki：https://wiki.nixos.org

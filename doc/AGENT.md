@@ -1,12 +1,15 @@
 # Agent 指引
 
-> 本文档供 AI agent 读取。修改配置前先读 `ARCHITECTURE.md`。
+> 本文档供 AI agent 读取。修改配置前先读 `doc/ARCHITECTURE.md`。
 
 ## 当前状态
 
-- 配置正在从「单文件」迁移到 `hosts/` + `users/` + `common/` + `modules/` + `settings/` 架构
-- 迁移进度见 `OPTIMIZATION.md`
-- 当前主机名待从 `nixos` 改为描述性名称（`e490`）
+- 已完成从「单文件」到 `hosts/` + `users/` + `common/` + `settings/` 架构的迁移
+- 当前主机：`e490`；当前用户：`drinkto`
+- 构建：`sudo nixos-rebuild build --flake .#e490`
+- 切换：`sudo nixos-rebuild switch --flake .#e490`
+- `modules/` 目前未创建；出现真正按需启用的模块时再建
+- 迁移记录见 `doc/OPTIMIZATION.md`
 
 ## 修改配置时的硬性规则
 
@@ -23,7 +26,7 @@
 | 要加的内容 | 放哪里 |
 | :--- | :--- |
 | 新的系统服务 | `common/nixos/<name>.nix`，在 `hosts/<host>/default.nix` 中 import |
-| 新的用户级程序配置 | `modules/home-manager/<name>.nix`，在 `users/<name>/default.nix` 中 import |
+| 新的用户级程序配置 | `common/home/<name>.nix` 或（可选模块）`modules/home-manager/<name>.nix`，在 `users/<name>/default.nix` 中 import |
 | 新的全局变量 | `settings/default.nix` |
 | 新的包分组 | `settings/packages.nix` |
 | 新的主机 | 复制 `hosts/<现有>/` 为新目录，改 `variables.nix` |

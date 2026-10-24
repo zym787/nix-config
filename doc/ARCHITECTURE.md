@@ -10,6 +10,9 @@
 - 加设备、加用户时只新增文件，不复制粘贴
 - 系统级与用户级物理隔离
 
+> **当前实例**：`hosts/e490` + `users/drinkto`。下文示例中的 `pc-main`、`alice` 等都是
+> 多设备/多用户场景的占位名，实际替换为 `e490`、`drinkto`。
+
 ## 2. 目录结构
 
 ```
@@ -17,46 +20,35 @@
 ├── flake.nix                     # 仅：inputs / outputs 发现 / nixConfig / formatter
 ├── flake.lock                    # 由 nix flake update 生成，不手动编辑
 ├── settings/
-│   ├── default.nix               # 全局变量：stateVersion、镜像源、insecure 包
-│   └── packages.nix              # 包分组：core / desktop / dev / media / utils
+│   ├── default.nix               # 全局变量：stateVersion、镜像源、insecure 包、packages 入口
+│   └── packages.nix              # 包分组：system / core / desktop / dev / media / utils
 ├── hosts/                        # 按“机器”组织
-│   ├── pc-main/                  # 桌面主力机（示例名，可改为 laptop-main 等）
-│   │   ├── default.nix           # 系统 imports + 启用哪些用户
-│   │   ├── hardware-configuration.nix
-│   │   └── variables.nix         # 主机名、GPU、显示器等
-│   ├── laptop-work/
-│   │   ├── default.nix
-│   │   ├── hardware-configuration.nix
-│   │   └── variables.nix
-│   └── sbc-home/
-│       ├── default.nix
+│   └── e490/                     # 当前唯一主机
+│       ├── default.nix           # 系统 imports + 启用哪些用户
 │       ├── hardware-configuration.nix
-│       └── variables.nix
+│       └── variables.nix         # 主机名
+│   # 计划中：laptop-work/、sbc-home/ 等按同样结构新增
 ├── users/                        # 按“人”组织，与 hosts 正交
-│   ├── alice/                    # 日常使用账号
-│   │   └── default.nix
-│   ├── alice-dev/                # 嵌入式开发账号
-│   │   └── default.nix
-│   └── bob/                      # 家庭成员
+│   └── drinkto/                  # 当前唯一用户
 │       └── default.nix
+│   # 计划中：drinkto-dev/、sega/ 等
 ├── common/
 │   ├── nixos/                    # 所有主机共享的系统级配置
-│   │   ├── core.nix              # nix.settings / nixpkgs.config / gc / boot
+│   │   ├── core.nix              # nix.settings / nixpkgs.config / gc / boot / locale
 │   │   ├── network.nix
-│   │   ├── desktop.nix           # X11 / SDDM / Plasma
+│   │   ├── desktop.nix           # X11 / SDDM / Plasma / libinput
 │   │   ├── audio.nix             # PipeWire
 │   │   ├── fonts.nix
 │   │   ├── ime.nix               # fcitx5
 │   │   ├── printing.nix          # CUPS + Brother 驱动
-│   │   └── avahi.nix             # 显式 settings.publish.*
+│   │   └── systemd.nix           # fwupd；不覆盖 kde-baloo
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块
 │       ├── git.nix
-│       ├── shell.nix             # zsh + starship
-│       └── autostart.nix         # 声明式管理 XDG autostart
-├── modules/                      # 可选、按需启用的模块
-│   ├── nixos/                    # 系统级可选模块（steam / gaming / proxy）
-│   └── home-manager/             # 用户级可选模块（vscode / neovim）
+│       └── shell.nix             # starship
+├── modules/                      # 可选；当前未创建，需要时再建
+│   ├── nixos/
+│   └── home-manager/
 └── wallpapers/
 ```
 
@@ -70,7 +62,7 @@
 | 用户 | `users/<username>/` | 个人包、个人 dotfiles、个人变量引用 | 系统级服务、其他用户的配置 |
 | 共享系统 | `common/nixos/` | 所有主机共享的系统服务 | 主机特有硬件、可选软件 |
 | 共享用户 | `common/home/` | 所有用户共享的用户基础 | 个人化内容 |
-| 可选模块 | `modules/` | Steam、代理、编辑器等按需启用的功能 | 基础系统必备配置 |
+| 可选模块 | `modules/` | Steam、代理、编辑器等按需启用的功能；当前未创建 | 基础系统必备配置 |
 
 ## 4. 命名规则
 
@@ -87,7 +79,7 @@
 
 ### 4.2 主机名
 
-- 使用描述性名称：`pc-main`、`laptop-work`、`sbc-home`
+- 使用描述性名称：`e490`（当前）、`laptop-work`、`sbc-home` 等；示例中的 `pc-main` 是占位名
 - **禁止**：`nixos`、`default`、`localhost`、`test`、`tmp`
 - 主机名是 DNS 标签，只能包含字母、数字和连字符
 
@@ -123,7 +115,7 @@ in {
     ../../common/nixos/fonts.nix
     ../../common/nixos/ime.nix
     ../../common/nixos/printing.nix
-    ../../common/nixos/avahi.nix
+    ../../common/nixos/systemd.nix
   ];
 
   networking.hostName = hostVars.hostName;
@@ -177,7 +169,6 @@ in {
   imports = [
     ./git.nix
     ./shell.nix
-    ./autostart.nix
   ];
   programs.home-manager.enable = true;
 }
@@ -234,7 +225,7 @@ home-manager.users.alice-game = {
 
 ### R4. 系统级 vs 用户级选对层
 
-- `programs.clash-verge`、`services.*`、`users.*` → 系统级（`hosts/` 或 `common/nixos/`）
+- `services.*`、`users.*`、`boot.*` → 系统级（`hosts/` 或 `common/nixos/`）
 - `home.packages`、`programs.git`、`xdg.*` → 用户级（`users/` 或 `common/home/`）
 - 报错 `The option ... does not exist` 时先确认层级
 
@@ -259,8 +250,8 @@ permittedInsecurePackages = [
 ### R7. 每次只改一件事，先 build 再 switch
 
 ```bash
-sudo nixos-rebuild build --flake .#pc-main
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild build --flake .#e490
+sudo nixos-rebuild switch --flake .#e490
 ```
 
 ### R8. 用 git 管理，小步提交
@@ -298,8 +289,8 @@ sudo nix-collect-garbage --delete-older-than 14d
 ```bash
 # 更新
 sudo nix flake update
-sudo nixos-rebuild build --flake .#pc-main
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild build --flake .#e490
+sudo nixos-rebuild switch --flake .#e490
 git add flake.lock && git commit -m "chore: flake update $(date +%F)"
 
 # 回滚

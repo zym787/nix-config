@@ -1,16 +1,18 @@
-{ settings, pkgs, ... }:
-let
-  packages = settings.packages { inherit pkgs; };
-in
 {
+  settings,
+  pkgs,
+  ...
+}: let
+  packages = settings.packages {inherit pkgs;};
+in {
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages = settings.permittedInsecurePackages;
   };
 
   nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    trusted-users = [ "drinkto" ];
+    experimental-features = ["nix-command" "flakes"];
+    trusted-users = ["drinkto"];
     substituters = settings.substituters;
   };
 

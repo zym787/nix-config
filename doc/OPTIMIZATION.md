@@ -1,8 +1,16 @@
 # 优化与迁移路线
 
-> 按优先级执行。每完成一项，`sudo nixos-rebuild build --flake .#<主机名>` 验证后再进入下一项。
+> **状态（2026-10-24）**：P0/P1 迁移已执行完成。实际结构为
+> `hosts/e490` + `users/drinkto` + `common/{nixos,home}` + `settings/`；
+> 构建命令为 `sudo nixos-rebuild build --flake .#e490`。本文保留为迁移记录。
+>
+> 执行时修正了原方案中的几处问题：先改 flake/settings 再拆文件；`formatter`
+> 必须按 system 索引；`nixConfig` 必须在 outputs 外；avahi 警告来自 `ipp-usb`，
+> 仅设置 `services.avahi.settings.publish.*` 不能消除。
 
-## 一、当前配置诊断
+> 原计划：按优先级执行。每完成一项，`sudo nixos-rebuild build --flake .#<主机名>` 验证后再进入下一项。
+
+## 一、迁移前配置诊断（历史记录）
 
 ### 已修复（相比上一版）
 
@@ -153,8 +161,8 @@ git mv nixos/hardware-configuration.nix hosts/pc-main/hardware-configuration.nix
 5. **`fonts.nix`**：`fonts.packages`、`fonts.fontconfig`
 6. **`ime.nix`**：`i18n.inputMethod`
 7. **`printing.nix`**：`services.printing`、`ipp-usb`
-8. **`avahi.nix`**：显式 `settings.publish.*`（消除警告）
-9. **`systemd.nix`**：`fwupd-refresh` 屏蔽；评估 `kde-baloo` 是否仍必要
+8. **`systemd.nix`**：`fwupd-refresh` 屏蔽；删除 `kde-baloo` 覆盖
+   - Avahi 警告来自 `ipp-usb`，不要单独建 `avahi.nix`。
 
 `common/nixos/core.nix` 示例：
 
@@ -184,18 +192,14 @@ git mv nixos/hardware-configuration.nix hosts/pc-main/hardware-configuration.nix
 }
 ```
 
-`common/nixos/avahi.nix` 示例：
+**关于 Avahi 警告（已修正）**：
 
-```nix
-{ ... }:
-{
-  services.avahi.settings.publish = {
-    "disable-publishing" = false;
-    "disable-user-service-publishing" = false;
-    "publish-addresses" = true;
-  };
-}
-```
+原方案建议新建 `common/nixos/avahi.nix` 设置 `services.avahi.settings.publish.*`，
+但这**不能**消除警告。警告实际来自 `services.ipp-usb` 内部设置的旧选项
+`services.avahi.publish.enable` / `userServices`。由于关闭 ipp-usb 会同时关闭
+`sane`/`skanpage` 扫描功能，当前方案是在 `common/nixos/printing.nix` 保留 ipp-usb，
+用 `lib.mkForce null` 清空旧选项，再用 `settings.publish.*` 等价设置。这样包列表
+与迁移前一致，警告也消失。不要创建无效的 `avahi.nix`。
 
 `common/nixos/systemd.nix` 示例：
 
@@ -318,7 +322,6 @@ in {
     ../../common/nixos/fonts.nix
     ../../common/nixos/ime.nix
     ../../common/nixos/printing.nix
-    ../../common/nixos/avahi.nix
     ../../common/nixos/systemd.nix
   ];
 
@@ -362,7 +365,8 @@ in {
       (n: !(nixpkgs.lib.hasPrefix "_" n))
       (builtins.attrNames (builtins.readDir ./hosts));
   in {
-    formatter = nixpkgs.legacyPackages.${system}.alejandra;
+    # 注意：formatter 必须按 system 索引；直接写 derivation 会让 nix flake check 失败。
+    formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
 
     nixosConfigurations = nixpkgs.lib.genAttrs hostNames (host:
       nixpkgs.lib.nixosSystem {
@@ -393,8 +397,8 @@ in {
 ### P1-7. 验证
 
 ```bash
-sudo nixos-rebuild build --flake .#pc-main
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild build --flake .#e490
+sudo nixos-rebuild switch --flake .#e490
 ```
 
 失败时优先查：
@@ -433,7 +437,7 @@ sudo nixos-rebuild switch --flake .#pc-main
 
 **新增设备**：
 
-1. 复制 `hosts/pc-main/` 为 `hosts/<新主机名>/`
+1. 复制 `hosts/e490/` 为 `hosts/<新主机名>/`
 2. 替换 `hardware-configuration.nix`（来自 `nixos-generate-config`）
 3. 修改 `variables.nix` 中的 `hostName`
 4. 在 `default.nix` 中调整启用的用户
@@ -441,30 +445,33 @@ sudo nixos-rebuild switch --flake .#pc-main
 
 **新增用户**：
 
-1. 复制 `users/alice/` 为 `users/<新用户名>/`
+1. 复制 `users/drinkto/` 为 `users/<新用户名>/`
 2. 修改 `default.nix` 中的 `username` 和 `homeDirectory`
 3. 在目标主机的 `hosts/<主机名>/default.nix` 中加 `users.users.<name>` 和 `home-manager.users.<name>`
 
 ---
 
-## 五、迁移顺序总览
+## 五、迁移顺序总览（已修正）
+
+实际执行顺序与原文不同：**先改 flake/settings，再搬文件**，否则 `settings`
+没有通过 `specialArgs` 传入，拆分 `core.nix` 时会报 `undefined variable 'settings'`。
 
 ```
-P0（清理，零风险）
-  → P1-1 建骨架
-  → P1-2 抽 settings
-  → P1-3 拆 configuration.nix
-  → P1-4 拆 home.nix
-  → P1-5 建 hosts 入口
-  → P1-6 重写 flake.nix
-  → P1-7 验证
-  → P2 长期维护
+P0 预检 + 基线
+  → P1 改 flake（hosts 发现 + settings + 临时 nixos 别名）
+  → P2 拆系统配置到 common/nixos
+  → P3 拆 Home 到 common/home + users/drinkto
+  → P4 主机名 e490 + 移除 nixos 别名
+  → P5 清理 baloo / ipp-usb / insecure / nixpkgs-stable
+  → P6 同步文档 + CI
+  → P7 最终验证
 ```
 
 每步完成后：
 
 ```bash
-sudo nixos-rebuild build --flake .#pc-main
-git add -A && git commit -m "refactor: <本步说明>"
+git add -A
+nix flake check --no-build --show-trace
+sudo nixos-rebuild build --flake .#e490
+git commit -m "refactor: <本步说明>"
 ```
-> 原子化修改，每步完成后，尝试修改以通过构建

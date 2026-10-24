@@ -1,5 +1,4 @@
-{ pkgs }:
-{
+{pkgs}: {
   # 系统级：原 environment.systemPackages
   system = with pkgs; [
     vim

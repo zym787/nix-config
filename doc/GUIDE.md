@@ -1,3 +1,7 @@
+> **状态**：本文是设计参考。实际迁移已完成，结构为 `hosts/e490` + `users/drinkto`
+> + `common/{nixos,home}` + `settings/`，构建命令 `sudo nixos-rebuild build --flake .#e490`。
+> 文中的 `pc-main`、`alice` 等是占位名；实际执行顺序以 `doc/OPTIMIZATION.md` 和迁移记录为准。
+
 在多设备与多用户并存的真实场景里（涵盖笔记本、桌面 PC、SBC 单板计算机，且单台设备上可能同时有日常使用、嵌入式开发、娱乐等多个账号），**最核心的难点是理清“机器”与“人”的边界**。八份优秀配置的共同经验是：**`hosts/` 管机器，`users/` 管人，两者完全正交**；而新手最容易犯的错误，是把用户配置焊死在主机目录里，导致换机或加人只能复制粘贴。
 
 ---
@@ -64,12 +68,11 @@
 │   │   ├── fonts.nix
 │   │   ├── ime.nix
 │   │   ├── printing.nix
-│   │   └── avahi.nix
+│   │   └── systemd.nix
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块
 │       ├── git.nix
-│       ├── shell.nix
-│       └── autostart.nix
+│       └── shell.nix
 ├── modules/                      # 可选、按需启用的模块
 │   ├── nixos/                    # 系统级可选模块（steam / gaming / clash）
 │   └── home-manager/             # 用户级可选模块（vscode / neovim）
@@ -238,14 +241,14 @@ home-manager.users.alice-dev = {
 
 ```bash
 # 构建（不切换）
-sudo nixos-rebuild build --flake .#pc-main
+sudo nixos-rebuild build --flake .#e490
 
 # 切换
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild switch --flake .#e490
 
 # 更新
 sudo nix flake update
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild switch --flake .#e490
 
 # 格式化
 nix fmt
@@ -253,7 +256,7 @@ nix fmt
 
 ## 新增设备
 
-1. 复制模板 `hosts/_template/` 为 `hosts/<新主机名>/`。
+1. 复制 `hosts/e490/` 为 `hosts/<新主机名>/`。
 2. 替换 `hardware-configuration.nix`（来自 `nixos-generate-config`）。
 3. 修改 `variables.nix` 中的 `hostName`。
 4. 在 `default.nix` 中声明启用哪些用户。
@@ -261,7 +264,7 @@ nix fmt
 
 ## 新增用户
 
-1. 复制模板 `users/_template/` 为 `users/<新用户名>/`。
+1. 复制 `users/drinkto/` 为 `users/<新用户名>/`。
 2. 修改 `default.nix` 中的 `username` 和 `homeDirectory`。
 3. 在目标主机的 `hosts/<主机名>/default.nix` 中启用该用户。
 ````
@@ -303,18 +306,18 @@ cd ~/Documents/nixos
 git add -A && git commit -m "checkpoint: before architecture refactor"
 ```
 
-### Step 1：创建骨架与模板
+### Step 1：创建骨架
+
+实际只创建当前需要的目录；`modules/` 等出现可选模块时再加，不创建空模板。
 
 ```bash
-mkdir -p settings hosts/{pc-main,laptop-work,sbc-home,_template} \
-         users/{alice,bob,_template} \
-         common/{nixos,home} modules/{nixos,home-manager}
+mkdir -p settings hosts/e490 users/drinkto common/{nixos,home}
 ```
 
-把当前 `hardware-configuration.nix` 移入 `hosts/pc-main/`（假设当前唯一机器将命名为 `pc-main`）：
+把当前 `hardware-configuration.nix` 移入 `hosts/e490/`：
 
 ```bash
-git mv nixos/hardware-configuration.nix hosts/pc-main/hardware-configuration.nix
+git mv nixos/hardware-configuration.nix hosts/e490/hardware-configuration.nix
 ```
 
 ### Step 2：抽出 `settings/`
@@ -337,7 +340,8 @@ git mv nixos/hardware-configuration.nix hosts/pc-main/hardware-configuration.nix
 5. `fonts.nix`
 6. `ime.nix`
 7. `printing.nix`
-8. `avahi.nix`（显式 `settings.publish.*` 消除警告）
+8. `systemd.nix`（fwupd；不覆盖 kde-baloo）
+   - Avahi 警告实际来自 `ipp-usb`；保留 ipp-usb（扫描），用 `lib.mkForce null` 清空旧选项并设置 `settings.publish.*`。
 
 搬完后旧 `configuration.nix` 只留 `users.users`（下一步迁入主机）。
 
@@ -349,16 +353,15 @@ git mv nixos/hardware-configuration.nix hosts/pc-main/hardware-configuration.nix
 
 ### Step 5：建立主机入口与变量
 
-`hosts/pc-main/variables.nix`：
+`hosts/e490/variables.nix`：
 
 ```nix
 {
-  hostName = "pc-main";
-  gpu = "intel"; # 或 amd / nvidia
+  hostName = "e490";
 }
 ```
 
-`hosts/pc-main/default.nix`：
+`hosts/e490/default.nix`：
 
 ```nix
 { settings, ... }:
@@ -373,7 +376,7 @@ in {
     ../../common/nixos/fonts.nix
     ../../common/nixos/ime.nix
     ../../common/nixos/printing.nix
-    ../../common/nixos/avahi.nix
+    ../../common/nixos/systemd.nix
   ];
   networking.hostName = hostVars.hostName;
   system.stateVersion = settings.stateVersion;
@@ -392,7 +395,8 @@ in {
     system = "x86_64-linux";
     settings = import ./settings { inherit inputs; };
   in {
-    formatter = nixpkgs.legacyPackages.${system}.alejandra;
+    # formatter 必须按 system 索引，否则 nix flake check 会失败
+    formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
 
     nixosConfigurations = nixpkgs.lib.genAttrs
       (builtins.attrNames (builtins.readDir ./hosts))
@@ -413,7 +417,7 @@ in {
 }
 ```
 
-**注意**：`hosts/` 下的 `_template` 目录会被 `readDir` 发现，需要过滤以 `_` 开头的目录：
+**注意**：如果将来创建 `hosts/_template`，它会被 `readDir` 发现，需要过滤以 `_` 开头的目录：
 
 ```nix
 (builtins.filter (n: !(nixpkgs.lib.hasPrefix "_" n))
@@ -423,8 +427,8 @@ in {
 ### Step 7：验证与清理
 
 ```bash
-sudo nixos-rebuild build --flake .#pc-main
-sudo nixos-rebuild switch --flake .#pc-main
+sudo nixos-rebuild build --flake .#e490
+sudo nixos-rebuild switch --flake .#e490
 ```
 
 通过后删除旧 `nixos/configuration.nix`、`home-manager/home.nix`，运行 `nix fmt`，提交：
@@ -443,5 +447,5 @@ git add -A && git commit -m "refactor: migrate to hosts/users architecture"
 | 单设备多账号（日常/开发/娱乐） | `users/<username>/` 独立目录，主机入口按需启用 |
 | 同一用户多设备 | `users/<username>/` 被多个 `hosts/` import，差异在主机入口局部覆盖 |
 | 新手看得懂 | 目录名全部是 `hosts`、`users`、`modules`、`common`、`settings` 等原生术语 |
-| 加设备/加人 | 复制 `_template`，改 `variables.nix` 或在主机入口加一行 `home-manager.users.<name>` |
+| 加设备/加人 | 复制 `hosts/e490` / `users/drinkto`，改 `variables.nix` 或在主机入口加一行 `home-manager.users.<name>` |
 | 避免“越写越乱” | 入口极简，变量集中，共享层薄，旧代码交给 git |

@@ -1,10 +1,12 @@
-# name: flake-check
-# on: [push, pull_request]
-# jobs:
-#   check:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: cachix/install-nix-action@v31
-#       - run: nix flake check --no-build --show-trace
-#       - run: nix eval .#nixosConfigurations.nixos.config.system.build.toplevel.drvPath
+name: flake-check
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - run: nix flake check --no-build --show-trace
+      - run: nix eval .#nixosConfigurations.e490.config.system.build.toplevel.drvPath

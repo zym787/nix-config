@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   fonts.packages = with pkgs; [
     # Maple Mono (Ligature TTF unhinted)
     maple-mono.truetype
@@ -13,7 +12,7 @@
     noto-fonts
     noto-fonts-cjk-sans
     noto-fonts-cjk-serif
-    sarasa-gothic  #更纱黑体
+    sarasa-gothic #更纱黑体
     source-code-pro
     hack-font
     jetbrains-mono

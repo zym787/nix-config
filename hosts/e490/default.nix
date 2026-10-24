@@ -1,8 +1,6 @@
-{ ... }:
-let
+{...}: let
   hostVars = import ./variables.nix;
-in
-{
+in {
   imports = [
     ./hardware-configuration.nix
     ../../common/nixos/core.nix
@@ -24,10 +22,10 @@ in
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
     ];
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = ["networkmanager" "wheel"];
   };
 
   home-manager.users.drinkto = {
-    imports = [ ../../users/drinkto ];
+    imports = [../../users/drinkto];
   };
 }
