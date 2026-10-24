@@ -1,6 +1,9 @@
+# 主机 e490 的入口：组合硬件、共享系统模块、用户和 Home Manager。
 {...}: let
+  # 主机特有变量（当前只有 hostName）。
   hostVars = import ./variables.nix;
 in {
+  # 共享系统配置；主机特有硬件单独放 hardware-configuration.nix。
   imports = [
     ./hardware-configuration.nix
     ../../common/nixos/core.nix
@@ -13,18 +16,23 @@ in {
     ../../common/nixos/systemd.nix
   ];
 
+  # 主机名来自 variables.nix，保证磁盘/SSH/mDNS 名称一致。
   networking.hostName = hostVars.hostName;
 
+  # 系统级用户：Home Manager 挂载前必须先存在。
   users.users.drinkto = {
     isNormalUser = true;
     description = "drinkto";
     home = "/home/drinkto";
+    # 远程登录用公钥；私钥只在客户端。
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
     ];
+    # networkmanager 管理网络；wheel 允许 sudo。
     extraGroups = ["networkmanager" "wheel"];
   };
 
+  # 该主机启用 drinkto 的 Home Manager 配置。
   home-manager.users.drinkto = {
     imports = [../../users/drinkto];
   };
