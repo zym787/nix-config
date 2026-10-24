@@ -79,7 +79,6 @@
 
   # 桌面/终端/Wayland 工具（当前 X11 会话也用得到终端和部分工具）
   desktop = with pkgs; [
-    kdePackages.bluedevil # KDE 蓝牙托盘/配对界面
     kitty
     ghostty
     zsh
