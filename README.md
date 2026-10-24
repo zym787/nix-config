@@ -84,7 +84,7 @@ sudo nix-collect-garbage -d                         # 清理所有旧代际（�
 ### 格式化
 
 ```bash
-nix fmt                               # 使用 flake formatter（alejandra）
+nix fmt .                             # 使用 flake formatter（alejandra）
 ```
 
 ## 镜像与网络

@@ -73,7 +73,7 @@
 │       ├── default.nix           # imports 下列模块
 │       ├── git.nix
 │       └── shell.nix
-├── modules/                      # 可选、按需启用的模块
+├── modules/                      # 可选、按需启用的模块（当前未创建）
 │   ├── nixos/                    # 系统级可选模块（steam / gaming / clash）
 │   └── home-manager/             # 用户级可选模块（vscode / neovim）
 └── wallpapers/
