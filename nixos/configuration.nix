@@ -117,6 +117,16 @@
     #   # allowedUDPPorts = [ ... ];
     #   # Or disable the firewall altogether.
     #   # enable = false;
+    #   # 将 Clash 的 TUN 虚拟网卡加入信任列表
+    #   trustedInterfaces = [ "Meta" ]; # 如果无效，可尝试改为 "Meta"
+
+    #   # 放行来自 TUN 网卡的所有入站流量
+    #   extraReversePathFilterRules = ''
+    #     iifname { "Meta" } accept comment "trusted interface"
+    #   '';
+
+    #   # 将反向路径过滤从严格模式放宽
+    #   checkReversePath = "loose";
     # };
   };
 
@@ -342,6 +352,35 @@
   systemd.services.fwupd-refresh.enable = false;
   systemd.timers.fwupd-refresh.enable = false;
 
+  # systemd.services.clash-verge.serviceConfig = {
+  #     # 强制设置所需的内核能力
+  #     CapabilityBoundingSet = [
+  #       "CAP_NET_ADMIN" "CAP_NET_RAW" "CAP_SYS_ADMIN"
+  #       "CAP_DAC_OVERRIDE" "CAP_DAC_READ_SEARCH"
+  #       "CAP_SYS_PTRACE" "CAP_SETUID" "CAP_SETGID"
+  #       "CAP_CHOWN" "CAP_MKNOD"
+  #     ];
+  #     AmbientCapabilities = [ "CAP_DAC_READ_SEARCH" "CAP_SYS_PTRACE" ];
+  #   };
+
+  systemd.user.services.kde-baloo = {
+    enable = true; # 确保服务被启用
+    # 核心修复：声明依赖关系 (来自上游补丁)
+    partOf = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+
+    # 必须提供完整的单元定义，包括执行命令
+    serviceConfig = {
+      # 注意：这里的路径需要与你系统中 baloo 包的实际路径一致。
+      # 你可以通过 `nix-shell -p kdePackages.baloo --run "which baloo_file"` 来查找准确路径。
+      # ExecStart = "/nix/store/f92z98606qczxqa0m7w2rx3wz1mf3dqm-baloo-6.31.0/libexec/kf6/baloo_file";
+      ExecStart = "${pkgs.kdePackages.baloo}/libexec/kf6/baloo_file";
+      # 以下是 baloo 服务常用的标准配置，建议保留
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
+
 #   systemd.services.clash-verge-rev = {
 #     enable = true;
 #     description = "clash verge rev";
@@ -367,16 +406,16 @@
   # services.openssh.enable = true;
 
   # Clash Verge Rev
-  programs.clash-verge = {
-    enable = true;
-    # 可选：指定使用的包，默认是 pkgs.clash-verge-rev
-    # package = pkgs.clash-verge-rev;
-    # 系统服务模式（推荐，允许TUN等系统级功能）
-    serviceMode = true;
-    # TUN 模式（全局代理，性能更好）
-    tunMode = true;
-    # 开机自启
-    autoStart = true;
-  };
+  # programs.clash-verge = {
+  #   enable = true;
+  #   # 可选：指定使用的包，默认是 pkgs.clash-verge-rev
+  #   # package = pkgs.clash-verge-rev;
+  #   # 系统服务模式（推荐，允许TUN等系统级功能）
+  #   serviceMode = true;
+  #   # TUN 模式（全局代理，性能更好）
+  #   tunMode = true;
+  #   # 开机自启
+  #   autoStart = true;
+  # };
 }
 

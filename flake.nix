@@ -11,10 +11,6 @@
       nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-unstable&shallow=1";
       # nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05"; # 保留稳定版作为备用
       nixpkgs-stable.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-26.05&shallow=1";
-      # You can access packages and modules from different nixpkgs revs
-      # at the same time. Here's an working example:
-      # nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-      # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
       # Home-manager, used for managing user configuration
       home-manager = {
@@ -132,11 +128,6 @@
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://mirrors.cernet.edu.cn/nix-channels/store"
         "https://cache.nixos.org" # 官方源作为备用
-
-        # nix community's cache server
-        # "https://nix-community.cachix.org"
-        # hyprland
-        # "https://hyprland.cachix.org"
       ];
       # trusted-public-keys = [
       #   # nix community's cache server public key

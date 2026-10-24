@@ -122,7 +122,6 @@
     kitty
     ghostty
     zsh
-    fzf # A command-line fuzzy finder
     libreoffice
 
     # front
@@ -147,13 +146,19 @@
     # DevTools
     direnv
 
-    # ladder
-    clash-verge-rev
-    mihomo
-    clash-nyanpasu
-    clash-rs
-    v2raya
+    # Ladder
+    # clash-verge-rev
+    # mihomo
+    # clash-meta
+    # clashtui
+    # clash-nyanpasu
+    # clash-rs
     # flclash
+    # zashboard
+    # v2rayn
+    # v2raya
+    # sing-box
+    # gui-for-singbox
 
     # misc
     cowsay
@@ -167,8 +172,11 @@
     gnupg
 
     # Surfing
-    telegram-desktop
     brave
+    # Message
+    telegram-desktop
+    qq
+    wechat
 
     # productivity
     # hugo # static site generator
@@ -178,8 +186,6 @@
     btop  # replacement of htop/nmon
     iotop # io monitoring
     iftop # network monitoring
-    ipcalc  # it is a calculator for the IPv4/v6 addresses
-    nmap
     netcat
     aircrack-ng
     wireshark
@@ -203,6 +209,9 @@
     # it provides the command `nom` works just like `nix`
     # with more details log output
     nix-output-monitor
+    nh
+    nix-du
+    nix-tree
 
     # For Work
     # C/C++
