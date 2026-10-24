@@ -1,146 +1,62 @@
 {
-  description = "Drinkto's Nix configuration ";
+  description = "Drinkto's NixOS configuration";
 
-  # ============================================================================
-  # inputs:所有外部“原料”(nixpkgs / home-manager / DMS 等)
-  # 想升级版本时,改这里的 URL 即可;改完执行 `nix flake update`
-  # ============================================================================
   inputs = {
-      # Nixpkgs
-      # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # 系统主体使用 unstable
-      nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-unstable&shallow=1";
-      # nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05"; # 保留稳定版作为备用
-      nixpkgs-stable.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-26.05&shallow=1";
+    nixpkgs.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-unstable&shallow=1";
 
-      # Home-manager, used for managing user configuration
-      home-manager = {
-        url = "github:nix-community/home-manager";
-        # The `follows` keyword in inputs is used for inheritance.
-        # Here, `inputs.nixpkgs` of home-manager is kept consistent with
-        # the `inputs.nixpkgs` of the current flake,
-        # to avoid problems caused by different versions of nixpkgs.
-        inputs.nixpkgs.follows = "nixpkgs";
-      };
-
-      # Catppuccin
-      # catppuccin = {
-      #   url = "github:catppuccin/nix";
-      # };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-  outputs = {
-      self,
-      nixpkgs,
-      home-manager,
-      # catppuccin,
-      ...
-  } @ inputs: let
-    # Supported systems for your flake packages, shell, etc.
-    system = [
-      "x86_64-linux"
-    ];
-    # This is a function that generates an attribute by calling a function you
-    # pass to it, with each system as an argument
-    forAllSystems = nixpkgs.lib.genAttrs system;
-    inherit (self) outputs;
-  in {
-    # # Your custom packages
-    # # Accessible through 'nix build', 'nix shell', etc
-    # packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
-    # # Formatter for your nix files, available through 'nix fmt'
-    # # Other options beside 'alejandra' include 'nixpkgs-fmt'
-    # formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
+    # Phase 1 先保留，P5 删除；避免在迁移中途同时改 lock。
+    nixpkgs-stable.url = "git+https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git?ref=nixos-26.05&shallow=1";
+  };
 
-    # # Your custom packages and modifications, exported as overlays
-    # overlays = import ./overlays {inherit inputs;};
-    # # Reusable nixos modules you might want to export
-    # # These are usually stuff you would upstream into nixpkgs
-    # nixosModules = import ./modules/nixos;
-    # # Reusable home-manager modules you might want to export
-    # # These are usually stuff you would upstream into home-manager
-    # homeManagerModules = import ./modules/home-manager;
+  outputs = { nixpkgs, home-manager, ... } @ inputs:
+    let
+      system = "x86_64-linux";
+      settings = import ./settings { inherit inputs; };
 
-    # NixOS configuration entrypoint
-    # Available through 'nixos-rebuild --flake .#your-hostname'
-    nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
+      hostNames = builtins.filter
+        (n: !(nixpkgs.lib.hasPrefix "_" n))
+        (builtins.attrNames (builtins.readDir ./hosts));
+
+      mkHost = host: nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs settings; };
         modules = [
-          # > Our main nixos configuration file <
-          ./nixos/configuration.nix
-          {
-            users.users.drinkto.home = "/home/drinkto";
-            # given the users in this list the right to specify additional substituters via:
-            #    1. `nixConfig.substituters` in `flake.nix`
-            # nix.settings.trusted-users = [ "drinkto" ];
-          }
-          # catppuccin.nixosModules.catppuccin
-
-          # # Standalone home-manager configuration entrypoint
-          # # Available through 'home-manager --flake .#your-username@your-hostname'
-          # homeConfigurations = {
-          #   # FIXME replace with your username@hostname
-          #   "your-username@your-hostname" = home-manager.lib.homeManagerConfiguration {
-          #     # Home-manager requires 'pkgs' instance
-          #     pkgs = nixpkgs.legacyPackages.x86_64-linux; # FIXME replace x86_64-linux with your architecture 
-          #     extraSpecialArgs = {inherit inputs;};
-          #     modules = [
-          #       # > Our main home-manager configuration file <
-          #       ./home-manager/home.nix
-          #     ];
-          #   };
-          # };
-
-          # 将 home-manager 配置为 NixOS 的一个 module
-          # 这样在 nixos-rebuild switch 时，home-manager 配置也会被自动部署
+          ./hosts/${host}/default.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-
-            # 这里的 import 函数在前面 Nix 语法中介绍过了，不再赘述
-            home-manager.users.drinkto = {
-              imports = [
-                ./home-manager/home.nix
-                # catppuccin.homeManagerModules.catppuccin
-                # catppuccin.homeModules.catppuccin
-              ];
-            };
-
-
-            # 使用 home-manager.extraSpecialArgs 自定义传递给 ./home.nix 的参数
-            # 取消注释下面这一行，就可以在 home.nix 中使用 flake 的所有 inputs 参数了
-            home-manager.extraSpecialArgs = inputs;
+            home-manager.extraSpecialArgs = { inherit inputs settings; };
           }
         ];
       };
+
+      configs = nixpkgs.lib.genAttrs hostNames mkHost;
+    in {
+      # flake 的 formatter 必须是“按 system 索引”的 attrset，
+      # 不能直接是 derivation，否则 nix flake check 会把它当成 system 名。
+      formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
+
+      nixosConfigurations = configs // {
+        # 迁移期间临时别名；P4 改完主机名后删除。
+        nixos = configs.e490;
+      };
     };
+
+  # nixConfig 是顶层属性，不能写在 outputs 的 attrset 里，
+  # 否则 nix flake check 会报 unknown flake output 'nixConfig'。
+  nixConfig = {
+    substituters = [
+      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store?priority=10"
+      "https://mirror.sjtu.edu.cn/nix-channels/store"
+      "https://mirrors.ustc.edu.cn/nix-channels/store"
+      "https://mirrors.cernet.edu.cn/nix-channels/store"
+      "https://cache.nixos.org"
+    ];
   };
-
-
-    # the nixConfig here only affects the flake itself, not the system configuration!
-    nixConfig = {
-      # override the default substituters
-      substituters = [
-        # cache mirror located in China
-        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store?priority=10" # 清华源优先
-        "https://mirror.sjtu.edu.cn/nix-channels/store"
-        "https://mirrors.ustc.edu.cn/nix-channels/store"
-        "https://mirrors.cernet.edu.cn/nix-channels/store"
-        "https://cache.nixos.org" # 官方源作为备用
-      ];
-      # trusted-public-keys = [
-      #   # nix community's cache server public key
-      #   # "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      #   # "nix-community.cachix.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      #   # "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-      # ];
-      # trusted-public-keys = [
-      #   "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      #   "mirror.sjtu.edu.cn/nix-channels/store-1:rHTSQ80kHq27g7pRc2Qk5M5G5V3VvXkDw="
-      #   "mirrors.ustc.edu.cn/nix-channels/store-1:ajXR9v+PiP9x63rM2ktGjLtM1F3pwQa5yf5H8tG6yY="
-      #   "mirrors.tuna.tsinghua.edu.cn/nix-channels/store-1:o49HOs9Y2Nl4X2yXyf5H8tG6yY="
-      # ];
-    };
-
 }

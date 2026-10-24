@@ -31,8 +31,7 @@
     # ./modules/fcitx5
     # ./modules/catppuccin
 
-    # Import your generated (nixos-generate-config) hardware configuration
-    ./hardware-configuration.nix
+    # 硬件配置由 hosts/e490/default.nix 导入
   ];
 
   nixpkgs = {
