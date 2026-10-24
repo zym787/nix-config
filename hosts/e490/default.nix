@@ -27,9 +27,7 @@ in
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
-  # Phase 2 时 users/drinkto 还不存在，先继续使用旧 home.nix；
-  # Phase 3 创建 users/drinkto 后再替换（见计划 §4.6）。
   home-manager.users.drinkto = {
-    imports = [ ../../home-manager/home.nix ];
+    imports = [ ../../users/drinkto ];
   };
 }
