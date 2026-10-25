@@ -38,7 +38,7 @@
 │   │   ├── network.nix
 │   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
-│   │   ├── desktop.nix           # X11 / SDDM / Plasma / libinput
+│   │   ├── desktop.nix           # Wayland/XWayland / SDDM / Plasma / libinput
 │   │   ├── audio.nix             # PipeWire
 │   │   ├── fonts.nix
 │   │   ├── ime.nix               # fcitx5

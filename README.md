@@ -16,7 +16,7 @@
 | 最近更新 | 见顶部 `last commit` 徽章 |
 | 系统 | NixOS `nixos-unstable` |
 | 平台 | `x86_64-linux` |
-| 桌面 | KDE Plasma 6 + SDDM + X11 |
+| 桌面 | KDE Plasma 6 + SDDM + Wayland（XWayland 兼容层） |
 | 配置方式 | Flake + Home Manager（system module 集成） |
 
 ## 支持平台
@@ -54,7 +54,7 @@
 | 项目 | 值 |
 | :--- | :--- |
 | 系统通道 | `nixos-unstable`（清华 Git 镜像） |
-| 桌面环境 | KDE Plasma 6 + SDDM + X11 |
+| 桌面环境 | KDE Plasma 6 + SDDM + Wayland（XWayland） |
 | 音频 | PipeWire（PulseAudio 兼容层） |
 | 输入法 | fcitx5 + Rime，启用 Wayland 前端 |
 | 引导 | systemd-boot（保留 10 个代际） |

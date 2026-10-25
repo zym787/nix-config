@@ -11,7 +11,7 @@
 | :--- | :--- |
 | 主机 | `e490`（Lenovo E490，i7-8565U，24G 内存） |
 | 用户 | `drinkto` |
-| 桌面 | KDE Plasma 6 + SDDM + X11 |
+| 桌面 | KDE Plasma 6 + SDDM + Wayland（XWayland 兼容层） |
 | 引导 | systemd-boot，保留 10 个代际 |
 | 文件系统 | Btrfs：`root` / `home` / `nix` 子卷，zstd |
 | 蓝牙 | Realtek RTL8822BE，BlueZ + BlueDevil |
@@ -489,6 +489,19 @@ sudo nixos-rebuild switch --flake .#e490
 
 - 自动检查更新已通过 Home Manager activation 尽力关闭；GUI 里再次打开则以 GUI 为准。
 
+#### Wayland 下标题栏按钮失效
+
+Clash Verge 是 Tauri/GTK 应用；在原生 Wayland 下可能使用客户端装饰，
+出现最小化/最大化/关闭按钮点不动。可先用 XWayland 验证：
+
+```bash
+GDK_BACKEND=x11 clash-verge
+```
+
+如果 KWin 的标题栏按钮恢复正常，可以把 GUI 启动方式固定为 XWayland
+（例如 XDG autostart 的 `Exec=env GDK_BACKEND=x11 clash-verge`）。
+不要把这个环境变量设成全局，否则会影响其他 GTK 应用。
+
 #### 安全
 
 - `profiles.yaml`、机场订阅 URL、DoH token、代理密码都在用户目录，
@@ -510,6 +523,42 @@ powerprofilesctl set balanced
 ```
 
 - 蓝牙：`hardware.bluetooth.powerOnBoot = true`；用 KDE BlueDevil 或 `bluetoothctl`。
+
+### 5.6 Wayland / 触摸板 / 输入延迟
+
+当前实际会话是 **Wayland**（`startplasma-wayland`），不是 X11。
+`services.xserver.enable` 只用于 XWayland，不能据此判断会话类型。
+
+触摸板：
+
+- 设备：`Synaptics TM3471-020`（I2C/RMI4），内核已识别。
+- KDE Plasma 6 + Wayland 原生支持触摸板手势，入口：
+  **系统设置 → 输入设备 → 触摸板 → 手势**。
+- 可配置三指/四指滑动、捏合等；KDE 不提供 macOS 的全部手势集合。
+- `common/nixos/desktop.nix` 里的 `services.libinput` 主要面向 X11/Xorg；
+  KDE Wayland 下实际由 KWin 读取 KDE 的触摸板设置（`kcminputrc`），
+  不要误以为 NixOS 里的 `tapping/disableWhileTyping` 一定生效。
+- 如果“打字后不久点击无效”，先关闭 KDE 触摸板的
+  “打字时禁用触摸板”（Disable while typing）再测。
+
+输入延迟/点击丢失：
+
+- 外部鼠标是 `MicLink AiMouse`（USB 无线），KWin 日志曾出现
+  `event processing lagging behind by 46ms`。先换鼠标/换 USB 口对比，
+  排除无线接收器/硬件问题。
+- `rtw88_8822be` 有大量 PCIe AER correctable 错误（本次检查约 19035 条）。
+  这是 Realtek Wi-Fi 网卡的 PCIe/ASPM 问题，可能造成日志刷屏和偶发卡顿。
+  可测试内核参数：
+
+  ```nix
+  boot.kernelParams = [ "pcie_aspm=off" ];
+  ```
+
+  代价是功耗可能略增；先确认问题是否与 Wi-Fi/PCIe 相关，再保留。
+  如果错误持续且影响使用，检查网卡是否松动/更换网卡。
+- KWin 当前使用 OpenGL ES / Intel UHD 620，硬件合成正常，不是软件渲染。
+- 屏幕是 1920x1080 @ 60Hz，缩放 1.25；如仍觉得卡，可临时试 1.0 缩放
+  或关闭部分桌面特效，以区分是缩放/特效还是输入设备问题。
 
 ---
 

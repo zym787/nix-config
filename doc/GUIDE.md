@@ -65,7 +65,7 @@
 │   │   ├── network.nix
 │   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
-│   │   ├── desktop.nix           # X11 / SDDM / Plasma
+│   │   ├── desktop.nix           # Wayland/XWayland / SDDM / Plasma
 │   │   ├── audio.nix
 │   │   ├── fonts.nix
 │   │   ├── ime.nix

@@ -1,11 +1,14 @@
-# 桌面环境：KDE Plasma 6 + SDDM + X11，以及 libinput 输入设备行为。
+# 桌面环境：KDE Plasma 6 + SDDM + Wayland（XWayland 兼容 X11 应用）。
 {...}: {
-  # 当前使用 X11 会话；如需 Wayland，需另行调整 SDDM/Plasma 配置。
+  # 实际会话是 Wayland；services.xserver 仍开启是为了 XWayland。
+  # 如需强制 X11，请在 SDDM 登录界面选择 “Plasma (X11)”。
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
-  # 鼠标/触控板设置：触控板自然滚动、轻触点击、双指滚动。
+  # 鼠标/触控板设置：主要作为 X11/Xorg 的 fallback。
+  # KDE Wayland 下触摸板、手势、轻触点击由 KDE 系统设置（KCM）管理，
+  # 这里的一些选项不会直接覆盖 KWin 的运行时设置。
   services.libinput = {
     enable = true;
 
