@@ -134,6 +134,35 @@ sudo nix-collect-garbage -d                         # 清理所有旧代际（�
 nix fmt .                             # 使用 flake formatter（alejandra）
 ```
 
+### Git hooks 与 CI
+
+首次 clone 后启用仓库自带的 pre-commit：
+
+```bash
+git config core.hooksPath .githooks
+```
+
+pre-commit 会：
+
+- 对暂存的 `.nix` 文件执行 `nix fmt`，并自动 `git add`
+- 执行 `nix flake check --no-build`（只评估，不构建系统闭包）
+
+完整 `nixos-rebuild build` **不放进 pre-commit**：它慢、依赖网络/构建缓存，
+且属于本机切换前的验证。提交前需要完整验证时手动执行：
+
+```bash
+sudo nixos-rebuild build --flake .#e490
+```
+
+CI（GitHub Actions）只做通用的 flake 评估 + 格式检查：
+
+```bash
+nix flake check
+```
+
+不绑定具体主机、不部署设备。CI 的职责是防止 eval/格式回归，不是替代
+`nixos-rebuild switch`。
+
 ## 镜像与网络
 
 - **Git 源**：`https://mirrors.tuna.tsinghua.edu.cn/git/nixpkgs.git`

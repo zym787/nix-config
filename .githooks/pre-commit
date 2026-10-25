@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# NixOS 配置的 pre-commit 钩子。
+#
+# 作用：
+#   1. 对暂存区里的 .nix 文件执行 nix fmt（alejandra）；
+#   2. 运行 `nix flake check --no-build`，只做评估检查，不构建系统闭包。
+#
+# 为什么不在 pre-commit 跑 `nixos-rebuild build`：
+#   - 它可能耗时数分钟并下载/构建大量包，不适合每次提交；
+#   - 它是本机切换前的验证步骤，不属于编辑器/提交钩子；
+#   - 完整构建放在本地 `nixos-rebuild build` 或可选 CI，避免设备绑定。
+#
+# 启用方式（每个 clone 执行一次）：
+#   git config core.hooksPath .githooks
+#
+# 临时跳过 eval 检查（仍会格式化）：
+#   SKIP_NIX_CHECK=1 git commit ...
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+
+# 只有 Nix 相关改动才触发，避免文档提交也跑 eval。
+if ! grep -qE '(^|/)flake\.(nix|lock)$|\.nix$' <<<"$staged"; then
+  echo "==> pre-commit: 没有 Nix 改动，跳过"
+  exit 0
+fi
+
+mapfile -t nix_files < <(git diff --cached --name-only --diff-filter=ACMR -- '*.nix')
+
+if ((${#nix_files[@]})); then
+  echo "==> pre-commit: nix fmt ${#nix_files[@]} 个暂存的 .nix 文件"
+  nix fmt "${nix_files[@]}"
+  # 格式化可能修改文件，重新加入暂存区。
+  git add -- "${nix_files[@]}"
+else
+  echo "==> pre-commit: 没有暂存的 .nix 文件，跳过格式化"
+fi
+
+if [[ "${SKIP_NIX_CHECK:-0}" == "1" ]]; then
+  echo "==> pre-commit: SKIP_NIX_CHECK=1，跳过 flake eval"
+  exit 0
+fi
+
+echo "==> pre-commit: nix flake check --no-build（仅评估）"
+nix flake check --no-build --show-trace

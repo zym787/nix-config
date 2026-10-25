@@ -21,6 +21,7 @@
   } @ inputs: let
     # 当前只支持 x86_64-linux；新增架构时在这里扩展。
     system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
 
     # 全局变量/包分组，传给 NixOS 和 Home Manager 模块。
     settings = import ./settings {inherit inputs;};
@@ -57,7 +58,17 @@
     # flake 的 formatter 必须是“按 system 索引”的 attrset，
     # 不能直接是 derivation，否则 nix flake check 会把它当成 system 名。
     # 使用 `nix fmt .` 调用。
-    formatter.${system} = nixpkgs.legacyPackages.${system}.alejandra;
+    formatter.${system} = pkgs.alejandra;
+
+    # 格式检查作为 flake check 构建；CI 用 `nix flake check` 执行。
+    # 这样不绑定具体主机/系统，任何 checkout 都可以验证格式。
+    checks.${system}.formatting =
+      pkgs.runCommand "check-formatting" {
+        nativeBuildInputs = [pkgs.alejandra];
+      } ''
+        alejandra --check ${./.}
+        touch $out
+      '';
 
     # 通过 `nixos-rebuild --flake .#e490` 使用。
     nixosConfigurations = configs;

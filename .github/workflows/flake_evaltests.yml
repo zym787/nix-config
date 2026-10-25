@@ -1,12 +1,29 @@
 name: flake-check
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+
+# 同一分支的新 push 取消旧任务，节省 CI 资源。
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v31
-      - run: nix flake check --no-build --show-trace
-      - run: nix eval .#nixosConfigurations.e490.config.system.build.toplevel.drvPath
+
+      # 通用检查，不绑定具体主机：
+      # - nix flake check 评估所有 nixosConfigurations；
+      # - 构建 checks.<system>.formatting，验证 alejandra 格式；
+      # - 不在这里 build 完整系统闭包，也不部署设备。
+      - name: Flake eval + formatting
+        run: nix flake check --show-trace

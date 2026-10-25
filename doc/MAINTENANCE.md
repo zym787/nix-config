@@ -85,6 +85,61 @@ sudo nixos-rebuild switch --rollback
 > **重要**：新建 `hosts/`、`users/`、`common/` 文件后如果不 `git add`，
 > `nixos-rebuild --flake` 可能看不到这些文件。
 
+### 3.1 Git pre-commit
+
+仓库自带 `.githooks/pre-commit`，首次 clone 后启用：
+
+```bash
+git config core.hooksPath .githooks
+```
+
+钩子行为：
+
+1. 只对暂存区的 `.nix` 文件执行 `nix fmt`；
+2. 格式化后自动 `git add`；
+3. 执行 `nix flake check --no-build`，只做评估，不构建系统闭包。
+
+没有 Nix 改动的提交（例如只改 Markdown）会跳过。
+
+临时跳过 eval：
+
+```bash
+SKIP_NIX_CHECK=1 git commit -m "..."
+```
+
+**为什么不在 pre-commit 跑完整构建**：
+
+- `nixos-rebuild build` 可能耗时数分钟、下载/构建大量包；
+- 它依赖本机缓存/网络，失败原因常与本次改动无关；
+- 完整构建是 `switch` 前的本地验证，不是每次提交的门槛；
+- 把设备/主机名写进共享钩子会造成设备绑定。
+
+### 3.2 CI 的职责
+
+当前 GitHub Actions 只做：
+
+```bash
+nix flake check
+```
+
+包括：
+
+- 评估 flake 的所有 `nixosConfigurations`；
+- 构建 `checks.<system>.formatting`，用 alejandra `--check` 验证格式；
+- 不 build 完整系统闭包；
+- 不部署、不绑定具体主机。
+
+CI **不是 CD**。个人 NixOS 设备的部署需要 root、硬件、磁盘和本机密钥，
+应由本人在设备上执行：
+
+```bash
+sudo nixos-rebuild build --flake .#e490
+sudo nixos-rebuild switch --flake .#e490
+```
+
+如果以后确实需要 CI 构建验证，建议用 `workflow_dispatch` 手动触发，
+并动态遍历 `nixosConfigurations`，不要写死 `e490`；不要自动部署到设备。
+
 ---
 
 ## 4. 日常维护
