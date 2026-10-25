@@ -101,6 +101,9 @@ git config core.hooksPath .githooks
 
 没有 Nix 改动的提交（例如只改 Markdown）会跳过。
 
+注意：如果对同一个 `.nix` 文件做了“部分暂存”，钩子会格式化整个文件并
+`git add` 整个文件；建议按文件整体提交，或在提交前先处理好暂存区。
+
 临时跳过 eval：
 
 ```bash
