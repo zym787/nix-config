@@ -8,6 +8,7 @@ in {
     ./hardware-configuration.nix
     ../../common/nixos/core.nix
     ../../common/nixos/network.nix
+    ../../common/nixos/proxy.nix
     ../../common/nixos/bluetooth.nix
     ../../common/nixos/desktop.nix
     ../../common/nixos/audio.nix

@@ -39,7 +39,24 @@
 | 文件系统 | Btrfs（`root` / `home` / `nix` 子卷，zstd 压缩） |
 | 打印 | CUPS + brlaser（Brother DCP-7057） |
 | 蓝牙 | BlueZ + BlueDevil（Realtek RTL8822BE） |
+| 代理 | Clash Verge Rev（Mihomo，TUN + 系统服务） |
 | 性能 | zram + sysctl 调优 + fstrim；PPD 默认 balanced（E490 不使用 thermald） |
+
+## 代理
+
+默认使用 Clash Verge Rev（Mihomo 内核），已启用：
+
+- 系统服务模式：`systemctl status clash-verge`
+- TUN 透明代理：需要特权，模块已处理 capabilities 和 reverse path
+- 登录后自动启动：首次打开 GUI 后导入订阅/节点
+
+```bash
+clash-verge                 # 打开 GUI
+systemctl status clash-verge --no-pager
+```
+
+配置和订阅通常保存在 `~/.config/clash-verge-rev/`。
+如果更想要无 GUI、eBPF 透明代理，可改用 `services.dae`（需要自己维护 `.dae` 配置）。
 
 ## 蓝牙与性能
 

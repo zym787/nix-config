@@ -63,6 +63,7 @@
 │   ├── nixos/                    # 所有主机共享的系统级配置
 │   │   ├── core.nix              # nix.settings / nixpkgs.config / gc / boot
 │   │   ├── network.nix
+│   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
 │   │   ├── desktop.nix           # X11 / SDDM / Plasma
 │   │   ├── audio.nix
