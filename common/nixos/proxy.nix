@@ -20,6 +20,10 @@
     group = "wheel";
   };
 
+  # 注意：Clash Verge 的 DNS、模式、TUN、订阅等是应用自身的 mutable state，
+  # 不在 NixOS 里声明。若节点全部 timeout，先检查应用的 dns_config.yaml
+  # 是否覆盖了机场 profile 的 nameserver-policy；详见 doc/MAINTENANCE.md。
+
   # Clash Verge 的 mihomo 在 TUN 模式需要监听 53 端口做 DNS 接管。
   # NixOS 模块给的 CapabilityBoundingSet 不含 CAP_NET_BIND_SERVICE，
   # 会导致日志出现 "Start DNS server(TCP/UDP) error: listen :53: bind: permission denied"。

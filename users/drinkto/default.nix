@@ -2,6 +2,7 @@
 {
   settings,
   pkgs,
+  lib,
   ...
 }: let
   # 包分组来自 settings/packages.nix；system 组由 core.nix 安装到系统。
@@ -37,4 +38,15 @@ in {
     name = "drinkto";
     email = "z_one787@163.com";
   };
+
+  # Clash Verge 的“自动检查更新”是应用自身状态，NixOS 没有对应选项。
+  # 这里在 Home Manager activation 时尽力关闭；应用运行时如果从 GUI
+  # 重新打开，会以 GUI 状态为准（它会重写 verge.yaml）。
+  # 版本更新应走 nix flake update，而不是 GUI 自更新。
+  home.activation.clashVergeDisableAutoUpdate = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    cfg="$HOME/.local/share/io.github.clash-verge-rev.clash-verge-rev/verge.yaml"
+    if [ -f "$cfg" ]; then
+      ${pkgs.yq-go}/bin/yq -i '.auto_check_update = false' "$cfg" 2>/dev/null || true
+    fi
+  '';
 }

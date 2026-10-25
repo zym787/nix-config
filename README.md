@@ -186,6 +186,7 @@ ls ~/.config/autostart/ | grep -i 软件名
 ## 相关文档
 
 - `doc/ARCHITECTURE.md`：架构设计 + 编码规则（改配置前必读）
+- `doc/MAINTENANCE.md`：维护手册、上手指南、故障排查与共性经验
 - `doc/OPTIMIZATION.md`：迁移记录与长期维护
 - NixOS 选项搜索：https://search.nixos.org/options
 - Home Manager 选项：https://nix-community.github.io/home-manager/options.xhtml
