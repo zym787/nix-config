@@ -226,6 +226,50 @@ scanimage -L
 
 **不要只改 `clash-verge.yaml`**：它会在 Clash Verge 重启时被重新生成。
 
+#### DNS 分层：谁改了 DNS？
+
+先把四层 DNS 分开：
+
+| 层 | 位置 | 谁管理 | 作用 |
+| :--- | :--- | :--- | :--- |
+| 系统 DNS | `/etc/resolv.conf`、NetworkManager | NixOS/路由器 | 普通系统解析 |
+| 机场 profile DNS | `profiles/<uid>.yaml` 的 `dns:` | 机场订阅 | 机场自己的解析策略，例如节点域名专用 DoH |
+| Clash Verge 全局 DNS | `dns_config.yaml` | Clash Verge GUI | “DNS 覆写”开启时覆盖 profile 的 DNS |
+| 运行时 DNS | `clash-verge.yaml` 的 `dns:` | Clash Verge 生成 | mihomo 实际加载的配置 |
+
+关键点：
+
+- **订阅可以携带 DNS 配置**（`nameserver`、`nameserver-policy`、`proxy-server-nameserver` 等），
+  但订阅更新不会改 `/etc/resolv.conf`。
+- Clash Verge 的 `verge.yaml` 里 `enable_dns_settings: true` 时，
+  它用自己的 `dns_config.yaml` 做全局覆写；默认的 `nameserver-policy: {}`
+  会盖掉机场 profile 里的 `nameserver-policy`。
+- 本次失败就是：机场 profile 为 `+.quandao.com` / `+.jiandaoyun.com`
+  配了专用 DoH；Clash Verge 全局 DNS 把它覆盖成空策略，并让
+  `proxy-server-nameserver` 走 `doh.pub` / 阿里 DNS，节点域名被解析到
+  `overdue.aliyun.com`。
+- GUI 里保存 DNS 设置、切换“DNS 覆写”、应用升级/迁移、或重新导入 profile，
+  都可能重写 `dns_config.yaml`；所以修好后仍要在订阅更新时复查。
+- 如果机场更换了 DoH 地址/令牌，需要把新 profile 的
+  `dns.nameserver-policy` 重新同步到 `dns_config.yaml` 和 `Merge.yaml`。
+- 只设置 `nameserver-policy` 还不够；代理节点域名解析还受
+  `proxy-server-nameserver` 影响，两者要一起配置。
+
+检查命令（不要公开输出 token）：
+
+```bash
+cd ~/.local/share/io.github.clash-verge-rev.clash-verge-rev
+
+# 机场 profile 里的 DNS 策略
+yq '.dns."nameserver-policy"' profiles/<uid>.yaml
+
+# Clash Verge 的全局覆盖
+yq '."nameserver-policy", ."proxy-server-nameserver"' dns_config.yaml
+
+# 运行时实际值
+yq '.dns."nameserver-policy", .dns."proxy-server-nameserver"' clash-verge.yaml
+```
+
 #### 常见问题：节点测速全 timeout，但 Android/flclash 正常
 
 本次实际案例：
