@@ -19,4 +19,12 @@
     # 允许 wheel 组访问 service socket；drinkto 已在 wheel 组。
     group = "wheel";
   };
+
+  # Clash Verge 的 mihomo 在 TUN 模式需要监听 53 端口做 DNS 接管。
+  # NixOS 模块给的 CapabilityBoundingSet 不含 CAP_NET_BIND_SERVICE，
+  # 会导致日志出现 "Start DNS server(TCP/UDP) error: listen :53: bind: permission denied"。
+  systemd.services.clash-verge.serviceConfig = {
+    CapabilityBoundingSet = ["CAP_NET_BIND_SERVICE"];
+    AmbientCapabilities = ["CAP_NET_BIND_SERVICE"];
+  };
 }
