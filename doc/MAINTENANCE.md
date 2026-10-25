@@ -143,6 +143,35 @@ sudo nixos-rebuild switch --flake .#e490
 如果以后确实需要 CI 构建验证，建议用 `workflow_dispatch` 手动触发，
 并动态遍历 `nixosConfigurations`，不要写死 `e490`；不要自动部署到设备。
 
+### 3.3 CI/CD 功能取舍
+
+参考 8 份公开配置后的结论：**只有 Foundry 有完整 CI/CD**（Hydra 构建所有
+host、binary cache、pull 自动升级）；大多数个人配置没有 GitHub Actions，
+主要靠本地 `nixos-rebuild`。
+
+| 功能 | 当前是否启用 | 说明 |
+| :--- | :--- | :--- |
+| flake eval | ✅ | 必选，能拦住大多数配置错误 |
+| 格式检查 | ✅ | alejandra check |
+| pre-commit | ✅ | 暂存文件格式化 + eval |
+| statix/deadnix 静态检查 | ⬜ 可选 | 先确认不会产生大量噪音 |
+| 完整闭包构建 | ⬜ 本地 | `nixos-rebuild build`，不放进每次提交 |
+| CI 自动 build | ⬜ 可选 | 多主机/有缓存时再加 |
+| binary cache | ⬜ 可选 | 自建 Hydra/Cachix 才有意义 |
+| CD / 自动部署 | ❌ | 笔记本不建议；需要 root/硬件/密钥 |
+| 自动升级 | ❌ | 服务器可用 pull 模式；笔记本手动 switch |
+| Hydra/self-hosted runner | ❌ | 单机配置过重 |
+
+CI 的目的不是“证明能在你的设备上启动”，而是：
+
+1. 防止 flake 评估失败；
+2. 防止格式回退；
+3. 给 PR/分支提供一个统一的检查结果；
+4. 不接触设备、不持有部署密钥。
+
+真正的“编译通过”由本地 `nixos-rebuild build` 完成；真正的部署由本地
+`nixos-rebuild switch` 完成。CI 不应替代这两步。
+
 ---
 
 ## 4. 日常维护

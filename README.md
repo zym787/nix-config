@@ -1,6 +1,28 @@
 # NixOS 配置
 
+[![flake-check](https://github.com/zym787/nix-config/actions/workflows/flake_evaltests.yml/badge.svg?branch=main)](https://github.com/zym787/nix-config/actions/workflows/flake_evaltests.yml)
+[![last commit](https://img.shields.io/github/last-commit/zym787/nix-config?label=last%20commit)](https://github.com/zym787/nix-config/commits/main)
+[![NixOS](https://img.shields.io/badge/NixOS-unstable-5277C3?logo=nixos&logoColor=white)](https://nixos.org)
+[![platform](https://img.shields.io/badge/platform-x86__64--linux-blue)](#支持平台)
+[![built with Nix](https://img.shields.io/static/v1?logo=nixos&logoColor=white&label=&message=Built%20with%20Nix&color=41439a)](https://builtwithnix.org)
+
 基于 Flake + Home Manager 的多设备多用户 NixOS 配置。
+
+## 项目状态
+
+| 项目 | 状态 |
+| :--- | :--- |
+| CI | flake 评估 + alejandra 格式检查（不部署设备） |
+| 最近更新 | 见顶部 `last commit` 徽章 |
+| 系统 | NixOS `nixos-unstable` |
+| 平台 | `x86_64-linux` |
+| 桌面 | KDE Plasma 6 + SDDM + X11 |
+| 配置方式 | Flake + Home Manager（system module 集成） |
+
+## 支持平台
+
+当前只支持 **`x86_64-linux`**。`aarch64-linux`、Darwin 尚未配置；
+新增平台需要在 `flake.nix` 扩展 `system`，并补对应 host/module。
 
 ## 设备
 
@@ -209,6 +231,30 @@ ls ~/.config/autostart/ | grep -i 软件名
 `common/nixos/printing.nix` 现在保留 `ipp-usb`（同时保留 sane/扫描功能），
 用 `lib.mkForce null` 清空旧选项，并以 `services.avahi.settings.publish.*` 等价表达，
 因此警告消失。仅设置 `settings.publish.*` 而不清空旧选项是无效的。
+
+## 设计参考与取舍
+
+本项目参考了以下配置，但没有照搬它们的重型基础设施：
+
+- **nix-starter-configs / Foundry**：`hosts/`、`users/`、`common/`、`modules/` 的分层。
+- **ryantm / luochen / novel2430**：主机与用户分离、变量集中。
+- **vimjoyer**：极简 flake 入口，适合单机起步。
+- **nixy**：dendritic/flake-parts 和硬化方案，适合多机/多模块的大仓库。
+- **imdomestic**：当前仓库无法访问，未能核对。
+
+当前只保留一个主机、一个用户，因此**不引入**：
+
+- Hydra/自建 binary cache、pull 自动升级
+- deploy-rs/colmena 自动部署
+- dendritic、flake-parts、import-tree 等大型架构
+- impermanence、disko、sops-nix（没有多机/服务器/密钥管理需求前）
+
+值得后续按需吸收的：
+
+- `nixos-hardware` 的 E490/ThinkPad 硬件模块（电池、热管理、触摸板）
+- 可选 `modules/` 目录（出现第一个按需模块时再建）
+- `statix` / `deadnix` 等静态检查（先确保不产生噪音）
+- 多主机出现后，再考虑动态构建矩阵和远程部署
 
 ## 目录结构
 
