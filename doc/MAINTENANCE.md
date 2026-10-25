@@ -255,6 +255,35 @@ scanimage -L
 - 只设置 `nameserver-policy` 还不够；代理节点域名解析还受
   `proxy-server-nameserver` 影响，两者要一起配置。
 
+**推荐做法（当前配置）**：在 Clash Verge 中关闭 **DNS 覆写**
+（`verge.yaml` 的 `enable_dns_settings: false`），让订阅 profile 自己的
+`dns:` 生效。实测：
+
+- profile DNS 监听 `127.0.0.1:5335`，TUN 仍然正常；
+- `nameserver-policy` 自动随订阅更新，不需要手动复制 DoH token；
+- 代理节点、TUN 直连、7897 混合端口都正常。
+
+只有在必须使用 Clash Verge 全局 DNS 时，才需要把机场 policy 复制到
+`dns_config.yaml` / `Merge.yaml`。否则不建议开启覆写，因为它会多一层覆盖，
+也是本次故障的直接原因。
+
+#### 应用配置的持久性与 NixOS 管理边界
+
+- `verge.yaml`、`config.yaml`、`dns_config.yaml`、`profiles/Merge.yaml`
+  都是 Clash Verge 的应用数据，不是 NixOS 声明式配置。
+- 普通 `nixos-rebuild switch` **不会**重置节点、模式、TUN、DNS 覆写；
+  唯一会被 Home Manager activation 改的是 `auto_check_update`。
+- Clash Verge 升级、重置设置、重新导入 profile、或清理应用数据，可能重写
+  `dns_config.yaml` / `Merge.yaml`；重装系统时如果保留 `/home`，这些文件会保留；
+  如果清空家目录/新用户，则会丢失。
+- 手动编辑 `dns_config.yaml` / `Merge.yaml` 只对当前应用数据有效，不是永久的
+  NixOS 配置；订阅更新后要复查，应用升级后也可能失效。
+- NixOS 没有原生的 Clash Verge DNS/节点/模式选项。可以写 Home Manager
+  activation 或 systemd user service 去改应用文件，但应用运行时会重写，
+  且把机场 DoH token 放进 Nix store 会泄露给所有本机用户，不建议。
+- 因此当前策略是：NixOS 管包、service、capabilities；DNS/节点/模式交给
+  Clash Verge 和订阅 profile；维护手册记录检查方法。
+
 检查命令（不要公开输出 token）：
 
 ```bash
@@ -281,12 +310,15 @@ yq '.dns."nameserver-policy", .dns."proxy-server-nameserver"' clash-verge.yaml
 - 结果节点域名被解析到 `overdue.aliyun.com`（170.33.12.185），TCP 全部超时。
 - 这不是机场节点失效；Android/flclash 使用 profile 自带 DNS 策略所以正常。
 
-处理：
+处理（推荐顺序）：
 
-1. 从机场 profile 复制 `dns.nameserver-policy` 到
-   `dns_config.yaml` 和 `profiles/Merge.yaml`。
-2. 把 `proxy-server-nameserver` 改为机场提供的 DoH 列表。
-3. 重启 Clash Verge，验证节点延迟和代理。
+1. 先关闭 Clash Verge 的 DNS 覆写，让机场 profile 的 `dns:` 生效。
+2. 重启 Clash Verge，验证节点延迟、TUN 和 7897 混合端口。
+3. 如果必须保留 DNS 覆写，再从机场 profile 复制 `dns.nameserver-policy`
+   到 `dns_config.yaml` / `profiles/Merge.yaml`，并把
+   `proxy-server-nameserver` 改为机场提供的 DoH 列表。
+4. 重启 Clash Verge，检查 `clash-verge.yaml` 里实际生效的 `dns.listen`
+   和 `nameserver-policy`。
 
 排查命令：
 
@@ -326,7 +358,7 @@ curl -I https://www.google.com
 | 开/关 TUN | 安全 | TUN 关闭后混合端口 7897 仍可用；NixOS 的 capabilities 保留 |
 | 开/关系统代理 | 安全 | 与 FoxyProxy 二选一，避免双重代理 |
 | 检查更新/自动更新 | 会被 GUI 覆盖 | NixOS activation 只做 best-effort；更新走 `nix flake update` |
-| **修改 DNS 设置/DNS 覆写** | **谨慎** | 可能重写 `dns_config.yaml`，丢失机场 `nameserver-policy`，导致节点解析失败 |
+| **DNS 覆写** | **建议关闭** | 关闭后使用机场 profile DNS；开启时可能重写 `dns_config.yaml`，覆盖机场 `nameserver-policy` |
 
 选择性直连的建议：
 
