@@ -269,6 +269,29 @@ curl -I https://www.google.com
 - GUI 的 TUN/模式状态会覆盖手改的生成配置；持久化要在 GUI 中设置，
   或在应用停止时改 `verge.yaml` / `config.yaml` 后重启。
 
+#### GUI 操作边界
+
+正常使用 GUI 不会破坏 NixOS 配置；NixOS 只管理包、service、capabilities，
+不管理节点、模式、TUN、订阅等运行态。
+
+| GUI 操作 | 安全性 | 说明 |
+| :--- | :--- | :--- |
+| 切换节点 | 安全 | 选择会持久化（`store-selected: true`），`nixos-rebuild` 不会重置 |
+| 切换代理组为 DIRECT | 安全 | 只影响匹配到该组的流量；适合“部分流量直连” |
+| 切换模式 rule/direct | 安全 | `direct` 是全局直连，不是只让某个软件直连 |
+| 开/关 TUN | 安全 | TUN 关闭后混合端口 7897 仍可用；NixOS 的 capabilities 保留 |
+| 开/关系统代理 | 安全 | 与 FoxyProxy 二选一，避免双重代理 |
+| 检查更新/自动更新 | 会被 GUI 覆盖 | NixOS activation 只做 best-effort；更新走 `nix flake update` |
+| **修改 DNS 设置/DNS 覆写** | **谨慎** | 可能重写 `dns_config.yaml`，丢失机场 `nameserver-policy`，导致节点解析失败 |
+
+选择性直连的建议：
+
+- 只让某类流量直连：保持 `mode: rule`，把对应代理组设为 `DIRECT`，
+  或用规则（`PROCESS-NAME`/`DOMAIN-SUFFIX`）指向 `DIRECT`。
+- 临时完全关闭代理：模式改 `direct`，并关闭 TUN/系统代理；
+  FoxyProxy 也要关掉或切到 direct，否则浏览器仍会连 7897。
+- 不要用全局 `direct` 来“只让某个软件直连”，那会让所有流量直连。
+
 #### TUN / DNS 权限
 
 - TUN 需要 mihomo 监听 53 做 DNS 接管。
