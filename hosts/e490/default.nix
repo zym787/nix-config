@@ -11,6 +11,8 @@ in {
     ../../common/nixos/proxy.nix
     ../../common/nixos/bluetooth.nix
     ../../common/nixos/desktop.nix
+    ../../common/nixos/graphics.nix
+    ../../common/nixos/gaming.nix
     ../../common/nixos/audio.nix
     ../../common/nixos/fonts.nix
     ../../common/nixos/ime.nix
@@ -31,8 +33,9 @@ in {
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIIN0efXDzfUMXzuI26CiV2xTAkxp/b4HIphsUVQXxU4 drinkto4nixos"
     ];
-    # networkmanager 管理网络；wheel 允许 sudo。
-    extraGroups = ["networkmanager" "wheel"];
+    # networkmanager 管理网络；wheel 允许 sudo；
+    # video/render 用于 Intel/AMD GPU 和 Steam/Proton 的 DRM/Vulkan 访问。
+    extraGroups = ["networkmanager" "wheel" "video" "render"];
   };
 
   # 该主机启用 drinkto 的 Home Manager 配置。

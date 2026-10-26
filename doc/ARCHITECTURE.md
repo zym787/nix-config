@@ -39,6 +39,8 @@
 │   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
 │   │   ├── desktop.nix           # Wayland/XWayland / SDDM / Plasma / libinput
+│   │   ├── graphics.nix          # Intel/AMD GPU、32-bit Vulkan、switcheroo
+│   │   ├── gaming.nix            # Steam / GameMode / MangoHud / gamescope
 │   │   ├── audio.nix             # PipeWire
 │   │   ├── fonts.nix
 │   │   ├── ime.nix               # fcitx5

@@ -608,6 +608,61 @@ powerprofilesctl set balanced
 - 屏幕是 1920x1080 @ 60Hz，缩放 1.25；如仍觉得卡，可临时试 1.0 缩放
   或关闭部分桌面特效，以区分是缩放/特效还是输入设备问题。
 
+### 5.7 GPU / Steam
+
+硬件：
+
+- Intel UHD 620（`i915`，主显示，`card1`）
+- AMD Radeon 540X/550X（Lexa PRO，2GB，`amdgpu`，`card0`）
+
+AMD Polaris 用内核 `amdgpu` + Mesa RADV，不需要安装闭源驱动。
+当前 `hardware.graphics.enable32Bit = true`，并提供 64/32-bit
+`vulkan-loader`；Steam/Proton 需要这部分。
+
+独显使用：
+
+```bash
+switcherooctl list
+switcherooctl launch -g 1 <程序>
+```
+
+Steam 游戏启动项：
+
+```bash
+DRI_PRIME=1 gamemoderun mangohud %command%
+MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
+```
+
+- `DRI_PRIME=1`：OpenGL 走独显
+- `MESA_VK_DEVICE_SELECT=1002:699f`：Vulkan 强制 AMD
+- `gamemoderun`：GameMode 提升游戏优先级/CPU 策略
+- `mangohud`：帧率/GPU 监控
+
+验证：
+
+```bash
+vulkaninfo --summary
+sensors
+cat /sys/class/drm/card0/device/power_dpm_force_performance_level
+cat /sys/class/drm/card0/device/pp_power_profile_mode
+```
+
+当前 AMD GPU 的 3D profile 是 `3D_FULL_SCREEN`，空闲约 4W。
+不要为了“性能”盲目启用 `amdgpu.ppfeaturemask` 超频；笔记本散热有限。
+
+Steam/gamescope：
+
+- 默认用 Plasma Wayland 桌面会话 + Steam，日常切换应用最方便。
+- `gamescope` 作为**按需工具**安装，Steam 启动项可用：
+
+```bash
+gamescope -W 1920 -H 1080 -f -- gamemoderun mangohud %command%
+```
+
+- **不建议**默认启用专用 `gamescopeSession`；它适合电视/手柄/couch
+  gaming，而不是日常笔记本桌面。需要时再在
+  `common/nixos/gaming.nix` 把 `gamescopeSession.enable` 改为 `true`。
+
 ---
 
 ## 6. 之前问题的共性经验

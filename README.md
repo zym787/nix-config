@@ -62,6 +62,8 @@
 | 打印 | CUPS + brlaser（Brother DCP-7057） |
 | 蓝牙 | BlueZ + BlueDevil（Realtek RTL8822BE） |
 | 代理 | Clash Verge Rev（Mihomo，TUN + 系统服务） |
+| GPU | Intel UHD 620 + AMD Radeon 540X/550X（amdgpu + Mesa RADV） |
+| 游戏 | Steam + GameMode + MangoHud + gamescope（按需） |
 | 性能 | zram + sysctl 调优 + fstrim；PPD 默认 balanced（E490 不使用 thermald） |
 
 ## 代理
@@ -81,6 +83,53 @@ systemctl status clash-verge --no-pager
 建议关闭 Clash Verge 的 **DNS 覆写**，让机场订阅自带的 DNS 策略生效；
 否则全局 DNS 可能覆盖 `nameserver-policy`，导致节点域名解析失败。
 如果更想要无 GUI、eBPF 透明代理，可改用 `services.dae`（需要自己维护 `.dae` 配置）。
+
+## 游戏与独显
+
+硬件是双显卡：
+
+- Intel UHD 620：主显示/桌面合成
+- AMD Radeon 540X/550X（Lexa PRO，2GB）：独显
+
+AMD 使用内核 `amdgpu` + Mesa RADV，不需要闭源驱动。Steam/Proton
+需要 32-bit 图形库，已在 `common/nixos/graphics.nix` 开启。
+`services.switcherooControl` 让 KDE 可以提供“使用独立显卡运行”。
+
+### 独显启动方式
+
+- KDE 应用菜单右键 → “使用独立显卡运行”
+- 或命令行：
+
+```bash
+switcherooctl list
+switcherooctl launch -g 1 <程序>
+```
+
+Steam 游戏可在 **属性 → 启动选项** 使用：
+
+```bash
+# OpenGL 游戏走独显
+DRI_PRIME=1 gamemoderun mangohud %command%
+
+# Vulkan 游戏强制 AMD 独显（vendor:device）
+MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
+```
+
+用 `vulkaninfo --summary` 可以确认 AMD 设备是否可见。
+
+### Steam 与 gamescope
+
+默认使用普通 Plasma Wayland 桌面 + Steam，日常切换应用最方便。
+`programs.gamescope.enable = true` 提供按需使用的 `gamescope` 命令：
+
+```bash
+gamescope -W 1920 -H 1080 -f -- gamemoderun mangohud %command%
+```
+
+**没有**把专用 gamescope 会话设为默认登录会话。它更适合电视/手柄/
+Steam Deck 式 couch gaming；笔记本日常使用 Plasma 会话更灵活。若以后
+想要 SDDM 里额外出现 Steam 会话，可在 `common/nixos/gaming.nix` 把
+`gamescopeSession.enable` 改为 `true`。
 
 ## 蓝牙与性能
 
