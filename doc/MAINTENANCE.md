@@ -652,16 +652,18 @@ cat /sys/class/drm/card0/device/pp_power_profile_mode
 
 Steam/gamescope：
 
-- 默认用 Plasma Wayland 桌面会话 + Steam，日常切换应用最方便。
-- `gamescope` 作为**按需工具**安装，Steam 启动项可用：
+- 已启用 NixOS 自带的专用 **Steam gamescope 会话**：
+  - SDDM 登录界面多一个 “Steam” 会话；
+  - 进入后是 gamescope + Steam Big Picture；
+  - 日常仍默认选 Plasma，工作和游戏环境分离。
+- 普通桌面也可以按需使用 gamescope：
 
 ```bash
 gamescope -W 1920 -H 1080 -f -- gamemoderun mangohud %command%
 ```
 
-- **不建议**默认启用专用 `gamescopeSession`；它适合电视/手柄/couch
-  gaming，而不是日常笔记本桌面。需要时再在
-  `common/nixos/gaming.nix` 把 `gamescopeSession.enable` 改为 `true`。
+- 不想保留专用会话时，把 `common/nixos/gaming.nix` 的
+  `gamescopeSession.enable` 改回 `false`。
 
 ---
 

@@ -119,17 +119,20 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 
 ### Steam 与 gamescope
 
-默认使用普通 Plasma Wayland 桌面 + Steam，日常切换应用最方便。
-`programs.gamescope.enable = true` 提供按需使用的 `gamescope` 命令：
+已启用 NixOS 自带的 **Steam gamescope 会话**：
+
+- SDDM 登录界面会多一个 “Steam” 会话
+- 一键进入 gamescope + Steam Big Picture，适合专门玩游戏
+- 日常仍选择 Plasma 会话，工作和游戏环境分离
+- 普通桌面里也可以按需使用 `gamescope`：
 
 ```bash
 gamescope -W 1920 -H 1080 -f -- gamemoderun mangohud %command%
 ```
 
-**没有**把专用 gamescope 会话设为默认登录会话。它更适合电视/手柄/
-Steam Deck 式 couch gaming；笔记本日常使用 Plasma 会话更灵活。若以后
-想要 SDDM 里额外出现 Steam 会话，可在 `common/nixos/gaming.nix` 把
-`gamescopeSession.enable` 改为 `true`。
+专用会话更适合电视/手柄/Steam Deck 式体验；日常办公仍用 Plasma。
+如果不想保留专用会话，把 `common/nixos/gaming.nix` 的
+`gamescopeSession.enable` 改为 `false` 即可。
 
 ## 蓝牙与性能
 
