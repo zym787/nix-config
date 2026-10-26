@@ -491,16 +491,31 @@ sudo nixos-rebuild switch --flake .#e490
 
 #### Wayland 下标题栏按钮失效
 
-Clash Verge 是 Tauri/GTK 应用；在原生 Wayland 下可能使用客户端装饰，
-出现最小化/最大化/关闭按钮点不动。可先用 XWayland 验证：
+这是 **Tauri 在 Linux Wayland 下的系统标题栏上游 bug**，不是所有
+X11 窗口的问题；当前 Clash Verge 是原生 Wayland，不走 XWayland。
 
-```bash
-GDK_BACKEND=x11 clash-verge
+优先修复（官方做法）：
+
+```text
+Clash Verge → 设置 → 界面设置 → 关闭“优先使用系统标题栏”
 ```
 
-如果 KWin 的标题栏按钮恢复正常，可以把 GUI 启动方式固定为 XWayland
-（例如 XDG autostart 的 `Exec=env GDK_BACKEND=x11 clash-verge`）。
-不要把这个环境变量设成全局，否则会影响其他 GTK 应用。
+关闭后会改用应用自绘标题栏，最小化/最大化/关闭按钮由 Tauri 自己处理。
+临时验证可以双击标题栏触发一次最大化/还原，按钮通常会恢复；但要从根本
+避免，还是关闭系统标题栏。
+
+当前用户状态文件已设为自绘标题栏：
+
+```text
+~/.config/io.github.clash-verge-rev.clash-verge-rev/window_state.json
+~/.config/io.github.clash-verge-rev.clash-verge-rev/.window-state.json
+
+"main": { "decorated": false }
+```
+
+如果以后升级/重置后又出现，先在 GUI 关闭上述选项，再重启 Clash Verge。
+只有在自绘标题栏也异常时，才考虑临时用 `GDK_BACKEND=x11` 验证；不要把
+它设为全局环境变量。
 
 #### 安全
 

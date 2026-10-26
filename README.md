@@ -79,6 +79,10 @@ clash-verge                 # 打开 GUI
 systemctl status clash-verge --no-pager
 ```
 
+如果 Clash Verge 右上角最小化/最大化/关闭按钮点不动：这是 Tauri 在
+Wayland 下使用系统标题栏的上游问题。打开 **设置 → 界面设置**，关闭
+**“优先使用系统标题栏”**，改用应用自绘标题栏即可；这不是 X11 通病。
+
 配置和订阅通常保存在 `~/.local/share/io.github.clash-verge-rev.clash-verge-rev/`。
 建议关闭 Clash Verge 的 **DNS 覆写**，让机场订阅自带的 DNS 策略生效；
 否则全局 DNS 可能覆盖 `nameserver-policy`，导致节点域名解析失败。
