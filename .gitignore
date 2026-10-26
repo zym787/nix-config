@@ -4,3 +4,15 @@ result-*
 /result
 *.bak
 *.cache
+
+# Local secrets / credentials (never commit)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.age
+id_rsa
+id_ed25519
+secrets/

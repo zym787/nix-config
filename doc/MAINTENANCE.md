@@ -508,6 +508,41 @@ GDK_BACKEND=x11 clash-verge
   不能提交到 git，也不要贴到公开 issue。
 - 备份应用配置时注意备份文件同样含敏感信息。
 
+#### 敏感信息审计
+
+本次对 48 个提交做了全历史扫描（`gitleaks` + git grep），结果：
+
+- 未发现私钥、密码、API key、GitHub token、机场订阅 URL、DoH token。
+- 仓库中没有 `.env`、`*.pem`、`id_rsa`、`secrets/` 等文件。
+- 存在以下**非凭据但属于个人信息/设备标识**的内容：
+  - `users/drinkto/default.nix` 的 git 邮箱
+  - `hosts/e490/default.nix` 的 SSH **公钥**（公钥本身按设计可公开，
+    私钥不在仓库）
+  - `hosts/e490/hardware-configuration.nix` 的磁盘/分区 UUID
+  - git 提交作者邮箱（历史元数据）
+- `git remote` 是 HTTPS，没有把 token 写进 URL；没有 `.git-credentials` 进仓库。
+
+如果要把仓库公开，建议：
+
+1. 邮箱可换成 GitHub noreply 或删除 `settings.user.email`；
+2. 磁盘 UUID 可考虑只保留在私有部署仓库；
+3. SSH 公钥可以保留（不是秘密），但不要提交私钥；
+4. 若要彻底清除历史中的邮箱/设备标识，需要 `git filter-repo` 重写并
+   force-push，会影响所有 clone；普通配置仓库通常不值得这样做。
+
+审计命令：
+
+```bash
+# 历史里的常见凭据模式
+git log --all -p | grep -iE 'password|passwd|secret|token|api[_-]?key|BEGIN .*PRIVATE KEY'
+
+# 可疑文件名
+git rev-list --objects --all | grep -Ei '\.(pem|key|env|p12|pfx|age)$|id_rsa|id_ed25519|secrets'
+
+# 用 gitleaks 扫描全历史
+nix run nixpkgs#gitleaks -- detect --source . --redact
+```
+
 ### 5.5 性能 / 蓝牙
 
 - zram：24G 内存的 25%，优先于磁盘 swap。
