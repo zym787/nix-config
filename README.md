@@ -84,6 +84,11 @@ systemctl status clash-verge --no-pager
 否则全局 DNS 可能覆盖 `nameserver-policy`，导致节点域名解析失败。
 如果更想要无 GUI、eBPF 透明代理，可改用 `services.dae`（需要自己维护 `.dae` 配置）。
 
+Steam 下载也会被 TUN 接管。当前在订阅的规则编辑器里把 Steam
+下载 CDN（`steamcontent.com`、`pphimalayanrt.com`、`clngaa.com` 等）
+设为 `DIRECT`，避免下载走代理节点；商店/社区仍按订阅规则走代理。
+如果仍然慢，在 Steam **设置 → 下载 → 下载区域**换一个就近区域再试。
+
 ## 游戏与独显
 
 硬件是双显卡：
@@ -117,6 +122,13 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 
 用 `vulkaninfo --summary` 可以确认 AMD 设备是否可见。
 
+如果游戏启动后白屏/黑屏，先在 Plasma 里用上面的启动项测试，
+并在 Steam 属性里打开 `PROTON_LOG=1`，日志会写到
+`~/steam-<appid>.log`。这台机器只有 2GB 显存，像
+*Little Nightmares Enhanced Edition* 这类新游戏不要开 Ultra/光追：
+改用 1280x720、Low、关闭 RT/FSR，并确认使用的是 AMD 独显。
+低于游戏推荐配置时，即使能启动也可能严重掉帧或显存不足。
+
 ### Steam 与 gamescope
 
 已启用 NixOS 自带的 **Steam gamescope 会话**：
@@ -132,6 +144,15 @@ gamescope -W 1920 -H 1080 -f -r 60 -- gamemoderun mangohud %command%
 
 首次使用建议先在 **Plasma 会话**里完成 Steam 登录、Steam Play/Proton、
 游戏下载、手柄和界面设置；这些数据与 Steam 会话共享。
+
+Steam 桌面版 Big Picture 没有 Steam Deck 的“性能”菜单。本配置在专用
+会话里设置 `MANGOHUD=1`，进入游戏后按 `Shift_R+F12` 切换 MangoHud
+帧率/CPU/GPU 覆盖层；也可以在单个游戏的启动项里加 `MANGOHUD=1`。
+
+专用会话没有桌面环境，所以 Big Picture 的“退出到桌面/切换到桌面”
+不会回到 Plasma，只会留下黑屏。请使用 **Steam 按钮 → 电源 → 退出
+Steam**；如果只退出了游戏或界面卡住，按 `Ctrl+Alt+F2` 到 TTY，
+执行 `loginctl list-sessions` 和 `loginctl terminate-session <id>`。
 
 Wi-Fi 要在 Steam 会话里自动连接，NetworkManager 的 PSK 必须是
 **系统级存储**（`psk-flags=0`），不能只由 KDE Wallet 管理：

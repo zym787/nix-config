@@ -664,6 +664,26 @@ Steam/gamescope：
 gamescope -W 1920 -H 1080 -f -r 60 -- gamemoderun mangohud %command%
 ```
 
+性能监控：
+
+- Steam 桌面版 Big Picture 没有 Steam Deck 的“性能”菜单；
+  `programs.steam.gamescopeSession.env` 已设置 `MANGOHUD=1`，
+  进入游戏后按 `Shift_R+F12` 切换 MangoHud。
+- 只想给单个游戏开启时，把 `MANGOHUD=1 %command%` 放到启动项。
+- MangoHud 已在 `programs.steam.extraPackages` 中，Steam FHS 内可见。
+
+游戏白屏/黑屏：
+
+- 先在 Plasma 会话测试，排除 gamescope 因素。
+- 2GB 独显不要用 Ultra/光追；Little Nightmares Enhanced Edition
+  当前配置已改为 1280x720、Low、RT 关闭（原配置备份为
+  `GameUserSettings.ini.bak-open`）。
+- 启动项使用 `DRI_PRIME=1 MESA_VK_DEVICE_SELECT=1002:699f`，
+  并加 `PROTON_LOG=1`；日志在 `~/steam-<appid>.log`。
+- 仍白屏时换 Proton 版本（Experimental/9/10 或 GE），或在 Plasma
+  里用窗口模式 `-windowed -ResX=1280 -ResY=720` 测试。
+- 低于推荐配置的游戏（本机 dGPU 只有 2GB 显存）可能无法稳定运行。
+
 Wi-Fi：
 
 - Steam 会话没有 KDE Wallet/secret agent，NetworkManager 的 Wi-Fi
@@ -680,9 +700,21 @@ nmcli connection up '<Wi-Fi 名称>'
   只要系统连接已激活，网络实际可用。不要用 Steam 会话里的网络
   菜单重新配置 Wi-Fi。
 
+Steam 下载/代理：
+
+- Steam 流量走 Mihomo TUN；订阅规则里原本只对部分 Steam CDN 直连。
+- 已在订阅的规则编辑器 `prepend` 加入
+  `steamcontent.com`、`pphimalayanrt.com`、`clngaa.com`、
+  `steamcdn-a.akamaihd.net` 等下载 CDN 的 `DIRECT` 规则。
+- 修改后重启 Clash Verge 触发配置重建，确认 `clash-verge.yaml`
+  顶部出现这些规则；商店/社区仍按订阅规则代理。
+- 若下载仍慢，在 Steam 设置里更换下载区域，或临时切换节点对比。
+
 退出/卡死：
 
-- Big Picture → Steam 按钮 → 电源 → 退出。
+- **“退出到桌面/切换到桌面”是 Steam Deck 的选项；专用会话没有
+  桌面环境，选它不会回到 Plasma。**
+- 正确退出：Big Picture → Steam 按钮 → 电源 → **退出 Steam**。
 - 无退出项或卡死：`Ctrl+Alt+F2` 到 TTY，登录后
   `loginctl list-sessions`、`loginctl terminate-session <id>`；
   或 `sudo systemctl restart display-manager`。

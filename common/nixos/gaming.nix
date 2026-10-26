@@ -13,6 +13,12 @@
       # “GPU accelerated rendering in web views”，或在 steamArgs 加
       # "-cef-disable-gpu"（会牺牲一点 UI 流畅度）。
       args = ["-W" "1920" "-H" "1080" "-f" "-r" "60"];
+
+      # Steam 桌面版 Big Picture 没有 Steam Deck 的“性能”菜单；
+      # 在游戏会话里默认启用 MangoHud，游戏中按 Shift_R+F12 切换。
+      env = {
+        MANGOHUD = "1";
+      };
     };
 
     # 这些工具需要出现在 Steam 的 FHS 环境里，启动项才能直接调用。
