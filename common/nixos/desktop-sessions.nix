@@ -1,6 +1,7 @@
 # 多桌面会话：niri + DMS 为默认，同时保留 KDE、GNOME、Hyprland、Denial。
 # 所有会话都注册到 SDDM，登录时在会话菜单中选择；不需要重装系统。
 {
+  config,
   inputs,
   pkgs,
   lib,
@@ -43,8 +44,9 @@
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "desktop-sessions" ''
       echo "可用桌面会话："
-      for f in /run/current-system/sw/share/wayland-sessions/*.desktop \
-               /run/current-system/sw/share/xsessions/*.desktop; do
+      sessions="${config.services.displayManager.sessionData.desktops}/share"
+      for f in "$sessions"/wayland-sessions/*.desktop \
+               "$sessions"/xsessions/*.desktop; do
         [ -f "$f" ] || continue
         name=$(sed -n 's/^Name=//p' "$f" | head -n1)
         echo "  - ''${name:-$(basename "$f" .desktop)}"
