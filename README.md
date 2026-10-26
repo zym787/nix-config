@@ -181,7 +181,7 @@ AMD 使用内核 `amdgpu` + Mesa RADV，不需要闭源驱动。Steam/Proton
 
 ### 独显启动方式
 
-- KDE 应用菜单右键 → “使用独立显卡运行”
+- KDE 应用菜单右键 → “使用独立显卡运行”，或使用下面的命令行
 - 或命令行：
 
 ```bash
@@ -262,7 +262,7 @@ loginctl terminate-session <session-id>
 # 蓝牙状态 / 配对
 systemctl status bluetooth --no-pager
 bluetoothctl
-# KDE 托盘里也可以直接用 BlueDevil 配对
+# KDE 托盘或 DMS 控制中心里也可以直接配对蓝牙
 
 # 查看 zram 和 TRIM
 zramctl

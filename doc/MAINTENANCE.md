@@ -670,7 +670,7 @@ Steam/gamescope：
 - 已启用 NixOS 自带的专用 **Steam gamescope 会话**：
   - SDDM 登录界面多一个 “Steam” 会话；
   - 进入后是 gamescope + Steam Big Picture；
-  - 日常仍默认选 Plasma，工作和游戏环境分离。
+  - 日常默认是 Niri，也可在 SDDM 选 Plasma，工作和游戏环境分离。
 - 首次使用先在 Plasma 里完成 Steam 登录、Steam Play/Proton、下载、
   手柄和界面设置；配置对 Steam 会话共享。
 - 普通桌面也可以按需使用 gamescope：
@@ -780,8 +780,8 @@ flatpak remote-add --user --if-not-exists flathub \
   flatpak update --user
   ```
 - 应用数据在 `~/.var/app/<应用 ID>/`。
-- 文件选择、剪贴板、截图异常时先查 XDG Portal；Plasma 已提供
-  `xdg-desktop-portal-kde`。
+- 文件选择、剪贴板、截图异常时先查 XDG Portal；KDE/GNOME/Niri 都已提供
+  对应的 portal 实现。
 - 不要把 Flathub 的安装写进 `environment.systemPackages`，两者是不同体系。
 
 ### 5.9 多桌面 / Niri / DMS
@@ -836,7 +836,7 @@ journalctl --user -b | grep -i -E 'niri|dms|quickshell'
   `Win+Shift+Enter` 启动 Kitty。
 - Niri 不读取 KDE 的触摸板设置；输入配置在 `users/drinkto/niri.nix`。
 - 修改 Niri 配置后先 `niri validate`，配置错误会导致会话启动失败；从 TTY
-  修正或回 SDDM 选 Plasma。
+  修正或回 SDDM 选 Niri/Plasma。
 
 多桌面冲突：
 
