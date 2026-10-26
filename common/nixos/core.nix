@@ -22,6 +22,10 @@ in {
     experimental-features = ["nix-command" "flakes"];
     trusted-users = ["drinkto"];
     substituters = settings.substituters;
+    # DenialWM 官方 cache 的公钥；只追加，不覆盖 NixOS 默认公钥。
+    "extra-trusted-public-keys" = [
+      "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo="
+    ];
   };
 
   # 自动清理旧代际，并定期去重/优化 store。

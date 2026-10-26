@@ -16,7 +16,7 @@
 | 最近更新 | 见顶部 `last commit` 徽章 |
 | 系统 | NixOS `nixos-unstable` |
 | 平台 | `x86_64-linux` |
-| 桌面 | KDE Plasma 6 + SDDM + Wayland（XWayland 兼容层） |
+| 桌面 | Niri + DMS（默认）/ KDE Plasma / GNOME / Hyprland / Denial，统一 SDDM |
 | 配置方式 | Flake + Home Manager（system module 集成） |
 
 ## 支持平台
@@ -54,7 +54,9 @@
 | 项目 | 值 |
 | :--- | :--- |
 | 系统通道 | `nixos-unstable`（清华 Git 镜像） |
-| 桌面环境 | KDE Plasma 6 + SDDM + Wayland（XWayland） |
+| 桌面环境 | Niri + DankMaterialShell（默认）+ KDE/GNOME/Hyprland/Denial 可选会话 |
+| 显示管理 | SDDM；会话菜单一键切换，默认 Niri |
+| 终端 | Ghostty + Kitty + zsh + oh-my-zsh + starship |
 | 音频 | PipeWire（PulseAudio 兼容层） |
 | 输入法 | fcitx5 + Rime（雾凇拼音 rime-ice），启用 Wayland 前端 |
 | 引导 | systemd-boot（保留 10 个代际） |
@@ -66,6 +68,34 @@
 | 游戏 | Steam + GameMode + MangoHud + gamescope（按需） |
 | 应用分发 | AppImage（appimage-run + binfmt）+ Flatpak |
 | 性能 | zram + sysctl 调优 + fstrim；PPD 默认 balanced（E490 不使用 thermald） |
+
+## 桌面会话
+
+默认登录 **Niri + DMS**，同时保留：
+
+| 会话 | 用途 |
+| :--- | :--- |
+| Niri + DMS | 默认，键盘/滚动平铺，日常主会话 |
+| KDE Plasma | 兼容性优先，完整 KDE 桌面 |
+| GNOME | GNOME 尝鲜 |
+| Hyprland | 另一套 Wayland 平铺合成器 |
+| Denial | Flutter 原生 Wayland 合成器；默认关闭，需在 `desktop-sessions.nix` 开启 |
+| Steam | gamescope + Steam Big Picture |
+
+切换方式：注销 → 在 SDDM 的会话菜单点击目标桌面 → 登录。  
+不需要重建 NixOS；`desktop-sessions` 可列出会话，`desktop-switch` 可提示注销。
+
+Niri 的入门教程、默认键位、DMS 使用和故障排查见
+**[doc/NIRI.md](doc/NIRI.md)**。
+
+关键默认键位：
+
+- `Win+Enter` 打开 Ghostty
+- `Win+Shift+Enter` 打开 Kitty
+- `Win+D` 打开 DMS 启动器
+- `Win+Q` 关闭窗口
+- `Win+O` 打开 Overview
+- `Win+1..9` 切换工作区
 
 ## 代理
 
@@ -119,7 +149,7 @@ APPIMAGE_EXTRACT_AND_RUN=1 ./SomeApp.AppImage
 
 ### Flatpak
 
-已启用 `services.flatpak`，并依赖 Plasma 提供的 XDG Desktop Portal。
+已启用 `services.flatpak`，并依赖 KDE/GNOME/Niri 会话提供的 XDG Desktop Portal。
 首次使用先添加 Flathub（用户级，不需要 root）：
 
 ```bash
@@ -180,7 +210,7 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 
 - SDDM 登录界面会多一个 “Steam” 会话
 - 一键进入 gamescope + Steam Big Picture，适合专门玩游戏
-- 日常仍选择 Plasma 会话，工作和游戏环境分离
+- 日常可选择 Niri 或 Plasma 会话，工作和游戏环境分离
 - 普通桌面里也可以按需使用 `gamescope`：
 
 ```bash
@@ -217,10 +247,10 @@ loginctl list-sessions
 loginctl terminate-session <session-id>
 ```
 
-然后回 SDDM 选 Plasma。如果不想保留专用会话，把
+然后回 SDDM 选 Niri/Plasma。如果不想保留专用会话，把
 `common/nixos/gaming.nix` 的 `gamescopeSession.enable` 改为 `false`。
 
-专用会话更适合电视/手柄/Steam Deck 式体验；日常办公仍用 Plasma。
+专用会话更适合电视/手柄/Steam Deck 式体验；日常办公可使用 Niri 或 Plasma。
 
 ## 蓝牙与性能
 
@@ -403,6 +433,7 @@ ls ~/.config/autostart/ | grep -i 软件名
 ## 相关文档
 
 - `doc/ARCHITECTURE.md`：架构设计 + 编码规则（改配置前必读）
+- `doc/NIRI.md`：Niri + DMS 初学者教程与默认快捷键
 - `doc/MAINTENANCE.md`：维护手册、上手指南、故障排查与共性经验
 - `doc/OPTIMIZATION.md`：迁移记录与长期维护
 - NixOS 选项搜索：https://search.nixos.org/options

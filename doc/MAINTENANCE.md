@@ -11,7 +11,7 @@
 | :--- | :--- |
 | 主机 | `e490`（Lenovo E490，i7-8565U，24G 内存） |
 | 用户 | `drinkto` |
-| 桌面 | KDE Plasma 6 + SDDM + Wayland（XWayland 兼容层） |
+| 桌面 | 默认 Niri + DMS；SDDM 可切换 KDE/GNOME/Hyprland/Denial |
 | 引导 | systemd-boot，保留 10 个代际 |
 | 文件系统 | Btrfs：`root` / `home` / `nix` 子卷，zstd |
 | 蓝牙 | Realtek RTL8822BE，BlueZ + BlueDevil |
@@ -784,6 +784,80 @@ flatpak remote-add --user --if-not-exists flathub \
   `xdg-desktop-portal-kde`。
 - 不要把 Flathub 的安装写进 `environment.systemPackages`，两者是不同体系。
 
+### 5.9 多桌面 / Niri / DMS
+
+对应文件：
+
+- `common/nixos/desktop-sessions.nix`：会话开关、默认会话、SDDM
+- `common/nixos/desktop.nix`：KDE/SDDM/输入基础
+- `users/drinkto/niri.nix`：Niri 配置与 DMS 启动
+- `users/drinkto/hyprland.nix`：Hyprland 尝鲜配置
+- `common/home/shell.nix`：zsh/oh-my-zsh/starship
+- `doc/NIRI.md`：面向初学者的完整指南
+
+默认会话：
+
+```text
+services.displayManager.defaultSession = "niri";
+```
+
+SDDM 会话菜单中应能看到：
+
+```text
+Niri / Plasma / GNOME / Hyprland / Denial / Steam
+```
+
+切换：注销 → SDDM 会话菜单点选 → 登录。  
+辅助命令：
+
+```bash
+desktop-sessions   # 列出会话
+desktop-switch     # 提示注销
+```
+
+Niri/DMS 检查：
+
+```bash
+niri validate -c ~/.config/niri/config.kdl
+niri msg outputs
+niri msg windows
+niri msg workspaces
+pgrep -af dms
+dms ipc call spotlight toggle
+journalctl --user -b | grep -i -E 'niri|dms|quickshell'
+```
+
+- DMS 由 `users/drinkto/niri.nix` 的 `spawn-at-startup` 启动，不启用
+  独立的 dms systemd 服务，避免与 niri 会话目标重复启动。
+- DMS 上游已从 DankMaterialShell 改名为 Dux Shell，但 Nix 选项仍是
+  `programs.dank-material-shell`，CLI 仍是 `dms`。
+- `Win+D` 调用 `dms ipc call spotlight toggle`；`Win+Enter` 启动 Ghostty，
+  `Win+Shift+Enter` 启动 Kitty。
+- Niri 不读取 KDE 的触摸板设置；输入配置在 `users/drinkto/niri.nix`。
+- 修改 Niri 配置后先 `niri validate`，配置错误会导致会话启动失败；从 TTY
+  修正或回 SDDM 选 Plasma。
+
+多桌面冲突：
+
+- KDE 与 GNOME 同时启用时会争抢 SSH askpass；已在
+  `desktop-sessions.nix` 中统一为 KSSHAskPass。
+- GNOME 继续使用 SDDM，`services.displayManager.gdm.enable = false`，
+  避免 GDM 和 SDDM 争抢 display-manager。
+- Denial 是实验性 Flutter 合成器，使用官方 flake 和 cachix；默认关闭
+  （`programs.denial.enable = false`），首次启用可能需要构建 Flutter
+  engine，失败时回 Niri/KDE，不影响主桌面。
+- 一次只运行一个桌面会话；不要在同一用户下同时启动多个 compositor。
+
+zsh：
+
+```bash
+getent passwd drinkto     # shell 应为 zsh
+echo $SHELL
+```
+
+Home Manager 管理 `.zshrc`、oh-my-zsh、自动建议、语法高亮和 starship；
+不要手工覆盖 `~/.zshrc`，改 `common/home/shell.nix` 后重新 switch。
+
 ---
 
 ## 6. 之前问题的共性经验
@@ -862,6 +936,7 @@ grep -rn "TODO\|FIXME" --include="*.nix" .
 ## 8. 相关文档
 
 - `doc/ARCHITECTURE.md`：架构与编码规则
+- `doc/NIRI.md`：Niri + DMS 初学者教程、键位与故障排查
 - `doc/OPTIMIZATION.md`：迁移记录与长期维护
 - `doc/GUIDE.md`：设计参考
 - `doc/AGENT.md`：AI agent 操作指引

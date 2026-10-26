@@ -1,6 +1,7 @@
 # drinkto 的个人 Home Manager 配置。
 {
   settings,
+  inputs,
   pkgs,
   lib,
   ...
@@ -9,7 +10,22 @@
   packages = settings.packages {inherit pkgs;};
 in {
   # 所有用户共享的 git/starship/home-manager 基础。
-  imports = [../../common/home];
+  # DMS 的 Home Manager 模块负责安装 dms/quickshell 及依赖。
+  imports = [
+    ../../common/home
+    inputs.dms.homeModules.dank-material-shell
+    ./niri.nix
+    ./hyprland.nix
+  ];
+
+  # DMS 由 niri 的 spawn-at-startup 启动，不额外启用 systemd 服务，
+  # 避免和 niri 会话目标重复启动。
+  programs.dank-material-shell = {
+    enable = true;
+    enableSystemMonitoring = true;
+    # 当前不使用日历集成，避免引入 khal（其 man 输出在该版本构建失败）。
+    enableCalendarEvents = false;
+  };
 
   home = {
     username = "drinkto";

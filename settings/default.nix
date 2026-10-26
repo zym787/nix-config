@@ -15,6 +15,8 @@
     "https://mirror.sjtu.edu.cn/nix-channels/store"
     "https://mirrors.ustc.edu.cn/nix-channels/store"
     "https://mirrors.cernet.edu.cn/nix-channels/store"
+    # DenialWM 官方二进制缓存；Flutter 引擎闭包很大，优先用缓存。
+    "https://denial.cachix.org"
   ];
 
   # 必须显式放行的不安全包；卸载依赖它们的软件后要同步删除对应条目。

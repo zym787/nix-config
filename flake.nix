@@ -12,6 +12,18 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # DankMaterialShell 已改名为 Dux Shell，但 Nix 模块仍叫
+    # programs.dank-material-shell，CLI 仍是 dms。
+    dms = {
+      url = "git+https://github.com/duxlabs-dev/dux-shell?rev=5b54dafa61400c839cf62aad2baeff3cf7438bdd";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # DenialWM：Flutter 原生 Wayland 合成器，作为尝鲜会话。
+    denial = {
+      url = "git+https://github.com/denialwm/denial?rev=c96375a190a200b6343868afc42d4492b6badb9d";
+    };
   };
 
   outputs = {
@@ -84,8 +96,13 @@
       "https://mirror.sjtu.edu.cn/nix-channels/store"
       "https://mirrors.ustc.edu.cn/nix-channels/store"
       "https://mirrors.cernet.edu.cn/nix-channels/store"
+      # DenialWM 官方二进制缓存。
+      "https://denial.cachix.org"
       # flake 命令的官方兜底；系统级列表由 NixOS 默认值补上官方源。
       "https://cache.nixos.org"
+    ];
+    extra-trusted-public-keys = [
+      "denial.cachix.org-1:wd8YTnvPmugFrtdMJWtR1XdVknR3/g2nmBJkT+vAruo="
     ];
   };
 }
