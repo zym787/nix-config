@@ -8,8 +8,11 @@
     # 日常仍默认 Plasma，工作和游戏会话分离。
     gamescopeSession = {
       enable = true;
-      # 匹配 E490 的内屏分辨率；进入会话后由 Steam 接管。
-      args = ["-W" "1920" "-H" "1080" "-f"];
+      # 匹配 E490 的内屏分辨率/刷新率；进入会话后由 Steam 接管。
+      # 如果 Big Picture 网页视图滚动出现乱码，可在 Steam 设置中关闭
+      # “GPU accelerated rendering in web views”，或在 steamArgs 加
+      # "-cef-disable-gpu"（会牺牲一点 UI 流畅度）。
+      args = ["-W" "1920" "-H" "1080" "-f" "-r" "60"];
     };
 
     # 这些工具需要出现在 Steam 的 FHS 环境里，启动项才能直接调用。

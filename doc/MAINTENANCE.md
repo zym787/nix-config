@@ -656,12 +656,39 @@ Steam/gamescope：
   - SDDM 登录界面多一个 “Steam” 会话；
   - 进入后是 gamescope + Steam Big Picture；
   - 日常仍默认选 Plasma，工作和游戏环境分离。
+- 首次使用先在 Plasma 里完成 Steam 登录、Steam Play/Proton、下载、
+  手柄和界面设置；配置对 Steam 会话共享。
 - 普通桌面也可以按需使用 gamescope：
 
 ```bash
-gamescope -W 1920 -H 1080 -f -- gamemoderun mangohud %command%
+gamescope -W 1920 -H 1080 -f -r 60 -- gamemoderun mangohud %command%
 ```
 
+Wi-Fi：
+
+- Steam 会话没有 KDE Wallet/secret agent，NetworkManager 的 Wi-Fi
+  密码必须是**系统级存储**；`psk-flags=1` 时无法自动连接。
+- 检查/修复：
+
+```bash
+nmcli -g 802-11-wireless-security.psk-flags connection show '<Wi-Fi 名称>'
+nmcli connection modify '<Wi-Fi 名称>' wifi-sec.psk-flags 0
+nmcli connection up '<Wi-Fi 名称>'
+```
+
+- Steam Big Picture 的 Wi-Fi 菜单可能只显示 HTTP proxy 或灰色图标；
+  只要系统连接已激活，网络实际可用。不要用 Steam 会话里的网络
+  菜单重新配置 Wi-Fi。
+
+退出/卡死：
+
+- Big Picture → Steam 按钮 → 电源 → 退出。
+- 无退出项或卡死：`Ctrl+Alt+F2` 到 TTY，登录后
+  `loginctl list-sessions`、`loginctl terminate-session <id>`；
+  或 `sudo systemctl restart display-manager`。
+- gamescope 会话中 Steam UI 的滚动/文字乱码可在 Steam 设置里关闭
+  “GPU accelerated rendering in web views”；仍不行时在 `steamArgs`
+  加 `-cef-disable-gpu`（会降低部分 UI 流畅度）。
 - 不想保留专用会话时，把 `common/nixos/gaming.nix` 的
   `gamescopeSession.enable` 改回 `false`。
 

@@ -127,12 +127,34 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 - 普通桌面里也可以按需使用 `gamescope`：
 
 ```bash
-gamescope -W 1920 -H 1080 -f -- gamemoderun mangohud %command%
+gamescope -W 1920 -H 1080 -f -r 60 -- gamemoderun mangohud %command%
 ```
 
+首次使用建议先在 **Plasma 会话**里完成 Steam 登录、Steam Play/Proton、
+游戏下载、手柄和界面设置；这些数据与 Steam 会话共享。
+
+Wi-Fi 要在 Steam 会话里自动连接，NetworkManager 的 PSK 必须是
+**系统级存储**（`psk-flags=0`），不能只由 KDE Wallet 管理：
+
+```bash
+nmcli -g 802-11-wireless-security.psk-flags connection show '<Wi-Fi 名称>'
+# 如果是 1：
+nmcli connection modify '<Wi-Fi 名称>' wifi-sec.psk-flags 0
+nmcli connection up '<Wi-Fi 名称>'
+```
+
+退出 Steam 会话：Big Picture 里 **Steam 按钮 → 电源 → 退出**。
+如果界面没有退出项或卡死，按 `Ctrl+Alt+F2` 切到 TTY，登录后执行：
+
+```bash
+loginctl list-sessions
+loginctl terminate-session <session-id>
+```
+
+然后回 SDDM 选 Plasma。如果不想保留专用会话，把
+`common/nixos/gaming.nix` 的 `gamescopeSession.enable` 改为 `false`。
+
 专用会话更适合电视/手柄/Steam Deck 式体验；日常办公仍用 Plasma。
-如果不想保留专用会话，把 `common/nixos/gaming.nix` 的
-`gamescopeSession.enable` 改为 `false` 即可。
 
 ## 蓝牙与性能
 
