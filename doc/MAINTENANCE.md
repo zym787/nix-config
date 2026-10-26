@@ -739,6 +739,51 @@ Steam 下载/代理：
 - 不想保留专用会话时，把 `common/nixos/gaming.nix` 的
   `gamescopeSession.enable` 改回 `false`。
 
+### 5.8 AppImage / Flatpak
+
+对应模块：
+
+- AppImage：`common/nixos/appimage.nix`
+- Flatpak：`common/nixos/flatpak.nix`
+
+AppImage：
+
+```bash
+command -v appimage-run
+ls /proc/sys/fs/binfmt_misc | grep -i appimage
+```
+
+- 直接双击/执行前先 `chmod +x foo.AppImage`。
+- binfmt 没有生效时，用 `appimage-run ./foo.AppImage`。
+- FUSE/挂载失败时可临时：
+  ```bash
+  APPIMAGE_EXTRACT_AND_RUN=1 ./foo.AppImage
+  ```
+
+Flatpak：
+
+```bash
+flatpak --version
+flatpak remotes
+systemctl --user status xdg-desktop-portal xdg-desktop-portal-kde
+```
+
+首次添加 Flathub（用户级，不需要 root）：
+
+```bash
+flatpak remote-add --user --if-not-exists flathub \
+  https://flathub.org/repo/flathub.flatpakrepo
+```
+
+- Flatpak 应用由 Flatpak 自己更新，NixOS 不会代管：
+  ```bash
+  flatpak update --user
+  ```
+- 应用数据在 `~/.var/app/<应用 ID>/`。
+- 文件选择、剪贴板、截图异常时先查 XDG Portal；Plasma 已提供
+  `xdg-desktop-portal-kde`。
+- 不要把 Flathub 的安装写进 `environment.systemPackages`，两者是不同体系。
+
 ---
 
 ## 6. 之前问题的共性经验

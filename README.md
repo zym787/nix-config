@@ -64,6 +64,7 @@
 | 代理 | Clash Verge Rev（Mihomo，TUN + 系统服务） |
 | GPU | Intel UHD 620 + AMD Radeon 540X/550X（amdgpu + Mesa RADV） |
 | 游戏 | Steam + GameMode + MangoHud + gamescope（按需） |
+| 应用分发 | AppImage（appimage-run + binfmt）+ Flatpak |
 | 性能 | zram + sysctl 调优 + fstrim；PPD 默认 balanced（E490 不使用 thermald） |
 
 ## 代理
@@ -92,6 +93,46 @@ Steam 下载也会被 TUN 接管。当前在订阅的规则编辑器里把 Steam
 下载 CDN（`steamcontent.com`、`pphimalayanrt.com`、`clngaa.com` 等）
 设为 `DIRECT`，避免下载走代理节点；商店/社区仍按订阅规则走代理。
 如果仍然慢，在 Steam **设置 → 下载 → 下载区域**换一个就近区域再试。
+
+## AppImage 与 Flatpak
+
+两者都是 NixOS 之外的软件分发方式，更新不由 NixOS 管理：
+
+### AppImage
+
+已启用 `programs.appimage` 和 binfmt 注册：
+
+```bash
+# 给 AppImage 执行权限后可直接运行
+chmod +x SomeApp.AppImage
+./SomeApp.AppImage
+
+# 也可以显式通过 appimage-run 启动
+appimage-run ./SomeApp.AppImage
+```
+
+如果 AppImage 因 FUSE/挂载问题启动失败，可以临时解包运行：
+
+```bash
+APPIMAGE_EXTRACT_AND_RUN=1 ./SomeApp.AppImage
+```
+
+### Flatpak
+
+已启用 `services.flatpak`，并依赖 Plasma 提供的 XDG Desktop Portal。
+首次使用先添加 Flathub（用户级，不需要 root）：
+
+```bash
+flatpak remote-add --user --if-not-exists flathub \
+  https://flathub.org/repo/flathub.flatpakrepo
+
+flatpak install --user flathub <应用 ID>
+flatpak run <应用 ID>
+flatpak update --user
+```
+
+Flatpak 应用的数据在 `~/.var/app/<应用 ID>/`，桌面菜单由 Flatpak
+自动生成；NixOS 更新不会更新 Flatpak 应用，需要单独 `flatpak update`。
 
 ## 游戏与独显
 

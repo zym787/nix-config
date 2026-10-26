@@ -13,6 +13,8 @@ in {
     ../../common/nixos/desktop.nix
     ../../common/nixos/graphics.nix
     ../../common/nixos/gaming.nix
+    ../../common/nixos/appimage.nix
+    ../../common/nixos/flatpak.nix
     ../../common/nixos/audio.nix
     ../../common/nixos/fonts.nix
     ../../common/nixos/ime.nix
