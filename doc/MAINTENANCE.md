@@ -804,7 +804,8 @@ services.displayManager.defaultSession = "niri";
 SDDM 会话菜单中应能看到：
 
 ```text
-Niri / Plasma / GNOME / Hyprland / Denial / Steam
+Niri / Plasma / GNOME / Hyprland / Steam
+# Denial 默认关闭；开启后才会出现
 ```
 
 切换：注销 → SDDM 会话菜单点选 → 登录。  

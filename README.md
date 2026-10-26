@@ -85,6 +85,10 @@
 切换方式：注销 → 在 SDDM 的会话菜单点击目标桌面 → 登录。  
 不需要重建 NixOS；`desktop-sessions` 可列出会话，`desktop-switch` 可提示注销。
 
+> DMS 上游已从 DankMaterialShell 改名为 **Dux Shell**，Nix 选项仍是
+> `programs.dank-material-shell`，命令行仍是 `dms`。Denial 默认关闭，
+> 因为首次启用可能需要构建 Flutter engine。
+
 Niri 的入门教程、默认键位、DMS 使用和故障排查见
 **[doc/NIRI.md](doc/NIRI.md)**。
 
