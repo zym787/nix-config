@@ -57,6 +57,32 @@ in {
         - { when: has_menu, accept: period, send: Page_Down }
   '';
 
+  # Ghostty 的官方 desktop 文件设置 DBusActivatable=true，KDE 会通过
+  # systemd 的 app-com.mitchellh.ghostty.service 启动它。systemd 262 使用
+  # Type=notify-reload 并要求 SIGUSR2，而 Ghostty 1.3.1 不处理该信号，
+  # 所以首次启动失败、第二次才成功。用用户级 desktop 覆盖为直接 Exec 启动。
+  xdg.dataFile."applications/com.mitchellh.ghostty.desktop".text = ''
+    [Desktop Entry]
+    Version=1.0
+    Type=Application
+    Name=Ghostty
+    GenericName=Terminal Emulator
+    Comment=A terminal emulator
+    Exec=${pkgs.ghostty}/bin/ghostty --gtk-single-instance=true
+    Icon=com.mitchellh.ghostty
+    Terminal=false
+    Categories=System;TerminalEmulator;
+    Keywords=terminal;tty;pty;
+    StartupNotify=true
+    StartupWMClass=com.mitchellh.ghostty
+    DBusActivatable=false
+    X-GNOME-UsesNotifications=true
+
+    [Desktop Action new-window]
+    Name=New Window
+    Exec=${pkgs.ghostty}/bin/ghostty --gtk-single-instance=true
+  '';
+
   # Clash Verge 的“自动检查更新”是应用自身状态，NixOS 没有对应选项。
   # 这里在 Home Manager activation 时尽力关闭；应用运行时如果从 GUI
   # 重新打开，会以 GUI 状态为准（它会重写 verge.yaml）。
