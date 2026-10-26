@@ -39,6 +39,24 @@ in {
     email = "z_one787@163.com";
   };
 
+  # Rime 用户级配置：选择雾凇拼音 rime_ice，并把候选词页设为 9 个。
+  # rime-ice 的数据由 common/nixos/ime.nix 的 fcitx5-rime.override 提供，
+  # 这里只放用户覆盖文件，避免把整个 Rime 数据目录写死。
+  xdg.dataFile."fcitx5/rime/default.custom.yaml".text = ''
+    patch:
+      schema_list:
+        - schema: rime_ice
+      menu/page_size: 9
+      ascii_composer/switch_key:
+        Shift_L: commit_code
+        Shift_R: commit_text
+        Control_L: noop
+        Control_R: noop
+      key_binder/bindings:
+        - { when: paging, accept: comma, send: Page_Up }
+        - { when: has_menu, accept: period, send: Page_Down }
+  '';
+
   # Clash Verge 的“自动检查更新”是应用自身状态，NixOS 没有对应选项。
   # 这里在 Home Manager activation 时尽力关闭；应用运行时如果从 GUI
   # 重新打开，会以 GUI 状态为准（它会重写 verge.yaml）。

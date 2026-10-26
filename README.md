@@ -56,7 +56,7 @@
 | 系统通道 | `nixos-unstable`（清华 Git 镜像） |
 | 桌面环境 | KDE Plasma 6 + SDDM + Wayland（XWayland） |
 | 音频 | PipeWire（PulseAudio 兼容层） |
-| 输入法 | fcitx5 + Rime，启用 Wayland 前端 |
+| 输入法 | fcitx5 + Rime（雾凇拼音 rime-ice），启用 Wayland 前端 |
 | 引导 | systemd-boot（保留 10 个代际） |
 | 文件系统 | Btrfs（`root` / `home` / `nix` 子卷，zstd 压缩） |
 | 打印 | CUPS + brlaser（Brother DCP-7057） |

@@ -564,6 +564,19 @@ powerprofilesctl set balanced
 当前实际会话是 **Wayland**（`startplasma-wayland`），不是 X11。
 `services.xserver.enable` 只用于 XWayland，不能据此判断会话类型。
 
+输入法：
+
+- fcitx5 + Rime，数据方案为雾凇拼音 `rime-ice`，用户配置在
+  `~/.local/share/fcitx5/rime/default.custom.yaml`。
+- Rime 的词库/方案由 `common/nixos/ime.nix` 的
+  `fcitx5-rime.override { rimeDataPkgs = [ rime-ice rime-data ]; }` 提供。
+- 切换或改了 Rime 配置后，如果方案没生效：
+  - 在 fcitx5-configtool 里重新选择 Rime；
+  - 或删除 `~/.local/share/fcitx5/rime/build` 后执行 `fcitx5-remote -r`，
+    让 Rime 重新部署。
+- 个人常用词可以加到 `~/.local/share/fcitx5/rime/custom_phrase.txt`
+  （Rime 用户词库也会自动学习）。
+
 触摸板：
 
 - 设备：`Synaptics TM3471-020`（I2C/RMI4），内核已识别。
