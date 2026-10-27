@@ -826,6 +826,10 @@ Starship：
   starship --version
   echo $SHELL
   ```
+- 如果用户首次运行 zsh 时生成了 `~/.zshrc`，Home Manager 默认不会覆盖它，
+  会导致 Starship/oh-my-zsh 配置不生效。当前已设置
+  `home-manager.backupFileExtension = "hm-backup"`，切换时会把原文件
+  备份为 `.hm-backup`。Niri/Hyprland 配置文件也受同一机制保护。
 
 ### 5.10 多桌面 / Niri / DMS
 
