@@ -47,6 +47,8 @@ in {
   };
 
   # 该主机启用 drinkto 的 Home Manager 配置。
+  # 首次登录 zsh 时用户可能已生成 ~/.zshrc；保留原文件并让 HM 接管。
+  home-manager.backupFileExtension = "hm-backup";
   home-manager.users.drinkto = {
     imports = [../../users/drinkto];
   };
