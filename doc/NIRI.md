@@ -276,7 +276,15 @@ kitty
 ```
 
 系统用户 shell 已设置为 zsh；Home Manager 负责 `.zshrc`、oh-my-zsh、
-插件和 starship 提示符：
+插件和 starship 提示符。AI 编码工具使用 **OpenCode TUI**：
+
+```bash
+opencode
+```
+
+（Electron 桌面版 `opencode-desktop` 已移除，降低内存占用。）
+
+zsh 配置：
 
 - oh-my-zsh 插件：`git`、`sudo`、`extract`、`colored-man-pages`、`z`、
   `history-substring-search`

@@ -57,6 +57,7 @@
 | 桌面环境 | Niri + DankMaterialShell（默认）+ KDE/GNOME/Hyprland/Denial 可选会话 |
 | 显示管理 | SDDM；会话菜单一键切换，默认 Niri |
 | 终端 | Ghostty + Kitty + zsh + oh-my-zsh + starship |
+| AI 工具 | OpenCode TUI（`opencode`，不使用 Electron 桌面版） |
 | 音频 | PipeWire（PulseAudio 兼容层） |
 | 输入法 | fcitx5 + Rime（雾凇拼音 rime-ice），启用 Wayland 前端 |
 | 引导 | systemd-boot（保留 10 个代际） |
@@ -100,6 +101,17 @@ Niri 的入门教程、默认键位、DMS 使用和故障排查见
 - `Win+Q` 关闭窗口
 - `Win+O` 打开 Overview
 - `Win+1..9` 切换工作区
+
+## OpenCode TUI
+
+已安装 `pkgs.opencode`，不再使用资源占用更高的 `opencode-desktop`：
+
+```bash
+opencode
+```
+
+它运行在终端中，适合和 Ghostty/Kitty + zsh 一起使用；版本更新跟随
+`nix flake update`，不是应用内自更新。
 
 ## 代理
 
@@ -154,19 +166,43 @@ APPIMAGE_EXTRACT_AND_RUN=1 ./SomeApp.AppImage
 ### Flatpak
 
 已启用 `services.flatpak`，并依赖 KDE/GNOME/Niri 会话提供的 XDG Desktop Portal。
-首次使用先添加 Flathub（用户级，不需要 root）：
+默认使用 **上海交大 Flathub 镜像**：
+
+```text
+https://mirror.sjtu.edu.cn/flathub
+```
+
+系统和用户级 remote 都会自动配置；系统服务在 `common/nixos/flatpak.nix`，
+用户级补正在 Home Manager activation 中完成。
+
+百度网盘（`com.baidu.NetDisk`）已安装到用户级 Flatpak：
 
 ```bash
-flatpak remote-add --user --if-not-exists flathub \
-  https://flathub.org/repo/flathub.flatpakrepo
+flatpak list --user --app | grep -i baidu
+flatpak run com.baidu.NetDisk
 
-flatpak install --user flathub <应用 ID>
+# 如需重新安装或更新
+flatpak install --user -y flathub com.baidu.NetDisk
+flatpak update --user com.baidu.NetDisk
+```
+
+其他应用：
+
+```bash
+flatpak remote-ls --user flathub
+flatpak install --user -y flathub <应用 ID>
 flatpak run <应用 ID>
 flatpak update --user
 ```
 
-Flatpak 应用的数据在 `~/.var/app/<应用 ID>/`，桌面菜单由 Flatpak
-自动生成；NixOS 更新不会更新 Flatpak 应用，需要单独 `flatpak update`。
+检查国内源是否生效：
+
+```bash
+flatpak remotes --columns=name,url
+```
+
+Flathub 应用数据在 `~/.var/app/<应用 ID>/`，桌面菜单由 Flatpak 自动生成；
+NixOS 不会更新 Flatpak 应用，需要单独 `flatpak update`。
 
 ## 游戏与独显
 

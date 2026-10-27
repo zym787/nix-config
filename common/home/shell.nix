@@ -43,10 +43,51 @@
     enableZshIntegration = true;
     settings = {
       add_newline = false;
+      format = "$directory$git_branch$git_status$nix_shell$cmd_duration$character";
+      right_format = "$time";
+
       # 当前没有 AWS/GCP 使用场景，关闭对应模块减少提示符噪音。
       aws.disabled = true;
       gcloud.disabled = true;
       line_break.disabled = true;
+
+      directory = {
+        style = "bold cyan";
+        truncation_length = 3;
+        truncate_to_repo = true;
+      };
+
+      git_branch = {
+        style = "bold purple";
+        symbol = " ";
+      };
+
+      git_status = {
+        style = "bold red";
+      };
+
+      nix_shell = {
+        style = "bold yellow";
+        symbol = "❄️ ";
+        format = "[$symbol$state]($style) ";
+      };
+
+      cmd_duration = {
+        min_time = 500;
+        style = "bold yellow";
+        format = "took [$duration]($style) ";
+      };
+
+      character = {
+        success_symbol = "[❯](bold green)";
+        error_symbol = "[❯](bold red)";
+      };
+
+      time = {
+        disabled = false;
+        time_format = "%H:%M";
+        style = "bold dimmed white";
+      };
     };
   };
 }

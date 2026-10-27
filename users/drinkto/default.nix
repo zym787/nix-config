@@ -99,6 +99,19 @@ in {
     Exec=${pkgs.ghostty}/bin/ghostty --gtk-single-instance=true
   '';
 
+  # Flatpak：优先使用上海交大 Flathub 镜像；首次安装百度网盘。
+  # Flatpak 应用本身不在 Nix store 中，这是用户级运行态；activation 只负责
+  # 补齐 remote 和缺失的应用。
+  home.activation.flatpakChinaMirror = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    if [ -x ${pkgs.flatpak}/bin/flatpak ]; then
+      ${pkgs.flatpak}/bin/flatpak remote-add --user --if-not-exists flathub https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo >/dev/null 2>&1 || true
+      ${pkgs.flatpak}/bin/flatpak remote-modify --user --url=https://mirror.sjtu.edu.cn/flathub flathub >/dev/null 2>&1 || true
+      if ! ${pkgs.flatpak}/bin/flatpak list --user --app --columns=application 2>/dev/null | grep -qx 'com.baidu.NetDisk'; then
+        ${pkgs.flatpak}/bin/flatpak install --user -y flathub com.baidu.NetDisk >/dev/null 2>&1 || true
+      fi
+    fi
+  '';
+
   # Clash Verge 的“自动检查更新”是应用自身状态，NixOS 没有对应选项。
   # 这里在 Home Manager activation 时尽力关闭；应用运行时如果从 GUI
   # 重新打开，会以 GUI 状态为准（它会重写 verge.yaml）。

@@ -764,15 +764,31 @@ Flatpak：
 
 ```bash
 flatpak --version
-flatpak remotes
+flatpak remotes --columns=name,url
+systemctl status flatpak-flathub-cn.service --no-pager
 systemctl --user status xdg-desktop-portal xdg-desktop-portal-kde
 ```
 
-首次添加 Flathub（用户级，不需要 root）：
+默认使用上海交大 Flathub 镜像：
+
+```text
+https://mirror.sjtu.edu.cn/flathub
+```
+
+系统级 remote 由 `flatpak-flathub-cn.service` 维护；用户级 remote 由
+Home Manager activation 修正。需要手工补一次时：
 
 ```bash
 flatpak remote-add --user --if-not-exists flathub \
-  https://flathub.org/repo/flathub.flatpakrepo
+  https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo
+flatpak remote-modify --user --url=https://mirror.sjtu.edu.cn/flathub flathub
+```
+
+百度网盘已安装为用户级 Flatpak：
+
+```bash
+flatpak list --user --app | grep -i baidu
+flatpak run com.baidu.NetDisk
 ```
 
 - Flatpak 应用由 Flatpak 自己更新，NixOS 不会代管：
@@ -784,7 +800,34 @@ flatpak remote-add --user --if-not-exists flathub \
   对应的 portal 实现。
 - 不要把 Flathub 的安装写进 `environment.systemPackages`，两者是不同体系。
 
-### 5.9 多桌面 / Niri / DMS
+### 5.9 OpenCode / Starship
+
+OpenCode：
+
+- 已安装 **TUI** 包 `opencode`，移除了 Electron 的 `opencode-desktop`，
+  降低待机和内存占用。
+- 终端运行：
+  ```bash
+  opencode
+  ```
+- 配置/会话数据属于用户目录，不能提交到仓库；升级跟随 nixpkgs。
+
+Starship：
+
+- `common/home/shell.nix` 配置了目录、git、Nix shell、命令耗时和右侧时间。
+- zsh + oh-my-zsh 负责插件，starship 负责提示符。
+- 改完执行：
+  ```bash
+  home-manager switch --flake ~/Documents/nixos#drinkto
+  # 或 sudo nixos-rebuild switch --flake ~/Documents/nixos#e490
+  ```
+- 检查：
+  ```bash
+  starship --version
+  echo $SHELL
+  ```
+
+### 5.10 多桌面 / Niri / DMS
 
 对应文件：
 

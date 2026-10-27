@@ -74,7 +74,8 @@
     cc-switch
     codex
     claude-monitor
-    opencode-desktop
+    # TUI 版，避免 Electron 桌面端的额外资源占用。
+    opencode
   ];
 
   # 桌面/终端/Wayland 工具（当前 X11 会话也用得到终端和部分工具）
