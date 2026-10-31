@@ -15,9 +15,8 @@
   # 日常与文件管理
   core = with pkgs; [
     fastfetch
-    nnn
     yazi
-    kdePackages.dolphin
+    # kdePackages.dolphin
     zip
     xz
     unzip
@@ -28,8 +27,6 @@
     yq-go
     eza
     fzf
-    rofi
-    tofi
   ];
 
   # 网络诊断与传输
@@ -73,8 +70,8 @@
     cherry-studio
     cc-switch
     codex
+    claude-code
     claude-monitor
-    # TUI 版，避免 Electron 桌面端的额外资源占用。
     opencode
   ];
 

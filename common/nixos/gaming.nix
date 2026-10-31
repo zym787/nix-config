@@ -12,6 +12,7 @@
       # 如果 Big Picture 网页视图滚动出现乱码，可在 Steam 设置中关闭
       # “GPU accelerated rendering in web views”，或在 steamArgs 加
       # "-cef-disable-gpu"（会牺牲一点 UI 流畅度）。
+      # 这里需要考虑使用强制FSR以低分辨率渲染再超分 `-F fsr`
       args = ["-W" "1920" "-H" "1080" "-f" "-r" "60"];
 
       # Steam 桌面版 Big Picture 没有 Steam Deck 的“性能”菜单；
