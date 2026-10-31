@@ -18,6 +18,7 @@
 | 平台 | `x86_64-linux` |
 | 桌面 | Niri + DMS（默认）/ KDE Plasma / GNOME / Hyprland / Denial，统一 SDDM |
 | 配置方式 | Flake + Home Manager（system module 集成） |
+| 已知问题 | 2026-10-31 审查发现若干问题，整改路线见 `doc/OPTIMIZATION.md` |
 
 ## 支持平台
 
@@ -34,7 +35,7 @@
 | 未配置 | `a200i-dk` | SBC（sbc-home） | 推理服务器（计划） |
 | 未配置 | `bikini` | 桌面 PC（pc-main） | 桌面机（计划） |
 
-> 新增设备时按 `doc/OPTIMIZATION.md` P2-4 操作：复制 `hosts/e490/`。
+> 新增设备时按 `doc/OPTIMIZATION.md` 第八节操作：复制 `hosts/e490/`。
 
 ## 用户
 
@@ -47,7 +48,7 @@
 | 未配置 | `sega` | 家庭成员（计划） |
 
 > 同一设备上的多个账号用后缀区分用途，如 `drinkto` / `drinkto-dev` / `drinkto-game`。
-> 新增用户时按 `doc/OPTIMIZATION.md` P2-4 操作：复制 `users/drinkto/`。
+> 新增用户时按 `doc/OPTIMIZATION.md` 第八节操作：复制 `users/drinkto/`。
 
 ## 技术栈
 
@@ -475,7 +476,7 @@ ls ~/.config/autostart/ | grep -i 软件名
 - `doc/ARCHITECTURE.md`：架构设计 + 编码规则（改配置前必读）
 - `doc/NIRI.md`：Niri + DMS 初学者教程与默认快捷键
 - `doc/MAINTENANCE.md`：维护手册、上手指南、故障排查与共性经验
-- `doc/OPTIMIZATION.md`：迁移记录与长期维护
+- `doc/OPTIMIZATION.md`：已知问题清单、整改路线（P0–P4）与迁移记录
 - NixOS 选项搜索：https://search.nixos.org/options
 - Home Manager 选项：https://nix-community.github.io/home-manager/options.xhtml
 - NixOS Wiki：https://wiki.nixos.org

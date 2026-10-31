@@ -69,6 +69,8 @@
 | 共享用户 | `common/home/` | 所有用户共享的用户基础 | 个人化内容 |
 | 可选模块 | `modules/` | Steam、代理、编辑器等按需启用的功能；当前未创建 | 基础系统必备配置 |
 
+> 待整改：`stateVersion` 按定义应随主机/用户走，计划在 P2 移到 `hosts/`、`users/`（A2）；`common/` 里混有 e490 专属配置（A1），`modules/` 计划在 P2 建立。详见 `doc/OPTIMIZATION.md`。
+
 ## 4. 命名规则
 
 ### 4.1 目录与文件

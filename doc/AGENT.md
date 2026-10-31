@@ -8,8 +8,8 @@
 - 当前主机：`e490`；当前用户：`drinkto`
 - 构建：`sudo nixos-rebuild build --flake .#e490`
 - 切换：`sudo nixos-rebuild switch --flake .#e490`
-- `modules/` 目前未创建；出现真正按需启用的模块时再建
-- 迁移记录见 `doc/OPTIMIZATION.md`
+- `modules/` 目前未创建；计划在整改 P2 建立（`my.*` 开关选项），见 `doc/OPTIMIZATION.md` 第五节
+- 已知问题与整改路线见 `doc/OPTIMIZATION.md`；整改时按阶段执行，完成后更新问题清单状态
 
 ## 修改配置时的硬性规则
 

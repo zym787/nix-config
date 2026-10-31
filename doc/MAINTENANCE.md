@@ -1,7 +1,7 @@
 # NixOS 维护手册
 
 > 面向本仓库的日常维护、上手操作和故障排查。
-> 改配置前先读 `doc/ARCHITECTURE.md`；迁移历史见 `doc/OPTIMIZATION.md`。
+> 改配置前先读 `doc/ARCHITECTURE.md`；已知问题与整改计划见 `doc/OPTIMIZATION.md`。
 
 ---
 
@@ -985,6 +985,6 @@ grep -rn "TODO\|FIXME" --include="*.nix" .
 
 - `doc/ARCHITECTURE.md`：架构与编码规则
 - `doc/NIRI.md`：Niri + DMS 初学者教程、键位与故障排查
-- `doc/OPTIMIZATION.md`：迁移记录与长期维护
+- `doc/OPTIMIZATION.md`：已知问题清单、整改路线（P0–P4）与迁移记录
 - `doc/GUIDE.md`：设计参考
 - `doc/AGENT.md`：AI agent 操作指引
