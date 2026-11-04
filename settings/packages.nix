@@ -115,6 +115,7 @@
     netease-cloud-music-gtk
     waylyrics
     logisim-evolution
+    piliplus
   ];
 
   # 浏览器/即时通讯
