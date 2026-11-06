@@ -77,6 +77,15 @@
 GNOME、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
 `common/nixos/desktop.nix`，需要时手动取消注释并 rebuild。
 
+每套桌面的启用步骤、键位、配置位置和故障排查见：
+
+- [桌面配置总览](doc/desktops/README.md)
+- [KDE Plasma](doc/desktops/kde.md)
+- [GNOME](doc/desktops/gnome.md)
+- [Niri + DMS](doc/desktops/niri.md)
+- [Hyprland](doc/desktops/hyprland.md)
+- [Steam gamescope](doc/desktops/steam.md)
+
 ## OpenCode TUI
 
 已安装 `pkgs.opencode`，不再使用资源占用更高的 `opencode-desktop`：
@@ -464,6 +473,8 @@ ls ~/.config/autostart/ | grep -i 软件名
 
 ## 相关文档
 
+- `doc/desktops/README.md`：KDE/GNOME/Niri/Hyprland/Steam 桌面配置总览
+- `doc/desktops/*.md`：各桌面的启用、键位、配置和故障排查
 - `doc/ARCHITECTURE.md`：架构设计 + 编码规则（改配置前必读）
 - `doc/MAINTENANCE.md`：维护手册、上手指南、故障排查与共性经验
 - `doc/OPTIMIZATION.md`：已知问题清单、整改路线（P0–P4）与迁移记录

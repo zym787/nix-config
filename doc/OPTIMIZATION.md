@@ -1,8 +1,17 @@
 # 优化与整改路线
 
-> **状态（2026-10-31）**：单文件 → `hosts/` + `users/` + `common/` + `settings/` 的迁移
-> 已于 2026-10-24 完成（记录见第六节）。本文现在用于跟踪 **2026-10-31 配置审查**发现的
-> 问题和整改计划。每完成一项，在第一节的问题清单里把状态改成 ✅，并写上提交号。
+> **状态（2026-11-06）**：当前只默认启用 **KDE Plasma + Steam**；GNOME/Niri/Hyprland
+> 通过注释开关手动启用。已移除 Denial、Wayland 冗余组件和 nixpkgs 版 Obsidian，
+> 改用官方 AppImage；OpenCode 改为 TUI；Flatpak 使用国内镜像并安装百度网盘。
+> 桌面细节见 `doc/desktops/`。
+>
+> **历史状态（2026-10-31）**：单文件 → `hosts/` + `users/` + `common/` + `settings/` 的迁移
+> 已于 2026-10-24 完成（记录见第六节）。本文继续保留各阶段整改记录，已完成项在
+> 对应章节标注。
+>
+> 注意：后半部分 P0/P1/P2 的代码片段是**历史整改方案**，不代表当前实现。当前桌面
+> 配置以 `common/nixos/desktop.nix`、`users/drinkto/default.nix` 和
+> `doc/desktops/` 为准。
 
 ---
 
@@ -17,7 +26,7 @@
 | A1 | `common/` 里有 e490 专属硬件配置（双显卡、24G 内存调优、1080p gamescope、DCP-7057 驱动），名义上"共享"，实际只适用于 e490 | `common/nixos/{graphics,performance,gaming,printing}.nix` | 🟡 | P2 | ⬜ |
 | A2 | `stateVersion` 放在全局 `settings` 里，新主机和新用户会错误继承 `25.05` | `settings/default.nix:7` | 🔴 | P2 | ⬜ |
 | A3 | `settings` 通过 `specialArgs` 传入，不是模块选项：不能按主机覆盖，也没有类型检查 | `flake.nix`、`settings/` | 🟡 | P2 | ⬜ |
-| A4 | 镜像源列表和 denial 公钥在 `flake.nix` 的 `nixConfig` 与 `settings`/`core.nix` 各写了一份 | `flake.nix:93`、`settings/default.nix:13`、`core.nix:26` | 🟢 | P2 | ⬜ |
+| A4 | 镜像源列表和 denial 公钥在 `flake.nix` 的 `nixConfig` 与 `settings`/`core.nix` 各写了一份 | 已移除 Denial cache/公钥；镜像源仍分 flake/系统两处 | 🟢 | P2 | ◐ |
 | A5 | 没有可开关的模块层，主机入口无条件 import 全部 16 个 common 模块 | `hosts/e490/default.nix` | 🟡 | P2 | ⬜ |
 | A6 | 别名 `nrs`/`nrb` 写死 `#e490`；`trusted-users` 写死 `drinkto`；niri 写死 `eDP-1` 缩放 | `common/home/shell.nix:30`、`core.nix:23`、`users/drinkto/niri.nix:37` | 🟡 | P2 | ⬜ |
 
@@ -25,11 +34,11 @@
 
 | # | 问题 | 位置 | 严重 | 阶段 | 状态 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| D1 | Plasma、GNOME、Hyprland、niri 同时启用：闭包大；askpass 冲突只能靠 `mkForce` 压住；portal 有 gnome/gtk/kde 三套，`gtk` 还重复；gnome-keyring 和 kwallet 同时启用 | `common/nixos/desktop-sessions.nix` | 🟡 | P1 | ⬜ |
-| D2 | `plasma6.enable` 写了两次 | `desktop.nix:7`、`desktop-sessions.nix:20` | 🟢 | P0 | ⬜ |
-| D3 | 注释过时："桌面环境：KDE Plasma 6"、"日常仍默认 Plasma"，实际默认会话是 niri；"xserver 是为了 XWayland"的说法不对 | `desktop.nix:1,3`、`gaming.nix:8` | 🟢 | P0 | ⬜ |
-| D4 | `services.libinput` 只对 X11 生效，niri/KWin/GNOME 下都不起作用，niri 里又重复配置了触控板 | `desktop.nix:12-30` | 🟢 | P1 | ⬜ |
-| D5 | niri 的 KDL 配置是纯字符串，写错要到登录才发现 | `users/drinkto/niri.nix` | 🟡 | P3 | ⬜ |
+| D1 | Plasma、GNOME、Hyprland、niri 同时启用：闭包大；askpass 冲突只能靠 `mkForce` 压住；portal 有 gnome/gtk/kde 三套，`gtk` 还重复；gnome-keyring 和 kwallet 同时启用 | 已移除 `desktop-sessions.nix`；默认仅 KDE+Steam | 🟡 | P1 | ✅ |
+| D2 | `plasma6.enable` 写了两次 | 已合并到 `desktop.nix` | 🟢 | P0 | ✅ |
+| D3 | 注释过时："桌面环境：KDE Plasma 6"、"日常仍默认 Plasma"，实际默认会话是 niri；"xserver 是为了 XWayland"的说法不对 | 桌面状态与注释已按 KDE 默认重写 | 🟢 | P0 | ✅ |
+| D4 | `services.libinput` 只对 X11 生效，niri/KWin/GNOME 下都不起作用，niri 里又重复配置了触控板 | 保留为 X11/KDE 兜底；可选 Niri 已独立配置 | 🟢 | P1 | ◐ |
+| D5 | niri 的 KDL 配置是纯字符串，写错要到登录才发现 | 可选 Niri 配置保留，启用前需 `niri validate` | 🟡 | P3 | ◐ |
 
 ### 1.3 包与功能
 
@@ -38,7 +47,7 @@
 | P1 | `wireshark` 放在 `home.packages`，但没启用 `programs.wireshark`，用户不在 `wireshark` 组，非 root 无法抓包 | `settings/packages.nix:135` | 🔴 | P0 | ⬜ |
 | P2 | `localsend` 装了，但防火墙没放行 53317 端口，只能发不能收 | `settings/packages.nix:42` | 🔴 | P0 | ⬜ |
 | P3 | 字体回退：emoji 第一位是文本字体 `Maple Mono CN`；sans/serif 第一位是等宽字体 `JetBrainsMono Nerd Font`，界面正文会变等宽 | `common/nixos/fonts.nix:28-51` | 🔴 | P0 | ⬜ |
-| P4 | `packages.desktop` 大多已被 DMS 替代：waybar/mako/fuzzel/swaylock/hyprlock/swayidle/wlogout/swaybg/waypaper/wlsunset；`uwsm`、`zsh` 由系统模块提供 | `settings/packages.nix:79-94` | 🟡 | P1 | ⬜ |
+| P4 | `packages.desktop` 大多已被 DMS 替代：waybar/mako/fuzzel/swaylock/hyprlock/swayidle/wlogout/swaybg/waypaper/wlsunset；`uwsm`、`zsh` 由系统模块提供 | 已移除上述 Wayland 冗余组件 | 🟡 | P1 | ✅ |
 | P5 | 无效或重复的包：`polkit`（用户包里没意义）、`gnused/gnutar/gawk/which`（基础环境已有）、`vulkan-tools`/`mangohud` 各装两处、`vulkan-loader` 放在 `hardware.graphics.extraPackages`（那里应该放驱动） | `packages.nix`、`graphics.nix`、`gaming.nix` | 🟢 | P1 | ⬜ |
 | P6 | SSH 公钥配了，但 `services.openssh.enable = false`，两者矛盾 | `hosts/e490/default.nix:41` | 🟡 | P0 | ⬜ |
 
@@ -54,8 +63,8 @@
 
 | # | 问题 | 位置 | 严重 | 阶段 | 状态 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| E1 | `dms`/`denial` 用 `?rev=` 写死，`nix flake update` 不会更新它们，也没写锁定原因 | `flake.nix:19,25` | 🟡 | P1 | ⬜ |
-| E2 | denial 没有 follows，lock 里共三份 nixpkgs；`programs.denial.enable = false`，但模块仍无条件 import，每次 eval 都要拉源码 | `flake.nix:24`、`desktop-sessions.nix:11` | 🟡 | P1 | ⬜ |
+| E1 | `dms`/`denial` 用 `?rev=` 写死，`nix flake update` 不会更新它们，也没写锁定原因 | Denial 已移除；DMS 仍固定 revision 作为可选 Niri/Hyprland 依赖 | 🟡 | P1 | ◐ |
+| E2 | denial 没有 follows，lock 里共三份 nixpkgs；`programs.denial.enable = false`，但模块仍无条件 import，每次 eval 都要拉源码 | 已移除 Denial 输入/module/cache | 🟡 | P1 | ✅ |
 | E3 | CI 只做 eval，不 build；GitHub runner 在海外，却优先走 TUNA 镜像；每个分支都触发 | `.github/workflows/flake_evaltests.yml` | 🟡 | P3 | ⬜ |
 | E4 | pre-commit 执行 `nix fmt` 后 `git add`，会把没暂存的改动也一起提交 | `.githooks/pre-commit:36` | 🔴 | P0 | ⬜ |
 | E5 | `wallpapers/` 约 9MB，没有代码引用；`checks.formatting` 用 `${./.}`，每次都把整个仓库复制进 store | `wallpapers/`、`flake.nix:81` | 🟢 | P1 | ⬜ |
@@ -192,34 +201,31 @@ services.openssh = {
 
 ## 四、P1：瘦身（去重、减负）
 
-### P1-1. 桌面会话改成开关（D1）
+### P1-1. 桌面会话改成注释开关（已完成）
 
-在 `desktop-sessions.nix` 里定义开关，默认只启用 niri 和 Plasma：
+当前不再使用 `desktop-sessions.nix`：
 
-```nix
-{config, lib, inputs, pkgs, ...}: let
-  cfg = config.my.desktop;
-in {
-  options.my.desktop = {
-    gnome.enable = lib.mkEnableOption "GNOME 会话";
-    hyprland.enable = lib.mkEnableOption "Hyprland 会话";
-  };
+- 默认只启用 KDE Plasma 和 Steam；
+- GNOME、Niri + DMS、Hyprland 以注释开关保留在
+  `common/nixos/desktop.nix`；
+- Niri/Hyprland 的 Home Manager imports 和 DMS 配置在
+  `users/drinkto/default.nix` 中同样是注释；
+- 启用时手动取消注释并 rebuild，不做运行时一键切换；
+- 完整操作见 `doc/desktops/README.md`。
 
-  config = lib.mkMerge [
-    { programs.niri.enable = true; services.desktopManager.plasma6.enable = true; }
-    (lib.mkIf cfg.gnome.enable { services.desktopManager.gnome.enable = true; })
-    (lib.mkIf cfg.hyprland.enable { programs.hyprland = { enable = true; withUWSM = true; }; })
-  ];
-}
+这样可以减少默认闭包、portal 冲突、SDDM 会话数量和 Home Manager
+activation 失败点。
+
+### P1-2. 精简 `packages.desktop`（已完成）
+
+已只保留 `kitty`、`ghostty`、`zsh`。已删除：
+
+```text
+waybar mako waypaper hyprlock swaybg swaylock-effects
+swayidle wlogout wlsunset fuzzel uwsm rofi tofi
 ```
 
-- 关掉 GNOME 后，试着删除 `programs.ssh.askPassword = lib.mkForce ...`，确认是否还需要。
-- `users/drinkto/hyprland.nix` 改成按 `osConfig.my.desktop.hyprland.enable` 条件生成（HM 模块可以通过 `osConfig` 读取系统配置）。
-- 对比前后闭包大小：`nix path-info -Sh ./result`。
-
-### P1-2. 精简 `packages.desktop`（P4）
-
-只保留 `kitty`、`ghostty`，其余删除。如果 Hyprland 会话还要用其中某个组件，把它放进 Hyprland 开关里。
+KDE 默认会话不再依赖这些额外组件；可选桌面需要时再单独加回。
 
 ### P1-3. 清理无效和重复的包（P5）
 
@@ -245,11 +251,12 @@ assertions = [{
 }];
 ```
 
-### P1-6. Flake 输入整理（E1、E2）
+### P1-6. Flake 输入整理（已完成）
 
-- `dms`/`denial` 如果没有必须锁定的理由，去掉 `?rev=`，交给 `flake.lock` 锁定；如果必须锁定，在注释里写明原因和升级步骤。
-- denial 默认不启用：把 `imports = [inputs.denial.nixosModules.denial]` 移到 `my.desktop.denial.enable` 的说明里，需要时再加回来（模块 import 不能写在 `mkIf` 里）。也可以先接受 eval 开销，只在注释里说明。
-- 如果保留 denial 但不追求命中 cachix，可以加 `inputs.nixpkgs.follows = "nixpkgs"` 减少 nixpkgs 份数（代价是要本地编译 Flutter）。
+- 已移除 DenialWM 的 flake 输入、NixOS module、Cachix substituter 和公钥；
+- 保留 `dms` 输入仅供可选的 Niri/Hyprland 使用，默认不导入、不构建；
+- DMS 输入保持固定 revision，升级时手动更新并在可选桌面下验证；
+- 减少默认闭包和外部供应链，避免 Flutter engine 首次构建拖慢系统构建。
 
 ### P1-7. 壁纸与检查源（E5）
 
@@ -342,7 +349,10 @@ modules/
 
 ### P2-4. 镜像源只保留一处（A4）
 
-`flake.nix` 的 `nixConfig` 必须是字面量，不能 import 别的文件。所以保留 `settings.substituters` 作为系统级唯一来源，`nixConfig` 只留 denial cachix（以及确实需要的条目），并在注释里说明两者的分工。也可以干脆删除 `nixConfig`：系统级 substituters 已经对本机生效，`nixConfig` 只对 untrusted 用户和 CI 有意义。
+`flake.nix` 的 `nixConfig` 必须是字面量，不能 import 别的文件。当前保留
+`settings.substituters` 作为系统级主要来源；`nixConfig` 只保留镜像和官方源兜底。
+Denial cachix 和公钥已随 Denial 输入一起移除。`nixConfig` 只对 untrusted 用户和
+CI 有额外意义。
 
 **P2 完成标准**：`diff-closures` 只有预期的变化；新建 `hosts/_template/`，复制成一台假主机后能通过 `nix eval`（不需要真实硬件）。
 
@@ -350,29 +360,17 @@ modules/
 
 ## 六、P3：声明式与可靠性
 
-### P3-1. Flatpak 声明式（S1）
+### P3-1. Flatpak 国内源与应用（已实现）
 
-引入 [nix-flatpak](https://github.com/gmodena/nix-flatpak)：
+当前不引入额外 flake，使用 NixOS `services.flatpak`：
 
-```nix
-# flake.nix inputs
-nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-```
+- 系统级 `flatpak-flathub-cn.service` 维护上海交大 Flathub 镜像；
+- 用户级 remote 由 `home.activation.flatpakChinaMirror` 修正；
+- 百度网盘 `com.baidu.NetDisk` 安装到用户级 Flatpak；
+- Flatpak 应用不由 NixOS 管理，更新使用 `flatpak update --user`；
+- 详见 `doc/MAINTENANCE.md` 5.8。
 
-```nix
-# users/drinkto/default.nix
-imports = [inputs.nix-flatpak.homeManagerModules.nix-flatpak];
-services.flatpak = {
-  remotes = [{
-    name = "flathub";
-    location = "https://mirror.sjtu.edu.cn/flathub/flathub.flatpakrepo";
-  }];
-  packages = ["com.baidu.NetDisk"];
-  update.auto.enable = false;
-};
-```
-
-然后删除 `home.activation.flatpakChinaMirror`。系统级 `flatpak-flathub-cn` 服务如果只给用户级安装用，也可以删除。
+后续如果改用 `nix-flatpak`，再把 activation 和服务替换成声明式 remotes/packages。
 
 ### P3-2. Clash Verge 自更新（S2）
 
@@ -473,10 +471,12 @@ checks.${system}.niri-config = pkgs.runCommand "niri-validate" {} ''
 2. **SBC `a200i-dk`**：需要在 `flake.nix` 引入 `aarch64-linux`，`mkHost` 改为由 host 声明 `system`；考虑交叉编译或远程构建。
 3. **密钥管理（M5）**：第一个密钥入仓前接入 sops-nix（age 密钥由 SSH host key 派生）。在此之前，`.gitignore` 继续兜底。
 4. **异地备份**：restic 定时备份 `/home/drinkto` 关键目录。
-5. **文档压缩（E6）**：
-   - 保留 `README.md`、`ARCHITECTURE.md`（含编码规则）、`NIRI.md`、`MAINTENANCE.md`（只保留排障部分）、本文件。
-   - `GUIDE.md` 的调研内容并入 ARCHITECTURE 的"设计参考"一节，或直接删除。
-   - 本文件在 P0–P3 完成后，把第一到第六节压缩成一张"已完成"表格。
+5. **文档结构（E6，已更新）**：
+   - 保留 `README.md`、`ARCHITECTURE.md`、`MAINTENANCE.md`、本文件；
+   - 桌面文档集中在 `doc/desktops/`：
+     `README.md`、`kde.md`、`gnome.md`、`niri.md`、`hyprland.md`、`steam.md`；
+   - `GUIDE.md` 保留为架构设计参考，桌面操作不再写进 GUIDE；
+   - 后续整改完成后，可再把本文件的历史章节压缩成“已完成”表格。
 
 ---
 

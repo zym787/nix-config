@@ -30,7 +30,10 @@
 │   # 计划中：laptop-work/、sbc-home/ 等按同样结构新增
 ├── users/                        # 按“人”组织，与 hosts 正交
 │   └── drinkto/                  # 当前唯一用户
-│       └── default.nix
+│       ├── default.nix
+│       ├── niri.nix              # 可选 Niri + DMS 配置（默认不 import）
+│       ├── hyprland.nix          # 可选 Hyprland 配置（默认不 import）
+│       └── obsidian-appimage.nix # Obsidian 官方 AppImage 启动器
 │   # 计划中：drinkto-dev/、sega/ 等
 ├── common/
 │   ├── nixos/                    # 所有主机共享的系统级配置
@@ -38,7 +41,7 @@
 │   │   ├── network.nix
 │   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
-│   │   ├── desktop.nix           # Wayland/XWayland / SDDM / Plasma / libinput
+│   │   ├── desktop.nix           # SDDM / Plasma / libinput；可选桌面注释开关
 │   │   ├── graphics.nix          # Intel/AMD GPU、32-bit Vulkan、switcheroo
 │   │   ├── gaming.nix            # Steam / GameMode / MangoHud / gamescope
 │   │   ├── audio.nix             # PipeWire
@@ -50,12 +53,21 @@
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块
 │       ├── git.nix
-│       └── shell.nix             # starship
+│       └── shell.nix             # zsh / oh-my-zsh / starship
+├── doc/
+│   ├── desktops/                 # KDE/GNOME/Niri/Hyprland/Steam 分桌面文档
+│   ├── ARCHITECTURE.md
+│   ├── MAINTENANCE.md
+│   └── ...
 ├── modules/                      # 可选；当前未创建，需要时再建
 │   ├── nixos/
 │   └── home-manager/
 └── wallpapers/
 ```
+
+> **当前桌面状态**：KDE Plasma 为默认会话，Steam gamescope 始终保留；
+> GNOME/Niri/Hyprland 默认关闭，通过 `desktop.nix` 和用户 imports 的注释开关
+> 手动启用。完整说明见 `doc/desktops/README.md`。
 
 ## 3. 分层职责
 

@@ -27,10 +27,11 @@
 flake.nix                  inputs / outputs 发现 / formatter / nixConfig
 settings/                  stateVersion、substituters、insecure 包、包分组
 hosts/e490/                主机入口、硬件配置、hostName
-users/drinkto/             个人 Home Manager 配置
+users/drinkto/             个人 Home Manager 配置（含可选 Niri/Hyprland、Obsidian AppImage）
 common/nixos/              所有主机共享的系统配置
 common/home/               所有用户共享的用户配置
-doc/                       架构、迁移记录、本维护手册
+doc/                       架构、桌面配置、迁移记录、本维护手册
+doc/desktops/              KDE/GNOME/Niri/Hyprland/Steam 分桌面文档
 ```
 
 新增内容放哪里：
@@ -830,6 +831,40 @@ Starship：
   `home-manager.backupFileExtension = "hm-backup"`，切换时会把原文件
   备份为 `.hm-backup`。Niri/Hyprland 配置文件也受同一机制保护。
 
+### 5.10 桌面配置
+
+当前默认：
+
+```text
+KDE Plasma（SDDM 默认会话）
+Steam（gamescope + Big Picture）
+```
+
+GNOME、Niri + DMS、Hyprland 默认关闭，开关以注释形式保留：
+
+- `common/nixos/desktop.nix`
+- `users/drinkto/default.nix`（Niri/Hyprland 的 HM imports）
+
+切换步骤：
+
+```bash
+# 取消目标桌面的注释
+sudo nixos-rebuild build --flake .#e490
+sudo nixos-rebuild switch --flake .#e490
+# 注销后在 SDDM 会话菜单选择
+```
+
+详细文档：
+
+- [桌面配置总览](desktops/README.md)
+- [KDE](desktops/kde.md)
+- [GNOME](desktops/gnome.md)
+- [Niri + DMS](desktops/niri.md)
+- [Hyprland](desktops/hyprland.md)
+- [Steam](desktops/steam.md)
+
+不要在运行时同时启动多个 compositor；切换桌面统一走注销/SDDM。
+
 ---
 
 ## 6. 之前问题的共性经验
@@ -907,6 +942,8 @@ grep -rn "TODO\|FIXME" --include="*.nix" .
 
 ## 8. 相关文档
 
+- `doc/desktops/README.md`：桌面配置总览
+- `doc/desktops/kde.md`、`gnome.md`、`niri.md`、`hyprland.md`、`steam.md`
 - `doc/ARCHITECTURE.md`：架构与编码规则
 - `doc/OPTIMIZATION.md`：已知问题清单、整改路线（P0–P4）与迁移记录
 - `doc/GUIDE.md`：设计参考

@@ -1,5 +1,9 @@
 # 桌面环境：KDE Plasma 6 + SDDM + Wayland（XWayland 兼容 X11 应用）。
-{...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   # 实际会话是 Wayland；services.xserver 仍开启是为了 XWayland。
   # 如需强制 X11，请在 SDDM 登录界面选择 “Plasma (X11)”。
   services.xserver.enable = true;
@@ -8,6 +12,9 @@
 
   # 只保留 KDE 作为默认桌面；Steam 会话由 gaming.nix 提供。
   services.displayManager.defaultSession = "plasma";
+
+  # 如果以后启用 GNOME，GNOME 与 KDE 会争抢 SSH askpass；统一使用 KDE 实现。
+  programs.ssh.askPassword = lib.mkForce "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
 
   # 可选桌面会话（默认注释）：
   # 取消对应块后执行 sudo nixos-rebuild switch --flake .#e490。

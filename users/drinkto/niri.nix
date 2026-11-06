@@ -10,7 +10,7 @@
   kitty = "${pkgs.kitty}/bin/kitty";
 in {
   xdg.configFile."niri/config.kdl".text = ''
-    // Niri + DMS 入门配置。完整键位见 doc/NIRI.md。
+    // Niri + DMS 配置。完整说明见 doc/desktops/niri.md。
     spawn-at-startup "${dms}" "run"
 
     prefer-no-csd

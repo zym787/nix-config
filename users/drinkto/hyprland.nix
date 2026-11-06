@@ -1,4 +1,4 @@
-# Hyprland 尝鲜配置：只提供最小可用键位，主会话仍是 niri。
+# Hyprland 可选配置：默认不导入，启用说明见 doc/desktops/hyprland.md。
 {
   config,
   pkgs,
