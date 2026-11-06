@@ -73,6 +73,7 @@
     claude-code
     claude-monitor
     opencode
+    opencode-desktop
   ];
 
   # 桌面/终端/Wayland 工具（当前 X11 会话也用得到终端和部分工具）
