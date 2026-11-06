@@ -10,22 +10,22 @@
   packages = settings.packages {inherit pkgs;};
 in {
   # 所有用户共享的 git/starship/home-manager 基础。
-  # DMS 的 Home Manager 模块负责安装 dms/quickshell 及依赖。
+  # 可选会话默认不导入；需要 Niri + DMS 时取消下面三行注释，
+  # 并在 common/nixos/desktop.nix 取消 Niri 的系统级开关。
   imports = [
     ../../common/home
-    inputs.dms.homeModules.dank-material-shell
-    ./niri.nix
-    ./hyprland.nix
+    ./obsidian-appimage.nix
+    # inputs.dms.homeModules.dank-material-shell
+    # ./niri.nix
+    # ./hyprland.nix
   ];
 
-  # DMS 由 niri 的 spawn-at-startup 启动，不额外启用 systemd 服务，
-  # 避免和 niri 会话目标重复启动。
-  programs.dank-material-shell = {
-    enable = true;
-    enableSystemMonitoring = true;
-    # 当前不使用日历集成，避免引入 khal（其 man 输出在该版本构建失败）。
-    enableCalendarEvents = false;
-  };
+  # 可选：Niri + DMS。与上面的 import 一起取消注释。
+  # programs.dank-material-shell = {
+  #   enable = true;
+  #   enableSystemMonitoring = true;
+  #   enableCalendarEvents = false;
+  # };
 
   home = {
     username = "drinkto";

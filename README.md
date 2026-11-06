@@ -16,7 +16,7 @@
 | 最近更新 | 见顶部 `last commit` 徽章 |
 | 系统 | NixOS `nixos-unstable` |
 | 平台 | `x86_64-linux` |
-| 桌面 | Niri + DMS（默认）/ KDE Plasma / GNOME / Hyprland / Denial，统一 SDDM |
+| 桌面 | KDE Plasma + SDDM；Steam 游戏会话；可选 Niri/GNOME/Hyprland（默认关闭） |
 | 配置方式 | Flake + Home Manager（system module 集成） |
 | 已知问题 | 2026-10-31 审查发现若干问题，整改路线见 `doc/OPTIMIZATION.md` |
 
@@ -55,8 +55,8 @@
 | 项目 | 值 |
 | :--- | :--- |
 | 系统通道 | `nixos-unstable`（清华 Git 镜像） |
-| 桌面环境 | Niri + DankMaterialShell（默认）+ KDE/GNOME/Hyprland/Denial 可选会话 |
-| 显示管理 | SDDM；会话菜单一键切换，默认 Niri |
+| 桌面环境 | KDE Plasma 6 + SDDM；可选 Niri/GNOME/Hyprland 注释开关 |
+| 显示管理 | SDDM；默认 Plasma，另保留 Steam 游戏会话 |
 | 终端 | Ghostty + Kitty + zsh + oh-my-zsh + starship |
 | AI 工具 | OpenCode TUI（`opencode`，不使用 Electron 桌面版） |
 | 音频 | PipeWire（PulseAudio 兼容层） |
@@ -73,35 +73,9 @@
 
 ## 桌面会话
 
-默认登录 **Niri + DMS**，同时保留：
-
-| 会话 | 用途 |
-| :--- | :--- |
-| Niri + DMS | 默认，键盘/滚动平铺，日常主会话 |
-| KDE Plasma | 兼容性优先，完整 KDE 桌面 |
-| GNOME | GNOME 尝鲜 |
-| Hyprland | 另一套 Wayland 平铺合成器 |
-| Denial | Flutter 原生 Wayland 合成器；默认关闭，需在 `desktop-sessions.nix` 开启 |
-| Steam | gamescope + Steam Big Picture |
-
-切换方式：注销 → 在 SDDM 的会话菜单点击目标桌面 → 登录。  
-不需要重建 NixOS；`desktop-sessions` 可列出会话，`desktop-switch` 可提示注销。
-
-> DMS 上游已从 DankMaterialShell 改名为 **Dux Shell**，Nix 选项仍是
-> `programs.dank-material-shell`，命令行仍是 `dms`。Denial 默认关闭，
-> 因为首次启用可能需要构建 Flutter engine。
-
-Niri 的入门教程、默认键位、DMS 使用和故障排查见
-**[doc/NIRI.md](doc/NIRI.md)**。
-
-关键默认键位：
-
-- `Win+Enter` 打开 Ghostty
-- `Win+Shift+Enter` 打开 Kitty
-- `Win+D` 打开 DMS 启动器
-- `Win+Q` 关闭窗口
-- `Win+O` 打开 Overview
-- `Win+1..9` 切换工作区
+默认登录 **KDE Plasma**；SDDM 中另保留 **Steam** 游戏会话。  
+GNOME、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
+`common/nixos/desktop.nix`，需要时手动取消注释并 rebuild。
 
 ## OpenCode TUI
 
@@ -164,9 +138,26 @@ appimage-run ./SomeApp.AppImage
 APPIMAGE_EXTRACT_AND_RUN=1 ./SomeApp.AppImage
 ```
 
+AppImage 统一放在：
+
+```text
+~/Applications/AppImages/
+```
+
+当前已放置官方 **Obsidian 1.15.0** AppImage。nixpkgs 的 `obsidian` 包在该
+Electron/沙箱环境下无法稳定启动，因此已从 Nix 包列表移除；使用：
+`users/drinkto/obsidian-appimage.nix` 生成启动器和桌面快捷方式。
+
+```bash
+ls ~/Applications/AppImages/
+~/Applications/AppImages/Obsidian-*.AppImage
+```
+
+桌面菜单中的名称是 **Obsidian**。
+
 ### Flatpak
 
-已启用 `services.flatpak`，并依赖 KDE/GNOME/Niri 会话提供的 XDG Desktop Portal。
+已启用 `services.flatpak`，并依赖 KDE 提供的 XDG Desktop Portal。
 默认使用 **上海交大 Flathub 镜像**：
 
 ```text
@@ -251,7 +242,7 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 
 - SDDM 登录界面会多一个 “Steam” 会话
 - 一键进入 gamescope + Steam Big Picture，适合专门玩游戏
-- 日常可选择 Niri 或 Plasma 会话，工作和游戏环境分离
+- 日常使用 Plasma 会话，工作和游戏环境分离
 - 普通桌面里也可以按需使用 `gamescope`：
 
 ```bash
@@ -288,10 +279,10 @@ loginctl list-sessions
 loginctl terminate-session <session-id>
 ```
 
-然后回 SDDM 选 Niri/Plasma。如果不想保留专用会话，把
+然后回 SDDM 选 Plasma。如果不想保留专用会话，把
 `common/nixos/gaming.nix` 的 `gamescopeSession.enable` 改为 `false`。
 
-专用会话更适合电视/手柄/Steam Deck 式体验；日常办公可使用 Niri 或 Plasma。
+专用会话更适合电视/手柄/Steam Deck 式体验；日常办公使用 Plasma。
 
 ## 蓝牙与性能
 
@@ -299,7 +290,7 @@ loginctl terminate-session <session-id>
 # 蓝牙状态 / 配对
 systemctl status bluetooth --no-pager
 bluetoothctl
-# KDE 托盘或 DMS 控制中心里也可以直接配对蓝牙
+# KDE 托盘里也可以直接配对蓝牙
 
 # 查看 zram 和 TRIM
 zramctl
@@ -474,7 +465,6 @@ ls ~/.config/autostart/ | grep -i 软件名
 ## 相关文档
 
 - `doc/ARCHITECTURE.md`：架构设计 + 编码规则（改配置前必读）
-- `doc/NIRI.md`：Niri + DMS 初学者教程与默认快捷键
 - `doc/MAINTENANCE.md`：维护手册、上手指南、故障排查与共性经验
 - `doc/OPTIMIZATION.md`：已知问题清单、整改路线（P0–P4）与迁移记录
 - NixOS 选项搜索：https://search.nixos.org/options

@@ -6,6 +6,23 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
+  # 只保留 KDE 作为默认桌面；Steam 会话由 gaming.nix 提供。
+  services.displayManager.defaultSession = "plasma";
+
+  # 可选桌面会话（默认注释）：
+  # 取消对应块后执行 sudo nixos-rebuild switch --flake .#e490。
+  #
+  # GNOME：
+  # services.desktopManager.gnome.enable = true;
+  #
+  # Niri（还需在 users/drinkto/default.nix 取消 DMS/niri imports）：
+  # programs.niri.enable = true;
+  # programs.niri.useNautilus = false;
+  #
+  # Hyprland（还需取消 users/drinkto/default.nix 的 hyprland import）：
+  # programs.hyprland.enable = true;
+  # programs.hyprland.withUWSM = true;
+
   # 鼠标/触控板设置：主要作为 X11/Xorg 的 fallback。
   # KDE Wayland 下触摸板、手势、轻触点击由 KDE 系统设置（KCM）管理，
   # 这里的一些选项不会直接覆盖 KWin 的运行时设置。

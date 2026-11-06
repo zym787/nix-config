@@ -11,7 +11,6 @@ in {
     ../../common/nixos/proxy.nix
     ../../common/nixos/bluetooth.nix
     ../../common/nixos/desktop.nix
-    ../../common/nixos/desktop-sessions.nix
     ../../common/nixos/graphics.nix
     ../../common/nixos/gaming.nix
     ../../common/nixos/appimage.nix

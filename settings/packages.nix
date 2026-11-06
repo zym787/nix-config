@@ -58,7 +58,7 @@
 
   # 办公/文档
   office = with pkgs; [
-    obsidian
+    # Obsidian 使用官方 AppImage，见 users/drinkto/obsidian-appimage.nix。
     texstudio
     evince
     wpsoffice-cn
@@ -72,8 +72,8 @@
     codex
     claude-code
     claude-monitor
+    # TUI 版；不再安装 Electron 的 opencode-desktop。
     opencode
-    opencode-desktop
   ];
 
   # 桌面/终端/Wayland 工具（当前 X11 会话也用得到终端和部分工具）
@@ -81,17 +81,6 @@
     kitty
     ghostty
     zsh
-    waybar
-    mako
-    waypaper
-    hyprlock
-    swaybg
-    swaylock-effects
-    swayidle
-    wlogout
-    wlsunset
-    fuzzel
-    uwsm
   ];
 
   # 通用 CLI 工具
