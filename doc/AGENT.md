@@ -14,7 +14,7 @@
 - 桌面文档入口：`doc/desktops/README.md`
 - Obsidian：不使用 nixpkgs 包；官方 AppImage 放在
   `~/Applications/AppImages/`，由 `users/drinkto/obsidian-appimage.nix` 生成快捷方式
-- OpenCode：使用 TUI `opencode`，不再安装 `opencode-desktop`
+<!-- - OpenCode：使用 TUI `opencode`，不再安装 `opencode-desktop` -->
 - `modules/` 目前未创建；计划在整改 P2 建立（`my.*` 开关选项），见 `doc/OPTIMIZATION.md` 第五节
 - 已知问题与整改路线见 `doc/OPTIMIZATION.md`；整改时按阶段执行，完成后更新问题清单状态
 

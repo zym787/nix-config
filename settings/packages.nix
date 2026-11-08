@@ -60,7 +60,7 @@
   office = with pkgs; [
     # Obsidian 使用官方 AppImage，见 users/drinkto/obsidian-appimage.nix。
     texstudio
-    evince
+    # evince
     wpsoffice-cn
     libreoffice
   ];
@@ -72,7 +72,7 @@
     codex
     claude-code
     claude-monitor
-    # TUI 版；不再安装 Electron 的 opencode-desktop。
+    opencode-desktop
     opencode
   ];
 

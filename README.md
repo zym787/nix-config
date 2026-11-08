@@ -88,7 +88,7 @@ GNOME、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
 
 ## OpenCode TUI
 
-已安装 `pkgs.opencode`，不再使用资源占用更高的 `opencode-desktop`：
+<!-- 已安装 `pkgs.opencode`，不再使用资源占用更高的 `opencode-desktop`： -->
 
 ```bash
 opencode

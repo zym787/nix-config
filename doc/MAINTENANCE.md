@@ -804,7 +804,7 @@ flatpak run com.baidu.NetDisk
 
 OpenCode：
 
-- 已安装 **TUI** 包 `opencode`，移除了 Electron 的 `opencode-desktop`，
+<!-- - 已安装 **TUI** 包 `opencode`，移除了 Electron 的 `opencode-desktop`， -->
   降低待机和内存占用。
 - 终端运行：
   ```bash
