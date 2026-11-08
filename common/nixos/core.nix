@@ -43,7 +43,8 @@ in {
 
   # 系统 locale；中文输入法在 common/nixos/ime.nix。
   i18n = {
-    defaultLocale = "en_US.UTF-8";
+    # defaultLocale = "en_US.UTF-8";
+    defaultLocale = "zh_CN.UTF-8";
     supportedLocales = [
       "en_US.UTF-8/UTF-8"
       "zh_CN.UTF-8/UTF-8"
