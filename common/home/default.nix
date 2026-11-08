@@ -1,7 +1,8 @@
-# 所有用户共享的 Home Manager 基础配置。
+# 所有用户共享的 Home Manager 基础配置（含 git、GNOME 外观、shell）。
 {...}: {
   imports = [
     ./git.nix
+    ./gnome.nix
     ./shell.nix
   ];
 

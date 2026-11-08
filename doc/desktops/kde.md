@@ -1,15 +1,15 @@
 # KDE Plasma（可选）
 
-KDE Plasma 当前**默认关闭**，SDDM 默认进入 GNOME。KDE 仅作为注释开关保留，
+KDE Plasma 当前**默认关闭**，GDM 默认进入 GNOME。KDE 仅作为注释开关保留，
 需要时手动启用并 build。
 
 ## 当前状态
 
 - 桌面：KDE Plasma 6
-- 显示管理器：SDDM
+- 显示管理器：GDM
 - 默认会话：GNOME（`defaultSession = "gnome"`）
 - KDE 系统级开关在 `common/nixos/desktop.nix` 中注释
-- KDE 与 Steam 都可以在 SDDM 选择；当前只默认启用 GNOME + Steam
+- KDE 与 Steam 都可以在 GDM 选择；当前只默认启用 GNOME + Steam
 
 ## 启用 KDE
 
@@ -18,7 +18,6 @@ KDE Plasma 当前**默认关闭**，SDDM 默认进入 GNOME。KDE 仅作为注�
 1. 注释 GNOME：
    ```nix
    # services.desktopManager.gnome.enable = true;
-   # services.displayManager.gdm.enable = false;
    ```
 2. 取消 KDE 注释：
    ```nix
@@ -33,15 +32,28 @@ KDE Plasma 当前**默认关闭**，SDDM 默认进入 GNOME。KDE 仅作为注�
    sudo nixos-rebuild build --flake .#e490
    sudo nixos-rebuild switch --flake .#e490
    ```
-5. 注销，在 SDDM 选择 **Plasma**。
+5. 注销，在 GDM 选择 **Plasma**。
 
 > 不建议同时启用 KDE 和 GNOME。两者会争抢 SSH askpass/portal，
 > 需要额外处理 `programs.ssh.askPassword` 和 portal 配置。
 
+### 可选：KDE 使用 SDDM
+
+GDM 可以启动 Plasma，因此不需要为了 KDE 切换显示管理器。如果确实想用
+SDDM 的主题/登录界面：
+
+```nix
+services.displayManager.gdm.enable = false;
+services.displayManager.sddm.enable = true;
+services.displayManager.defaultSession = "plasma";
+```
+
+两个显示管理器只能启用一个。
+
 ## 相关配置
 
 ```text
-common/nixos/desktop.nix     SDDM / KDE 开关 / libinput
+common/nixos/desktop.nix     GDM / KDE 开关 / libinput
 common/nixos/audio.nix       PipeWire
 common/nixos/ime.nix         fcitx5 + Rime
 users/drinkto/default.nix    用户级配置
@@ -59,8 +71,8 @@ KDE 运行时设置由 KDE 自己保存：
 
 ## X11 / Wayland
 
-`services.xserver.enable = true` 仍然保留，主要用于 XWayland、SDDM 和
-需要 X11 的兼容应用。登录时如果 SDDM 显示 X11 选项，可以用
+`services.xserver.enable = true` 仍然保留，主要用于 XWayland、GDM 和
+需要 X11 的兼容应用。登录时如果 GDM 显示 X11 选项，可以用
 **Plasma (X11)** 做兼容性排查；日常使用 Wayland。
 
 ## 输入设备
@@ -74,7 +86,7 @@ KDE Wayland 下实际由 KDE 系统设置管理：
 
 ## 关闭 KDE
 
-1. 注销到 SDDM；
+1. 注销到 GDM；
 2. 选择 GNOME 或 Steam；
 3. 注释 `services.desktopManager.plasma6.enable`；
 4. 恢复 GNOME 开关和 `defaultSession = "gnome"`；
@@ -88,8 +100,8 @@ KDE 用户数据不会自动删除。
 echo "$XDG_SESSION_TYPE"
 echo "$XDG_CURRENT_DESKTOP"
 journalctl -b -u display-manager --no-pager
-journalctl --user -b | grep -i -E 'kwin|plasma|sddm'
+journalctl --user -b | grep -i -E 'kwin|plasma|gdm'
 cat ~/.config/kcminputrc
 ```
 
-如果 KDE 登录失败，SDDM 选择 GNOME/Steam，或按 `Ctrl+Alt+F2` 进 TTY 修复。
+如果 KDE 登录失败，GDM 选择 GNOME/Steam，或按 `Ctrl+Alt+F2` 进 TTY 修复。

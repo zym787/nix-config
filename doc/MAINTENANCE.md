@@ -11,7 +11,7 @@
 | :--- | :--- |
 | 主机 | `e490`（Lenovo E490，i7-8565U，24G 内存） |
 | 用户 | `drinkto` |
-| 桌面 | GNOME + Steam 会话；KDE/Niri/Hyprland 通过注释开关手动启用 |
+| 桌面 | GNOME + GDM + Steam 会话；KDE/Niri/Hyprland 通过注释开关手动启用 |
 | 引导 | systemd-boot，保留 10 个代际 |
 | 文件系统 | Btrfs：`root` / `home` / `nix` 子卷，zstd |
 | 蓝牙 | Realtek RTL8822BE，BlueZ + GNOME Bluetooth |
@@ -577,7 +577,7 @@ powerprofilesctl set balanced
 
 ### 5.6 Wayland / 触摸板 / 输入延迟
 
-当前实际会话是 **Wayland**（`startplasma-wayland`），不是 X11。
+当前实际会话是 **GNOME Wayland**（`gnome-shell`），不是 X11。
 `services.xserver.enable` 只用于 XWayland，不能据此判断会话类型。
 
 输入法：
@@ -605,11 +605,41 @@ powerprofilesctl set balanced
 - 如果“打字后不久点击无效”，先关闭桌面设置中的
   “打字时禁用触摸板”（Disable while typing）再测。
 
+光标/图标主题：
+
+- 如果鼠标指针变成**灰色方块**或只剩一个空框，通常是光标主题不存在。
+- 从 KDE 迁移后，dconf 可能仍保留：
+  `cursor-theme = 'breeze_cursors'`、`icon-theme = 'breeze-dark'`。
+  KDE 停用后这些主题不在 GNOME 的 `XDG_DATA_DIRS` 中，Mutter/GTK 找不到
+  光标文件，就会显示灰色方块。
+- 当前由 `common/home/gnome.nix` 统一设置 Adwaita：
+  `home.pointerCursor` + `gtk` 会写入 `~/.icons/Adwaita`、GTK settings.ini
+  和 dconf。
+- 立即恢复：
+  ```bash
+  gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita'
+  gsettings set org.gnome.desktop.interface cursor-size 24
+  gsettings set org.gnome.desktop.interface icon-theme 'Adwaita'
+  ```
+  部分 GTK/Flatpak 应用需要重启或注销。
+- 检查：
+  ```bash
+  gsettings get org.gnome.desktop.interface cursor-theme
+  gsettings get org.gnome.desktop.interface cursor-size
+  ls -l ~/.icons/Adwaita/cursors/default
+  ```
+- 如果仍然异常，确认没有其他配置把主题改回未安装的 Breeze：
+  ```bash
+  dconf read /org/gnome/desktop/interface/cursor-theme
+  grep -n -i cursor ~/.config/gtk-3.0/settings.ini ~/.config/gtk-4.0/settings.ini
+  ```
+
 输入延迟/点击丢失：
 
-- 外部鼠标是 `MicLink AiMouse`（USB 无线），KWin 日志曾出现
+- 外部鼠标是 `MicLink AiMouse`（USB 无线），旧 KDE/KWin 日志曾出现
   `event processing lagging behind by 46ms`。先换鼠标/换 USB 口对比，
-  排除无线接收器/硬件问题。
+  排除无线接收器/硬件问题；GNOME 下可查
+  `journalctl --user -b | grep -i mutter`。
 - `rtw88_8822be` 有大量 PCIe AER correctable 错误（本次检查约 19035 条）。
   这是 Realtek Wi-Fi 网卡的 PCIe/ASPM 问题，可能造成日志刷屏和偶发卡顿。
   可测试内核参数：
@@ -620,7 +650,8 @@ powerprofilesctl set balanced
 
   代价是功耗可能略增；先确认问题是否与 Wi-Fi/PCIe 相关，再保留。
   如果错误持续且影响使用，检查网卡是否松动/更换网卡。
-- KWin 当前使用 OpenGL ES / Intel UHD 620，硬件合成正常，不是软件渲染。
+- GNOME/Mutter 当前使用 OpenGL ES / Intel UHD 620，硬件合成正常，
+  不是软件渲染。
 - 屏幕是 1920x1080 @ 60Hz，缩放 1.25；如仍觉得卡，可临时试 1.0 缩放
   或关闭部分桌面特效，以区分是缩放/特效还是输入设备问题。
 
@@ -669,7 +700,7 @@ cat /sys/class/drm/card0/device/pp_power_profile_mode
 Steam/gamescope：
 
 - 已启用 NixOS 自带的专用 **Steam gamescope 会话**：
-  - SDDM 登录界面多一个 “Steam” 会话；
+  - GDM 登录界面多一个 “Steam” 会话；
   - 进入后是 gamescope + Steam Big Picture；
   - 日常使用 GNOME，工作和游戏环境分离。
 - 首次使用先在 GNOME 里完成 Steam 登录、Steam Play/Proton、下载、
@@ -836,7 +867,7 @@ Starship：
 当前默认：
 
 ```text
-GNOME（SDDM 默认会话）
+GNOME（GDM 默认会话）
 Steam（gamescope + Big Picture）
 ```
 
@@ -851,7 +882,7 @@ KDE、Niri + DMS、Hyprland 默认关闭，开关以注释形式保留：
 # 取消目标桌面的注释
 sudo nixos-rebuild build --flake .#e490
 sudo nixos-rebuild switch --flake .#e490
-# 注销后在 SDDM 会话菜单选择
+# 注销后在 GDM 会话菜单选择
 ```
 
 详细文档：
@@ -863,7 +894,7 @@ sudo nixos-rebuild switch --flake .#e490
 - [Hyprland](desktops/hyprland.md)
 - [Steam](desktops/steam.md)
 
-不要在运行时同时启动多个 compositor；切换桌面统一走注销/SDDM。
+不要在运行时同时启动多个 compositor；切换桌面统一走注销/GDM。
 
 ---
 

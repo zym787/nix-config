@@ -16,7 +16,7 @@
 | 最近更新 | 见顶部 `last commit` 徽章 |
 | 系统 | NixOS `nixos-unstable` |
 | 平台 | `x86_64-linux` |
-| 桌面 | GNOME + SDDM；Steam 游戏会话；KDE/Niri/Hyprland 为注释开关 |
+| 桌面 | GNOME + GDM；Steam 游戏会话；KDE/Niri/Hyprland 为注释开关 |
 | 配置方式 | Flake + Home Manager（system module 集成） |
 | 已知问题 | 2026-10-31 审查发现若干问题，整改路线见 `doc/OPTIMIZATION.md` |
 
@@ -55,8 +55,8 @@
 | 项目 | 值 |
 | :--- | :--- |
 | 系统通道 | `nixos-unstable`（清华 Git 镜像） |
-| 桌面环境 | GNOME + SDDM；KDE/Niri/Hyprland 为注释开关 |
-| 显示管理 | SDDM；默认 GNOME，另保留 Steam 游戏会话 |
+| 桌面环境 | GNOME + GDM；KDE/Niri/Hyprland 为注释开关 |
+| 显示管理 | GDM；默认 GNOME，另保留 Steam 游戏会话 |
 | 终端 | Ghostty + Kitty + zsh + oh-my-zsh + starship |
 | AI 工具 | OpenCode TUI（`opencode`）+ OpenCode Desktop（`opencode-desktop`） |
 | 音频 | PipeWire（PulseAudio 兼容层） |
@@ -73,7 +73,7 @@
 
 ## 桌面会话
 
-默认登录 **GNOME**；SDDM 中另保留 **Steam** 游戏会话。  
+默认登录 **GNOME**；GDM 中另保留 **Steam** 游戏会话。  
 KDE、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
 `common/nixos/desktop.nix`，需要时手动取消注释并 rebuild。
 
@@ -250,7 +250,7 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 
 已启用 NixOS 自带的 **Steam gamescope 会话**：
 
-- SDDM 登录界面会多一个 “Steam” 会话
+- GDM 登录界面会多一个 “Steam” 会话
 - 一键进入 gamescope + Steam Big Picture，适合专门玩游戏
 - 日常使用 GNOME 会话，工作和游戏环境分离
 - 普通桌面里也可以按需使用 `gamescope`：
@@ -289,7 +289,7 @@ loginctl list-sessions
 loginctl terminate-session <session-id>
 ```
 
-然后回 SDDM 选 GNOME。如果不想保留专用会话，把
+然后回 GDM 选 GNOME。如果不想保留专用会话，把
 `common/nixos/gaming.nix` 的 `gamescopeSession.enable` 改为 `false`。
 
 专用会话更适合电视/手柄/Steam Deck 式体验；日常办公使用 GNOME。

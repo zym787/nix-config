@@ -68,7 +68,7 @@
 │   │   ├── network.nix
 │   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
-│   │   ├── desktop.nix           # Wayland/XWayland / SDDM / GNOME
+│   │   ├── desktop.nix           # Wayland/XWayland / GDM / GNOME
 │   │   ├── graphics.nix          # Intel/AMD GPU、32-bit Vulkan、switcheroo
 │   │   ├── gaming.nix            # Steam / GameMode / MangoHud / gamescope
 │   │   ├── audio.nix
@@ -343,7 +343,7 @@ git mv nixos/hardware-configuration.nix hosts/e490/hardware-configuration.nix
 
 1. `core.nix`：`nix.settings`、`nixpkgs.config`、`boot.loader`、`nix.gc`
 2. `network.nix`：`hostName`（先留空，迁到主机变量）、`networkmanager`、`firewall`
-3. `desktop.nix`：`xserver`、`sddm`、`plasma6`
+3. `desktop.nix`：`xserver`、`gdm`、`plasma6`
 4. `audio.nix`：`pipewire`、`pulseaudio.enable = false`
 5. `fonts.nix`
 6. `ime.nix`

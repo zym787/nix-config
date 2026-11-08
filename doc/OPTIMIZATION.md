@@ -1,6 +1,6 @@
 # 优化与整改路线
 
-> **状态（2026-11-08）**：当前默认启用 **GNOME + Steam**；KDE/Niri/Hyprland
+> **状态（2026-11-08）**：当前默认启用 **GNOME + GDM + Steam**；KDE/Niri/Hyprland
 > 通过注释开关手动启用。已移除 Denial、Wayland 冗余组件和 nixpkgs 版 Obsidian，
 > 改用官方 AppImage；OpenCode TUI 和 Desktop 都保留；Flatpak 使用国内镜像并安装
 > 百度网盘。桌面细节见 `doc/desktops/`。
@@ -192,7 +192,7 @@ services.openssh = {
 ### P0-6. 清理重复项和过时注释（D2、D3）
 
 - 删除 `desktop.nix:7` 的 `plasma6.enable`，只保留 `desktop-sessions.nix` 里那处。
-- `desktop.nix` 的文件头改成"SDDM + 输入设备"，删掉"xserver 是为了 XWayland"的说法。如果去掉 `services.xserver.enable` 后 SDDM 和 Plasma X11 会话仍然正常，就一起删掉。
+- `desktop.nix` 的文件头改成"GDM + 输入设备"，删掉"xserver 是为了 XWayland"的说法。如果去掉 `services.xserver.enable` 后 GDM 和 Plasma X11 会话仍然正常，就一起删掉。
 - `gaming.nix:8` 改为"日常默认 niri"。
 
 **P0 完成标准**：`nixos-rebuild build` 通过；wireshark 能抓包、localsend 能接收、`fc-match` 结果正确。
@@ -213,7 +213,7 @@ services.openssh = {
 - 启用时手动取消注释并 rebuild，不做运行时一键切换；
 - 完整操作见 `doc/desktops/README.md`。
 
-这样可以减少默认闭包、portal 冲突、SDDM 会话数量和 Home Manager
+这样可以减少默认闭包、portal 冲突、GDM 会话数量和 Home Manager
 activation 失败点。
 
 ### P1-2. 精简 `packages.desktop`（已完成）
@@ -260,7 +260,7 @@ assertions = [{
 
 ### P1-7. 壁纸与检查源（E5）
 
-- 用不到的壁纸用 `git rm` 删除；要保留就在 DMS 或 SDDM 主题里实际引用。
+- 用不到的壁纸用 `git rm` 删除；要保留就在 DMS 或 GDM 主题里实际引用。
 - `checks.formatting` 只拷贝 `.nix` 文件：
 
 ```nix
@@ -278,7 +278,7 @@ in
 
 > 仓库历史里的大文件依然存在；如果要真正缩小 `.git`，需要 `git filter-repo`，这一步要单独确认，不在本计划内默认执行。
 
-**P1 完成标准**：闭包大小有可见下降（记录前后的 `nix path-info -Sh` 数值）；SDDM 里的会话列表符合开关设置；niri 和 Plasma 都能正常登录。
+**P1 完成标准**：闭包大小有可见下降（记录前后的 `nix path-info -Sh` 数值）；GDM 里的会话列表符合开关设置；niri 和 Plasma 都能正常登录。
 
 ---
 

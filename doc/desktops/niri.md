@@ -4,7 +4,7 @@ Niri 是可选桌面，默认关闭。启用后使用 **Niri + DankMaterialShell
 上游已改名 Dux Shell）**。DMS 的 Nix 选项仍叫
 `programs.dank-material-shell`，命令行是 `dms`。
 
-> 本配置不是运行时一键切换：需要打开注释、重新 build，再在 SDDM 选择 Niri。
+> 本配置不是运行时一键切换：需要打开注释、重新 build，再在 GDM 选择 Niri。
 
 ## 1. 启用 Niri + DMS
 
@@ -43,7 +43,7 @@ sudo nixos-rebuild build --flake .#e490
 sudo nixos-rebuild switch --flake .#e490
 ```
 
-注销后在 SDDM 会话菜单选择 **Niri**。默认会话仍是 GNOME；如果想让 Niri
+注销后在 GDM 会话菜单选择 **Niri**。默认会话仍是 GNOME；如果想让 Niri
 默认登录：
 
 ```nix
@@ -208,7 +208,7 @@ input {
 ## 8. 关闭 Niri
 
 1. 注销；
-2. SDDM 选择 GNOME；
+2. GDM 选择 GNOME；
 3. 注释掉 `common/nixos/desktop.nix` 和 `users/drinkto/default.nix` 中的
    Niri/DMS 块；
 4. 重新 build/switch。
@@ -217,14 +217,14 @@ Niri/DMS 的用户数据不会自动删除。
 
 ## 9. 故障排查
 
-### 登录后黑屏/回 SDDM
+### 登录后黑屏/回 GDM
 
 ```bash
 journalctl --user -b | grep -i niri
 niri validate -c ~/.config/niri/config.kdl
 ```
 
-配置错误时从 TTY 修改 `users/drinkto/niri.nix`，或回 SDDM 选 GNOME。
+配置错误时从 TTY 修改 `users/drinkto/niri.nix`，或回 GDM 选 GNOME。
 
 ### `Win+D` 没反应
 

@@ -1,12 +1,12 @@
-# 桌面环境：GNOME + SDDM + Wayland（XWayland 兼容 X11 应用）。
+# 桌面环境：GNOME + GDM + Wayland（XWayland 兼容 X11 应用）。
 {...}: {
-  # 实际会话是 GNOME Wayland；services.xserver 仍开启是为了 XWayland/SDDM。
+  # 实际会话是 GNOME Wayland；services.xserver 仍开启是为了 XWayland。
   services.xserver.enable = true;
-  services.displayManager.sddm.enable = true;
 
-  # GNOME 是当前默认桌面；GDM 不启用，继续使用 SDDM。
+  # GNOME 官方配套 GDM；SDDM 已停用，避免两个显示管理器冲突。
   services.desktopManager.gnome.enable = true;
-  services.displayManager.gdm.enable = false;
+  services.displayManager.gdm.enable = true;
+  services.displayManager.sddm.enable = false;
   services.displayManager.defaultSession = "gnome";
 
   # KDE Plasma 已完全注释；需要切回 KDE 时取消这一行，并同时关闭 GNOME。

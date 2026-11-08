@@ -41,7 +41,7 @@
 │   │   ├── network.nix
 │   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
-│   │   ├── desktop.nix           # SDDM / GNOME / libinput；KDE/其他桌面注释开关
+│   │   ├── desktop.nix           # GDM / GNOME / libinput；KDE/其他桌面注释开关
 │   │   ├── graphics.nix          # Intel/AMD GPU、32-bit Vulkan、switcheroo
 │   │   ├── gaming.nix            # Steam / GameMode / MangoHud / gamescope
 │   │   ├── audio.nix             # PipeWire
@@ -65,7 +65,7 @@
 └── wallpapers/
 ```
 
-> **当前桌面状态**：GNOME 为默认会话，Steam gamescope 始终保留；
+> **当前桌面状态**：GNOME + GDM 为默认会话，Steam gamescope 始终保留；
 > KDE/Niri/Hyprland 默认关闭，通过 `desktop.nix` 和用户 imports 的注释开关
 > 手动启用。完整说明见 `doc/desktops/README.md`。
 

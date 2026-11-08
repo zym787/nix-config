@@ -7,7 +7,7 @@
 
 | 会话 | 默认 | 说明 |
 | :--- | :---: | :--- |
-| **GNOME** | ✅ | 默认桌面，SDDM 登录 |
+| **GNOME** | ✅ | 默认桌面，GDM 登录 |
 | **Steam** | ✅ | gamescope + Steam Big Picture 游戏会话 |
 | KDE Plasma | ⬜ | 注释开关，需要时手动启用 |
 | Niri + DMS | ⬜ | 注释开关，需要时手动启用 |
@@ -17,7 +17,7 @@
 
 1. 修改 Nix 配置中的注释开关；
 2. 执行 `sudo nixos-rebuild switch --flake .#e490`；
-3. 注销后在 SDDM 会话菜单中选择目标桌面。
+3. 注销后在 GDM 会话菜单中选择目标桌面。
 
 默认会话固定为 GNOME：
 
@@ -26,14 +26,15 @@
 services.displayManager.defaultSession = "gnome";
 ```
 
-如果希望在 SDDM 中默认选中 Niri，可改为 `"niri"`，但这不改变“手动 build”
+如果希望在 GDM 中默认选中 Niri，可改为 `"niri"`，但这不改变“手动 build”
 的启停方式。
 
 ## 配置入口
 
 | 配置 | 位置 |
 | :--- | :--- |
-| GNOME / SDDM / 输入设备 | `common/nixos/desktop.nix` |
+| GNOME / GDM / 输入设备 | `common/nixos/desktop.nix` |
+| GNOME 光标/图标/GTK | `common/home/gnome.nix` |
 | Steam 游戏会话 | `common/nixos/gaming.nix` |
 | KDE 可选开关 | `common/nixos/desktop.nix` 注释 |
 | Niri 可选开关 | `common/nixos/desktop.nix` + `users/drinkto/default.nix` |
@@ -56,7 +57,7 @@ services.displayManager.defaultSession = "gnome";
    sudo nixos-rebuild build --flake .#e490
    sudo nixos-rebuild switch --flake .#e490
    ```
-5. 注销，在 SDDM 会话菜单中选择桌面。
+5. 注销，在 GDM 会话菜单中选择桌面。
 
 GNOME 和 Steam 始终启用，不需要额外操作。
 
@@ -64,7 +65,7 @@ GNOME 和 Steam 始终启用，不需要额外操作。
 
 - 注释掉新增桌面块，重新 build/switch；
 - 不会删除用户数据；
-- 如果桌面无法登录，可在 SDDM 选择 GNOME，或按 `Ctrl+Alt+F2` 进 TTY 修复。
+- 如果桌面无法登录，可在 GDM 选择 GNOME，或按 `Ctrl+Alt+F2` 进 TTY 修复。
 
 ## 相关文档
 

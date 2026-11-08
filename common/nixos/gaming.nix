@@ -3,9 +3,9 @@
   programs.steam = {
     enable = true;
 
-    # 专用游戏会话：SDDM 登录界面会多一个 “Steam” 会话，
+    # 专用游戏会话：GDM 登录界面会多一个 “Steam” 会话，
     # 使用 gamescope + Steam Big Picture，一键进入游戏环境。
-    # 日常仍默认 Plasma，工作和游戏会话分离。
+    # 日常仍默认 GNOME，工作和游戏会话分离。
     gamescopeSession = {
       enable = true;
       # 匹配 E490 的内屏分辨率/刷新率；进入会话后由 Steam 接管。

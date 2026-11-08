@@ -41,7 +41,7 @@ sudo nixos-rebuild build --flake .#e490
 sudo nixos-rebuild switch --flake .#e490
 ```
 
-注销，在 SDDM 选择 **Hyprland**。默认会话仍是 GNOME；如果想默认 Hyprland：
+注销，在 GDM 选择 **Hyprland**。默认会话仍是 GNOME；如果想默认 Hyprland：
 
 ```nix
 services.displayManager.defaultSession = "hyprland";
@@ -100,7 +100,7 @@ journalctl --user -b | grep -i -E 'hyprland|dms|portal'
 
 ## 关闭
 
-注销到 SDDM，选择 GNOME，然后注释掉：
+注销到 GDM，选择 GNOME，然后注释掉：
 
 - `common/nixos/desktop.nix` 中 Hyprland 两行；
 - `users/drinkto/default.nix` 中 `./hyprland.nix` 和 DMS import/配置块。
