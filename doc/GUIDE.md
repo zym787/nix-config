@@ -170,6 +170,7 @@ in {
 {
   imports = [
     ./git.nix
+    ./gnome.nix
     ./shell.nix
   ];
   programs.home-manager.enable = true;

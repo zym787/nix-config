@@ -634,6 +634,26 @@ powerprofilesctl set balanced
   grep -n -i cursor ~/.config/gtk-3.0/settings.ini ~/.config/gtk-4.0/settings.ini
   ```
 
+GNOME 扩展：
+
+- 由 `common/home/gnome.nix` 的 `programs.gnome-shell.extensions` 管理；
+- 扩展包使用 `pkgs.gnome50Extensions`；不要直接用联合集
+  `pkgs.gnomeExtensions`，它可能被 GNOME 51 版本覆盖；
+- 当前启用：
+  - `appindicatorsupport@rgcjonas.gmail.com`：顶栏显示后台应用/托盘图标；
+  - `kimpanel@kde.org`：fcitx5 输入法面板（原手工安装，已迁移）；
+- Home Manager 会同时安装包并写入 dconf `org.gnome.shell.enabled-extensions`；
+  手工在 Extensions 应用里改启用状态会被下一次 activation 覆盖；
+- 旧的用户级 kimpanel 目录会在 activation 时改名为
+  `kimpanel@kde.org.manual-backup.<时间戳>`；
+- 检查：
+  ```bash
+  gnome-extensions list --enabled
+  gsettings get org.gnome.shell enabled-extensions
+  ```
+- GNOME 顶栏默认没有系统托盘；后台应用图标依赖 AppIndicator 扩展，应用本身
+  仍需实现 StatusNotifierItem/AppIndicator 或旧式 tray。
+
 输入延迟/点击丢失：
 
 - 外部鼠标是 `MicLink AiMouse`（USB 无线），旧 KDE/KWin 日志曾出现

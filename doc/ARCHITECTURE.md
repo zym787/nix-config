@@ -53,6 +53,7 @@
 │   └── home/                     # 所有用户共享的用户级基础
 │       ├── default.nix           # imports 下列模块
 │       ├── git.nix
+│       ├── gnome.nix             # GNOME 外观 / 光标图标 / Shell 扩展
 │       └── shell.nix             # zsh / oh-my-zsh / starship
 ├── doc/
 │   ├── desktops/                 # KDE/GNOME/Niri/Hyprland/Steam 分桌面文档

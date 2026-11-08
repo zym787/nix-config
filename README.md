@@ -75,7 +75,9 @@
 
 默认登录 **GNOME**；GDM 中另保留 **Steam** 游戏会话。  
 KDE、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
-`common/nixos/desktop.nix`，需要时手动取消注释并 rebuild。
+`common/nixos/desktop.nix`，需要时手动取消注释并 rebuild。  
+GNOME 扩展（AppIndicator、Input Method Panel）由
+`common/home/gnome.nix` 的 `programs.gnome-shell.extensions` 声明式管理。
 
 每套桌面的启用步骤、键位、配置位置和故障排查见：
 

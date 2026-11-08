@@ -9,6 +9,7 @@
 - 构建：`sudo nixos-rebuild build --flake .#e490`
 - 切换：`sudo nixos-rebuild switch --flake .#e490`
 - 当前桌面：**GNOME + GDM（默认）+ Steam gamescope**
+- GNOME 外观/扩展：`common/home/gnome.nix`（Adwaita 光标、AppIndicator、kimpanel）
 - KDE、Niri + DMS、Hyprland：默认关闭，只在 `common/nixos/desktop.nix` 和
   `users/drinkto/default.nix` 中保留注释开关；属于手动 build 切换
 - 桌面文档入口：`doc/desktops/README.md`

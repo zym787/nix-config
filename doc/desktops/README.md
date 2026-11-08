@@ -34,7 +34,7 @@ services.displayManager.defaultSession = "gnome";
 | 配置 | 位置 |
 | :--- | :--- |
 | GNOME / GDM / 输入设备 | `common/nixos/desktop.nix` |
-| GNOME 光标/图标/GTK | `common/home/gnome.nix` |
+| GNOME 外观 / Shell 扩展 | `common/home/gnome.nix` |
 | Steam 游戏会话 | `common/nixos/gaming.nix` |
 | KDE 可选开关 | `common/nixos/desktop.nix` 注释 |
 | Niri 可选开关 | `common/nixos/desktop.nix` + `users/drinkto/default.nix` |

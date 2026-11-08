@@ -108,6 +108,81 @@ journalctl --user -b | grep -i -E 'cursor|gnome-shell'
 不要继续把光标主题设成未安装的 Breeze 主题；如果确实想用 Breeze，
 需要把对应的 KDE 包加入 `home.packages`，而不是只改 gsettings。
 
+## GNOME Shell 扩展
+
+当前扩展由 Home Manager 的 `programs.gnome-shell` 管理，配置在
+`common/home/gnome.nix`：
+
+```nix
+programs.gnome-shell = {
+  enable = true;
+  extensions = [
+    { package = pkgs.gnome50Extensions."appindicatorsupport@rgcjonas.gmail.com"; }
+    { package = pkgs.gnome50Extensions."kimpanel@kde.org"; }
+  ];
+};
+```
+
+> 这里使用 `gnome50Extensions` 而不是 `gnomeExtensions`：`gnomeExtensions`
+> 是 GNOME 49/50/51 的联合集，`kimpanel` 会被 GNOME 51 的 v94 覆盖，而 v94
+> 只声明支持 Shell 51。GNOME 50 对应的 kimpanel 版本是 v92。
+
+Home Manager 会：
+
+- 把扩展包安装到用户 profile；
+- 写入 dconf：
+  ```text
+  org.gnome.shell.disable-user-extensions = false
+  org.gnome.shell.enabled-extensions = [
+    appindicatorsupport@rgcjonas.gmail.com
+    kimpanel@kde.org
+  ]
+  ```
+
+因此**不要再用 Extensions 应用手工启用/禁用这两个扩展**：下次
+Home Manager activation 会按 Nix 列表重写 `enabled-extensions`。要新增扩展，
+在列表里加对应包，然后 rebuild；先确认该包的 `metadata.json` 里
+`shell-version` 包含 `50`，nixpkgs 没收录的扩展需要自行打包。
+
+> NixOS 本身可以通过 `environment.systemPackages` 安装
+> `pkgs.gnomeExtensions.*`，但 NixOS 文档也说明它不能完全声明式地启用扩展；
+> Home Manager 的 `programs.gnome-shell.extensions` 同时负责安装和启用。
+
+### Input Method Panel（kimpanel）
+
+原来的 `kimpanel@kde.org` 是手工放在
+`~/.local/share/gnome-shell/extensions/` 的。现在改用 nixpkgs 的
+`pkgs.gnome50Extensions."kimpanel@kde.org"`（版本 92，兼容 GNOME Shell 50）。
+
+`common/home/gnome.nix` 里有一个 activation 步骤，会在首次 switch 时把旧目录
+改名为 `kimpanel@kde.org.manual-backup.<时间戳>`，避免用户目录版本遮蔽 Nix
+版本。切换并重新登录后检查：
+
+```bash
+gnome-extensions list --enabled
+gsettings get org.gnome.shell enabled-extensions
+```
+
+应该同时看到：
+
+```text
+appindicatorsupport@rgcjonas.gmail.com
+kimpanel@kde.org
+```
+
+### 状态栏显示后台应用图标
+
+GNOME 顶栏默认不显示系统托盘/后台应用图标。当前已通过
+**AppIndicator and KStatusNotifierItem Support** 扩展恢复：
+
+- Clash Verge、Steam、Telegram 等使用 StatusNotifierItem/AppIndicator 的应用
+  会出现在顶栏右侧；
+- 旧式 tray 图标也由该扩展兼容；
+- 切换/重新登录后如果图标没出现，先确认应用本身有托盘功能，再到
+  **Extensions → AppIndicator** 的设置里检查；
+- 如果只是想要“运行中应用的 Dock 图标”，那是 Dash to Dock/Ubuntu Dock 的
+  功能，不是 AppIndicator。
+
 ## 切换/关闭
 
 如果要切回 KDE：
