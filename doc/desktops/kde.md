@@ -1,28 +1,53 @@
-# KDE Plasma
+# KDE Plasma（可选）
 
-KDE 是当前默认桌面，默认会话名为 `plasma`。
+KDE Plasma 当前**默认关闭**，SDDM 默认进入 GNOME。KDE 仅作为注释开关保留，
+需要时手动启用并 build。
 
 ## 当前状态
 
 - 桌面：KDE Plasma 6
 - 显示管理器：SDDM
-- 会话：Wayland；保留 XWayland 兼容 X11 应用
-- 默认 Session：
-  ```nix
-  services.displayManager.defaultSession = "plasma";
-  ```
-- KDE 与 Steam 是当前默认启用的两个会话
+- 默认会话：GNOME（`defaultSession = "gnome"`）
+- KDE 系统级开关在 `common/nixos/desktop.nix` 中注释
+- KDE 与 Steam 都可以在 SDDM 选择；当前只默认启用 GNOME + Steam
+
+## 启用 KDE
+
+编辑 `common/nixos/desktop.nix`：
+
+1. 注释 GNOME：
+   ```nix
+   # services.desktopManager.gnome.enable = true;
+   # services.displayManager.gdm.enable = false;
+   ```
+2. 取消 KDE 注释：
+   ```nix
+   services.desktopManager.plasma6.enable = true;
+   ```
+3. 把默认会话改为：
+   ```nix
+   services.displayManager.defaultSession = "plasma";
+   ```
+4. 构建并切换：
+   ```bash
+   sudo nixos-rebuild build --flake .#e490
+   sudo nixos-rebuild switch --flake .#e490
+   ```
+5. 注销，在 SDDM 选择 **Plasma**。
+
+> 不建议同时启用 KDE 和 GNOME。两者会争抢 SSH askpass/portal，
+> 需要额外处理 `programs.ssh.askPassword` 和 portal 配置。
 
 ## 相关配置
 
 ```text
-common/nixos/desktop.nix     KDE / SDDM / libinput
+common/nixos/desktop.nix     SDDM / KDE 开关 / libinput
 common/nixos/audio.nix       PipeWire
 common/nixos/ime.nix         fcitx5 + Rime
-users/drinkto/default.nix    用户级桌面相关配置
+users/drinkto/default.nix    用户级配置
 ```
 
-KDE 的运行时设置由 KDE 自己保存，例如：
+KDE 运行时设置由 KDE 自己保存：
 
 ```text
 ~/.config/kcminputrc        鼠标/触摸板
@@ -30,20 +55,13 @@ KDE 的运行时设置由 KDE 自己保存，例如：
 ~/.config/kdeglobals        主题/字体
 ```
 
-这些文件不是 NixOS 声明式配置；修改 Nix 文件不会覆盖当前 KDE 会话里的
-KCM 设置。
+这些不是 NixOS 声明式配置；修改 Nix 不会覆盖当前 KDE 会话里的 KCM 设置。
 
 ## X11 / Wayland
 
-`services.xserver.enable = true` 仍然保留，主要用于：
-
-- XWayland
-- SDDM
-- 需要 X11 的兼容应用
-- 可选的 Plasma X11 会话
-
-登录时如果 SDDM 显示 X11 选项，可以选择 **Plasma (X11)** 做兼容性排查。
-日常使用 Wayland。
+`services.xserver.enable = true` 仍然保留，主要用于 XWayland、SDDM 和
+需要 X11 的兼容应用。登录时如果 SDDM 显示 X11 选项，可以用
+**Plasma (X11)** 做兼容性排查；日常使用 Wayland。
 
 ## 输入设备
 
@@ -54,40 +72,24 @@ KDE Wayland 下实际由 KDE 系统设置管理：
 系统设置 → 输入设备 → 鼠标和触摸板
 ```
 
-如果触摸板行为不符合预期，优先调整 KDE KCM，而不是只改 Nix 的
-`services.libinput`。
+## 关闭 KDE
 
-## 切换与禁用
+1. 注销到 SDDM；
+2. 选择 GNOME 或 Steam；
+3. 注释 `services.desktopManager.plasma6.enable`；
+4. 恢复 GNOME 开关和 `defaultSession = "gnome"`；
+5. 重新 build/switch。
 
-KDE 默认启用，不需要手动开关。临时切到 Steam 会话：
-
-1. 注销；
-2. SDDM 会话菜单选择 **Steam**；
-3. 游戏结束后退出 Steam，回到 SDDM；
-4. 选择 **Plasma**。
-
-如果未来要把 KDE 改成可选：
-
-```nix
-# common/nixos/desktop.nix
-services.desktopManager.plasma6.enable = false;
-```
-
-并确保至少还有一个可登录桌面，否则 SDDM 可能没有可用会话。
+KDE 用户数据不会自动删除。
 
 ## 故障排查
 
 ```bash
-# 当前会话
 echo "$XDG_SESSION_TYPE"
 echo "$XDG_CURRENT_DESKTOP"
-
-# SDDM / KDE 日志
 journalctl -b -u display-manager --no-pager
 journalctl --user -b | grep -i -E 'kwin|plasma|sddm'
-
-# KDE 输入设置
 cat ~/.config/kcminputrc
 ```
 
-如果 KDE 登录失败，可先选择 Steam 或 TTY，修复后再回到 Plasma。
+如果 KDE 登录失败，SDDM 选择 GNOME/Steam，或按 `Ctrl+Alt+F2` 进 TTY 修复。

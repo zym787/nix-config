@@ -2,7 +2,7 @@
 > + `common/{nixos,home}` + `settings/`，构建命令 `sudo nixos-rebuild build --flake .#e490`。
 > 文中的 `pc-main`、`alice` 等是占位名；实际执行顺序以 `doc/OPTIMIZATION.md` 和迁移记录为准。
 >
-> 当前桌面为 KDE Plasma + Steam；GNOME/Niri/Hyprland 是注释开关，启用与键位
+> 当前桌面为 GNOME + Steam；KDE/Niri/Hyprland 是注释开关，启用与键位
 > 见 `doc/desktops/README.md` 及各桌面文档。本文不重复桌面操作细节。
 
 在多设备与多用户并存的真实场景里（涵盖笔记本、桌面 PC、SBC 单板计算机，且单台设备上可能同时有日常使用、嵌入式开发、娱乐等多个账号），**最核心的难点是理清“机器”与“人”的边界**。八份优秀配置的共同经验是：**`hosts/` 管机器，`users/` 管人，两者完全正交**；而新手最容易犯的错误，是把用户配置焊死在主机目录里，导致换机或加人只能复制粘贴。
@@ -68,7 +68,7 @@
 │   │   ├── network.nix
 │   │   ├── proxy.nix             # Clash Verge Rev（Mihomo / TUN）
 │   │   ├── bluetooth.nix         # BlueZ + 开机上电
-│   │   ├── desktop.nix           # Wayland/XWayland / SDDM / Plasma
+│   │   ├── desktop.nix           # Wayland/XWayland / SDDM / GNOME
 │   │   ├── graphics.nix          # Intel/AMD GPU、32-bit Vulkan、switcheroo
 │   │   ├── gaming.nix            # Steam / GameMode / MangoHud / gamescope
 │   │   ├── audio.nix

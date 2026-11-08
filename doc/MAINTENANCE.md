@@ -11,10 +11,10 @@
 | :--- | :--- |
 | 主机 | `e490`（Lenovo E490，i7-8565U，24G 内存） |
 | 用户 | `drinkto` |
-| 桌面 | KDE Plasma + Steam 会话；其他桌面通过注释开关手动启用 |
+| 桌面 | GNOME + Steam 会话；KDE/Niri/Hyprland 通过注释开关手动启用 |
 | 引导 | systemd-boot，保留 10 个代际 |
 | 文件系统 | Btrfs：`root` / `home` / `nix` 子卷，zstd |
-| 蓝牙 | Realtek RTL8822BE，BlueZ + BlueDevil |
+| 蓝牙 | Realtek RTL8822BE，BlueZ + GNOME Bluetooth |
 | 打印/扫描 | Brother DCP-7057，CUPS + brlaser；`ipp-usb` 同时启用 sane |
 | 代理 | Clash Verge Rev（Mihomo），规则模式 + TUN |
 | 性能 | zram、`vm.swappiness=10`、fstrim、PPD balanced；不使用 thermald |
@@ -573,7 +573,7 @@ powerprofilesctl set performance
 powerprofilesctl set balanced
 ```
 
-- 蓝牙：`hardware.bluetooth.powerOnBoot = true`；用 KDE BlueDevil 或 `bluetoothctl`。
+- 蓝牙：`hardware.bluetooth.powerOnBoot = true`；用 GNOME 蓝牙设置或 `bluetoothctl`。
 
 ### 5.6 Wayland / 触摸板 / 输入延迟
 
@@ -596,13 +596,13 @@ powerprofilesctl set balanced
 触摸板：
 
 - 设备：`Synaptics TM3471-020`（I2C/RMI4），内核已识别。
-- KDE Plasma 6 + Wayland 原生支持触摸板手势，入口：
-  **系统设置 → 输入设备 → 触摸板 → 手势**。
-- 可配置三指/四指滑动、捏合等；KDE 不提供 macOS 的全部手势集合。
+- GNOME 默认会话下，触摸板入口：
+  **设置 → 鼠标和触摸板**。
+- KDE 可选启用时，入口是 **系统设置 → 输入设备 → 触摸板**。
 - `common/nixos/desktop.nix` 里的 `services.libinput` 主要面向 X11/Xorg；
-  KDE Wayland 下实际由 KWin 读取 KDE 的触摸板设置（`kcminputrc`），
+  GNOME/KDE Wayland 分别由 Mutter/KWin 读取各自的运行时设置，
   不要误以为 NixOS 里的 `tapping/disableWhileTyping` 一定生效。
-- 如果“打字后不久点击无效”，先关闭 KDE 触摸板的
+- 如果“打字后不久点击无效”，先关闭桌面设置中的
   “打字时禁用触摸板”（Disable while typing）再测。
 
 输入延迟/点击丢失：
@@ -671,8 +671,8 @@ Steam/gamescope：
 - 已启用 NixOS 自带的专用 **Steam gamescope 会话**：
   - SDDM 登录界面多一个 “Steam” 会话；
   - 进入后是 gamescope + Steam Big Picture；
-  - 日常使用 Plasma，工作和游戏环境分离。
-- 首次使用先在 Plasma 里完成 Steam 登录、Steam Play/Proton、下载、
+  - 日常使用 GNOME，工作和游戏环境分离。
+- 首次使用先在 GNOME 里完成 Steam 登录、Steam Play/Proton、下载、
   手柄和界面设置；配置对 Steam 会话共享。
 - 普通桌面也可以按需使用 gamescope：
 
@@ -690,19 +690,19 @@ gamescope -W 1920 -H 1080 -f -r 60 -- gamemoderun mangohud %command%
 
 游戏白屏/黑屏：
 
-- 先在 Plasma 会话测试，排除 gamescope 因素。
+- 先在 GNOME 会话测试，排除 gamescope 因素。
 - 2GB 独显不要用 Ultra/光追；Little Nightmares Enhanced Edition
   当前配置已改为 1280x720、Low、RT 关闭（原配置备份为
   `GameUserSettings.ini.bak-open`）。
 - 启动项使用 `DRI_PRIME=1 MESA_VK_DEVICE_SELECT=1002:699f`，
   并加 `PROTON_LOG=1`；日志在 `~/steam-<appid>.log`。
-- 仍白屏时换 Proton 版本（Experimental/9/10 或 GE），或在 Plasma
+- 仍白屏时换 Proton 版本（Experimental/9/10 或 GE），或在 GNOME
   里用窗口模式 `-windowed -ResX=1280 -ResY=720` 测试。
 - 低于推荐配置的游戏（本机 dGPU 只有 2GB 显存）可能无法稳定运行。
 
 Wi-Fi：
 
-- Steam 会话没有 KDE Wallet/secret agent，NetworkManager 的 Wi-Fi
+- Steam 会话没有桌面 keyring/secret agent，NetworkManager 的 Wi-Fi
   密码必须是**系统级存储**；`psk-flags=1` 时无法自动连接。
 - 检查/修复：
 
@@ -729,7 +729,7 @@ Steam 下载/代理：
 退出/卡死：
 
 - **“退出到桌面/切换到桌面”是 Steam Deck 的选项；专用会话没有
-  桌面环境，选它不会回到 Plasma。**
+  桌面环境，选它不会回到 GNOME。**
 - 正确退出：Big Picture → Steam 按钮 → 电源 → **退出 Steam**。
 - 无退出项或卡死：`Ctrl+Alt+F2` 到 TTY，登录后
   `loginctl list-sessions`、`loginctl terminate-session <id>`；
@@ -797,20 +797,20 @@ flatpak run com.baidu.NetDisk
   flatpak update --user
   ```
 - 应用数据在 `~/.var/app/<应用 ID>/`。
-- 文件选择、剪贴板、截图异常时先查 XDG Portal；KDE 已提供对应的 portal 实现。
+- 文件选择、剪贴板、截图异常时先查 XDG Portal；GNOME 已提供对应的 portal 实现。
 - 不要把 Flathub 的安装写进 `environment.systemPackages`，两者是不同体系。
 
 ### 5.9 OpenCode / Starship
 
 OpenCode：
 
-<!-- - 已安装 **TUI** 包 `opencode`，移除了 Electron 的 `opencode-desktop`， -->
-  降低待机和内存占用。
-- 终端运行：
+- 同时安装 **TUI** `opencode` 和桌面版 `opencode-desktop`：
   ```bash
   opencode
+  opencode-desktop
   ```
-- 配置/会话数据属于用户目录，不能提交到仓库；升级跟随 nixpkgs。
+- 两者共享用户配置/会话数据；数据在用户目录，不能提交到仓库；
+  升级跟随 nixpkgs。
 
 Starship：
 
@@ -836,11 +836,11 @@ Starship：
 当前默认：
 
 ```text
-KDE Plasma（SDDM 默认会话）
+GNOME（SDDM 默认会话）
 Steam（gamescope + Big Picture）
 ```
 
-GNOME、Niri + DMS、Hyprland 默认关闭，开关以注释形式保留：
+KDE、Niri + DMS、Hyprland 默认关闭，开关以注释形式保留：
 
 - `common/nixos/desktop.nix`
 - `users/drinkto/default.nix`（Niri/Hyprland 的 HM imports）
@@ -870,7 +870,7 @@ sudo nixos-rebuild switch --flake .#e490
 ## 6. 之前问题的共性经验
 
 1. **先区分“声明式配置”和“应用运行态”**  
-   NixOS 管包/服务/权限；Clash Verge、KDE、CUPS 的 GUI 状态在用户目录，
+   NixOS 管包/服务/权限；Clash Verge、GNOME、CUPS 的 GUI 状态在用户目录，
    改了生成文件不等于持久化。要找应用的源配置（`verge.yaml`、`dns_config.yaml`）。
 
 2. **不要只看一个症状**  

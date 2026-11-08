@@ -8,13 +8,13 @@
 - 当前主机：`e490`；当前用户：`drinkto`
 - 构建：`sudo nixos-rebuild build --flake .#e490`
 - 切换：`sudo nixos-rebuild switch --flake .#e490`
-- 当前桌面：**KDE Plasma（默认）+ Steam gamescope**
-- GNOME、Niri + DMS、Hyprland：默认关闭，只在 `common/nixos/desktop.nix` 和
+- 当前桌面：**GNOME（默认）+ Steam gamescope**
+- KDE、Niri + DMS、Hyprland：默认关闭，只在 `common/nixos/desktop.nix` 和
   `users/drinkto/default.nix` 中保留注释开关；属于手动 build 切换
 - 桌面文档入口：`doc/desktops/README.md`
 - Obsidian：不使用 nixpkgs 包；官方 AppImage 放在
   `~/Applications/AppImages/`，由 `users/drinkto/obsidian-appimage.nix` 生成快捷方式
-<!-- - OpenCode：使用 TUI `opencode`，不再安装 `opencode-desktop` -->
+- OpenCode：同时安装 TUI `opencode` 和桌面版 `opencode-desktop`
 - `modules/` 目前未创建；计划在整改 P2 建立（`my.*` 开关选项），见 `doc/OPTIMIZATION.md` 第五节
 - 已知问题与整改路线见 `doc/OPTIMIZATION.md`；整改时按阶段执行，完成后更新问题清单状态
 

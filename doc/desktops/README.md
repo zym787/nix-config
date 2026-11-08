@@ -7,9 +7,9 @@
 
 | 会话 | 默认 | 说明 |
 | :--- | :---: | :--- |
-| **KDE Plasma** | ✅ | 默认桌面，SDDM 登录 |
+| **GNOME** | ✅ | 默认桌面，SDDM 登录 |
 | **Steam** | ✅ | gamescope + Steam Big Picture 游戏会话 |
-| GNOME | ⬜ | 注释开关，需要时手动启用 |
+| KDE Plasma | ⬜ | 注释开关，需要时手动启用 |
 | Niri + DMS | ⬜ | 注释开关，需要时手动启用 |
 | Hyprland | ⬜ | 注释开关，需要时手动启用 |
 
@@ -19,11 +19,11 @@
 2. 执行 `sudo nixos-rebuild switch --flake .#e490`；
 3. 注销后在 SDDM 会话菜单中选择目标桌面。
 
-默认会话固定为 KDE：
+默认会话固定为 GNOME：
 
 ```nix
 # common/nixos/desktop.nix
-services.displayManager.defaultSession = "plasma";
+services.displayManager.defaultSession = "gnome";
 ```
 
 如果希望在 SDDM 中默认选中 Niri，可改为 `"niri"`，但这不改变“手动 build”
@@ -33,9 +33,9 @@ services.displayManager.defaultSession = "plasma";
 
 | 配置 | 位置 |
 | :--- | :--- |
-| KDE / SDDM / 输入设备 | `common/nixos/desktop.nix` |
+| GNOME / SDDM / 输入设备 | `common/nixos/desktop.nix` |
 | Steam 游戏会话 | `common/nixos/gaming.nix` |
-| GNOME 可选开关 | `common/nixos/desktop.nix` 注释 |
+| KDE 可选开关 | `common/nixos/desktop.nix` 注释 |
 | Niri 可选开关 | `common/nixos/desktop.nix` + `users/drinkto/default.nix` |
 | Hyprland 可选开关 | `common/nixos/desktop.nix` + `users/drinkto/default.nix` |
 | Niri 键位/DMS | `users/drinkto/niri.nix` |
@@ -58,13 +58,13 @@ services.displayManager.defaultSession = "plasma";
    ```
 5. 注销，在 SDDM 会话菜单中选择桌面。
 
-KDE 和 Steam 始终启用，不需要额外操作。
+GNOME 和 Steam 始终启用，不需要额外操作。
 
 ## 通用回滚
 
 - 注释掉新增桌面块，重新 build/switch；
 - 不会删除用户数据；
-- 如果桌面无法登录，可在 SDDM 选择 KDE，或按 `Ctrl+Alt+F2` 进 TTY 修复。
+- 如果桌面无法登录，可在 SDDM 选择 GNOME，或按 `Ctrl+Alt+F2` 进 TTY 修复。
 
 ## 相关文档
 

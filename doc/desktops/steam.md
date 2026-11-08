@@ -1,6 +1,6 @@
 # Steam gamescope 会话
 
-Steam 会话是当前**始终启用**的第二个 SDDM 会话，和 KDE 并列；它不是
+Steam 会话是当前**始终启用**的第二个 SDDM 会话，和 GNOME 并列；它不是
 完整桌面，而是 gamescope + Steam Big Picture。
 
 ## 当前配置
@@ -12,11 +12,11 @@ common/nixos/gaming.nix
   env.MANGOHUD = "1"
 ```
 
-SDDM 中显示为 **Steam**。默认会话仍是 Plasma。
+SDDM 中显示为 **Steam**。默认会话仍是 GNOME。
 
 ## 使用流程
 
-1. 先在 **Plasma** 里打开 Steam，完成登录、Steam Play/Proton、下载、
+1. 先在 **GNOME** 里打开 Steam，完成登录、Steam Play/Proton、下载、
    手柄和界面设置。
 2. 注销，SDDM 选择 **Steam**。
 3. 进入 Big Picture 后启动游戏。
@@ -24,7 +24,7 @@ SDDM 中显示为 **Steam**。默认会话仍是 Plasma。
 5. 退出：Steam 按钮 → 电源 → **退出 Steam**。
 
 Steam 会话没有桌面环境；Big Picture 的“退出到桌面/切换到桌面”不会回到
-Plasma。
+GNOME。
 
 ## 无法退出时
 
@@ -43,7 +43,7 @@ sudo systemctl restart display-manager
 
 ## Wi-Fi
 
-Steam 会话没有 KDE Wallet/secret agent，NetworkManager 的 Wi-Fi PSK 必须是
+Steam 会话没有桌面 keyring/secret agent，NetworkManager 的 Wi-Fi PSK 必须是
 系统级存储：
 
 ```bash

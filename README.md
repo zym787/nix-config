@@ -16,7 +16,7 @@
 | 最近更新 | 见顶部 `last commit` 徽章 |
 | 系统 | NixOS `nixos-unstable` |
 | 平台 | `x86_64-linux` |
-| 桌面 | KDE Plasma + SDDM；Steam 游戏会话；可选 Niri/GNOME/Hyprland（默认关闭） |
+| 桌面 | GNOME + SDDM；Steam 游戏会话；KDE/Niri/Hyprland 为注释开关 |
 | 配置方式 | Flake + Home Manager（system module 集成） |
 | 已知问题 | 2026-10-31 审查发现若干问题，整改路线见 `doc/OPTIMIZATION.md` |
 
@@ -55,16 +55,16 @@
 | 项目 | 值 |
 | :--- | :--- |
 | 系统通道 | `nixos-unstable`（清华 Git 镜像） |
-| 桌面环境 | KDE Plasma 6 + SDDM；可选 Niri/GNOME/Hyprland 注释开关 |
-| 显示管理 | SDDM；默认 Plasma，另保留 Steam 游戏会话 |
+| 桌面环境 | GNOME + SDDM；KDE/Niri/Hyprland 为注释开关 |
+| 显示管理 | SDDM；默认 GNOME，另保留 Steam 游戏会话 |
 | 终端 | Ghostty + Kitty + zsh + oh-my-zsh + starship |
-| AI 工具 | OpenCode TUI（`opencode`，不使用 Electron 桌面版） |
+| AI 工具 | OpenCode TUI（`opencode`）+ OpenCode Desktop（`opencode-desktop`） |
 | 音频 | PipeWire（PulseAudio 兼容层） |
 | 输入法 | fcitx5 + Rime（雾凇拼音 rime-ice），启用 Wayland 前端 |
 | 引导 | systemd-boot（保留 10 个代际） |
 | 文件系统 | Btrfs（`root` / `home` / `nix` 子卷，zstd 压缩） |
 | 打印 | CUPS + brlaser（Brother DCP-7057） |
-| 蓝牙 | BlueZ + BlueDevil（Realtek RTL8822BE） |
+| 蓝牙 | BlueZ + GNOME Bluetooth（Realtek RTL8822BE） |
 | 代理 | Clash Verge Rev（Mihomo，TUN + 系统服务） |
 | GPU | Intel UHD 620 + AMD Radeon 540X/550X（amdgpu + Mesa RADV） |
 | 游戏 | Steam + GameMode + MangoHud + gamescope（按需） |
@@ -73,8 +73,8 @@
 
 ## 桌面会话
 
-默认登录 **KDE Plasma**；SDDM 中另保留 **Steam** 游戏会话。  
-GNOME、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
+默认登录 **GNOME**；SDDM 中另保留 **Steam** 游戏会话。  
+KDE、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
 `common/nixos/desktop.nix`，需要时手动取消注释并 rebuild。
 
 每套桌面的启用步骤、键位、配置位置和故障排查见：
@@ -86,16 +86,17 @@ GNOME、Niri + DMS、Hyprland 默认关闭，开关以注释形式放在
 - [Hyprland](doc/desktops/hyprland.md)
 - [Steam gamescope](doc/desktops/steam.md)
 
-## OpenCode TUI
+## OpenCode
 
-<!-- 已安装 `pkgs.opencode`，不再使用资源占用更高的 `opencode-desktop`： -->
+同时保留：
 
 ```bash
-opencode
+opencode            # TUI，适合终端内工作
+opencode-desktop    # Electron 桌面客户端
 ```
 
-它运行在终端中，适合和 Ghostty/Kitty + zsh 一起使用；版本更新跟随
-`nix flake update`，不是应用内自更新。
+两者共享 `~/.config/opencode` / 用户数据；版本更新跟随 `nix flake update`，
+不是应用内自更新。
 
 ## 代理
 
@@ -166,7 +167,7 @@ ls ~/Applications/AppImages/
 
 ### Flatpak
 
-已启用 `services.flatpak`，并依赖 KDE 提供的 XDG Desktop Portal。
+已启用 `services.flatpak`，并依赖 GNOME 提供的 XDG Desktop Portal。
 默认使用 **上海交大 Flathub 镜像**：
 
 ```text
@@ -214,12 +215,12 @@ NixOS 不会更新 Flatpak 应用，需要单独 `flatpak update`。
 
 AMD 使用内核 `amdgpu` + Mesa RADV，不需要闭源驱动。Steam/Proton
 需要 32-bit 图形库，已在 `common/nixos/graphics.nix` 开启。
-`services.switcherooControl` 让 KDE 可以提供“使用独立显卡运行”。
+`services.switcherooControl` 让桌面可以提供“使用独立显卡运行”。
 
 ### 独显启动方式
 
-- KDE 应用菜单右键 → “使用独立显卡运行”，或使用下面的命令行
-- 或命令行：
+- KDE 应用菜单右键 → “使用独立显卡运行”（仅在启用 KDE 时）
+- GNOME 会话建议使用下面的命令行：
 
 ```bash
 switcherooctl list
@@ -238,7 +239,7 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 
 用 `vulkaninfo --summary` 可以确认 AMD 设备是否可见。
 
-如果游戏启动后白屏/黑屏，先在 Plasma 里用上面的启动项测试，
+如果游戏启动后白屏/黑屏，先在 GNOME 里用上面的启动项测试，
 并在 Steam 属性里打开 `PROTON_LOG=1`，日志会写到
 `~/steam-<appid>.log`。这台机器只有 2GB 显存，像
 *Little Nightmares Enhanced Edition* 这类新游戏不要开 Ultra/光追：
@@ -251,14 +252,14 @@ MESA_VK_DEVICE_SELECT=1002:699f gamemoderun mangohud %command%
 
 - SDDM 登录界面会多一个 “Steam” 会话
 - 一键进入 gamescope + Steam Big Picture，适合专门玩游戏
-- 日常使用 Plasma 会话，工作和游戏环境分离
+- 日常使用 GNOME 会话，工作和游戏环境分离
 - 普通桌面里也可以按需使用 `gamescope`：
 
 ```bash
 gamescope -W 1920 -H 1080 -f -r 60 -- gamemoderun mangohud %command%
 ```
 
-首次使用建议先在 **Plasma 会话**里完成 Steam 登录、Steam Play/Proton、
+首次使用建议先在 **GNOME 会话**里完成 Steam 登录、Steam Play/Proton、
 游戏下载、手柄和界面设置；这些数据与 Steam 会话共享。
 
 Steam 桌面版 Big Picture 没有 Steam Deck 的“性能”菜单。本配置在专用
@@ -266,12 +267,12 @@ Steam 桌面版 Big Picture 没有 Steam Deck 的“性能”菜单。本配置�
 帧率/CPU/GPU 覆盖层；也可以在单个游戏的启动项里加 `MANGOHUD=1`。
 
 专用会话没有桌面环境，所以 Big Picture 的“退出到桌面/切换到桌面”
-不会回到 Plasma，只会留下黑屏。请使用 **Steam 按钮 → 电源 → 退出
+不会回到 GNOME，只会留下黑屏。请使用 **Steam 按钮 → 电源 → 退出
 Steam**；如果只退出了游戏或界面卡住，按 `Ctrl+Alt+F2` 到 TTY，
 执行 `loginctl list-sessions` 和 `loginctl terminate-session <id>`。
 
 Wi-Fi 要在 Steam 会话里自动连接，NetworkManager 的 PSK 必须是
-**系统级存储**（`psk-flags=0`），不能只由 KDE Wallet 管理：
+**系统级存储**（`psk-flags=0`），不能只由桌面 keyring/secret agent 管理：
 
 ```bash
 nmcli -g 802-11-wireless-security.psk-flags connection show '<Wi-Fi 名称>'
@@ -288,10 +289,10 @@ loginctl list-sessions
 loginctl terminate-session <session-id>
 ```
 
-然后回 SDDM 选 Plasma。如果不想保留专用会话，把
+然后回 SDDM 选 GNOME。如果不想保留专用会话，把
 `common/nixos/gaming.nix` 的 `gamescopeSession.enable` 改为 `false`。
 
-专用会话更适合电视/手柄/Steam Deck 式体验；日常办公使用 Plasma。
+专用会话更适合电视/手柄/Steam Deck 式体验；日常办公使用 GNOME。
 
 ## 蓝牙与性能
 
@@ -299,7 +300,7 @@ loginctl terminate-session <session-id>
 # 蓝牙状态 / 配对
 systemctl status bluetooth --no-pager
 bluetoothctl
-# KDE 托盘里也可以直接配对蓝牙
+# GNOME 设置/控制中心里也可以直接配对蓝牙
 
 # 查看 zram 和 TRIM
 zramctl

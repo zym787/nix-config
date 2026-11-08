@@ -41,7 +41,7 @@ sudo nixos-rebuild build --flake .#e490
 sudo nixos-rebuild switch --flake .#e490
 ```
 
-注销，在 SDDM 选择 **Hyprland**。默认会话仍是 KDE；如果想默认 Hyprland：
+注销，在 SDDM 选择 **Hyprland**。默认会话仍是 GNOME；如果想默认 Hyprland：
 
 ```nix
 services.displayManager.defaultSession = "hyprland";
@@ -100,7 +100,7 @@ journalctl --user -b | grep -i -E 'hyprland|dms|portal'
 
 ## 关闭
 
-注销到 SDDM，选择 Plasma，然后注释掉：
+注销到 SDDM，选择 GNOME，然后注释掉：
 
 - `common/nixos/desktop.nix` 中 Hyprland 两行；
 - `users/drinkto/default.nix` 中 `./hyprland.nix` 和 DMS import/配置块。
@@ -109,7 +109,7 @@ journalctl --user -b | grep -i -E 'hyprland|dms|portal'
 
 ## 注意
 
-- 不要同时启动 Hyprland 和 Niri/KDE 会话。
+- 不要同时启动 Hyprland 和 Niri/GNOME/KDE 会话。
 - Hyprland 的 `withUWSM = true` 依赖系统 UWSM/systemd 集成。
 - 如果 DMS 没启动，可先运行 `dms run` 排查；构建时如果 DMS import
   没打开，`users/drinkto/hyprland.nix` 会找不到 `programs.dank-material-shell.package`。

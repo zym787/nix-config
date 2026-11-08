@@ -1,26 +1,19 @@
-# 桌面环境：KDE Plasma 6 + SDDM + Wayland（XWayland 兼容 X11 应用）。
-{
-  pkgs,
-  lib,
-  ...
-}: {
-  # 实际会话是 Wayland；services.xserver 仍开启是为了 XWayland。
-  # 如需强制 X11，请在 SDDM 登录界面选择 “Plasma (X11)”。
+# 桌面环境：GNOME + SDDM + Wayland（XWayland 兼容 X11 应用）。
+{...}: {
+  # 实际会话是 GNOME Wayland；services.xserver 仍开启是为了 XWayland/SDDM。
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
 
-  # 只保留 KDE 作为默认桌面；Steam 会话由 gaming.nix 提供。
-  services.displayManager.defaultSession = "plasma";
+  # GNOME 是当前默认桌面；GDM 不启用，继续使用 SDDM。
+  services.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = false;
+  services.displayManager.defaultSession = "gnome";
 
-  # 如果以后启用 GNOME，GNOME 与 KDE 会争抢 SSH askpass；统一使用 KDE 实现。
-  programs.ssh.askPassword = lib.mkForce "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+  # KDE Plasma 已完全注释；需要切回 KDE 时取消这一行，并同时关闭 GNOME。
+  # services.desktopManager.plasma6.enable = true;
 
   # 可选桌面会话（默认注释）：
   # 取消对应块后执行 sudo nixos-rebuild switch --flake .#e490。
-  #
-  # GNOME：
-  # services.desktopManager.gnome.enable = true;
   #
   # Niri（还需在 users/drinkto/default.nix 取消 DMS/niri imports）：
   # programs.niri.enable = true;
@@ -31,8 +24,8 @@
   # programs.hyprland.withUWSM = true;
 
   # 鼠标/触控板设置：主要作为 X11/Xorg 的 fallback。
-  # KDE Wayland 下触摸板、手势、轻触点击由 KDE 系统设置（KCM）管理，
-  # 这里的一些选项不会直接覆盖 KWin 的运行时设置。
+  # GNOME Wayland 下触摸板、手势、轻触点击由 GNOME 控制中心管理，
+  # 这里的一些选项不会直接覆盖 Mutter 的运行时设置。
   services.libinput = {
     enable = true;
 

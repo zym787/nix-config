@@ -43,7 +43,7 @@ sudo nixos-rebuild build --flake .#e490
 sudo nixos-rebuild switch --flake .#e490
 ```
 
-注销后在 SDDM 会话菜单选择 **Niri**。默认会话仍是 KDE；如果想让 Niri
+注销后在 SDDM 会话菜单选择 **Niri**。默认会话仍是 GNOME；如果想让 Niri
 默认登录：
 
 ```nix
@@ -191,7 +191,7 @@ niri msg workspaces
 
 ## 7. 输入与触摸板
 
-Niri 直接读取 libinput，KDE 的触摸板 KCM **不会**作用于 Niri。  
+Niri 直接读取 libinput，KDE/GNOME 的触摸板设置 **不会**自动作用于 Niri。  
 输入设置在 `users/drinkto/niri.nix` 的 `input` 段：
 
 ```kdl
@@ -208,7 +208,7 @@ input {
 ## 8. 关闭 Niri
 
 1. 注销；
-2. SDDM 选择 Plasma；
+2. SDDM 选择 GNOME；
 3. 注释掉 `common/nixos/desktop.nix` 和 `users/drinkto/default.nix` 中的
    Niri/DMS 块；
 4. 重新 build/switch。
@@ -224,7 +224,7 @@ journalctl --user -b | grep -i niri
 niri validate -c ~/.config/niri/config.kdl
 ```
 
-配置错误时从 TTY 修改 `users/drinkto/niri.nix`，或回 SDDM 选 Plasma。
+配置错误时从 TTY 修改 `users/drinkto/niri.nix`，或回 SDDM 选 GNOME。
 
 ### `Win+D` 没反应
 
@@ -237,7 +237,7 @@ dms ipc call spotlight toggle
 
 ### 多桌面冲突
 
-Niri 和 KDE 可以同时安装，但一次只运行一个桌面。注销后再切换，不要在同一
+Niri 和 GNOME 可以同时安装，但一次只运行一个桌面。注销后再切换，不要在同一
 用户会话里同时启动多个 compositor。
 
 ### DMS 依赖

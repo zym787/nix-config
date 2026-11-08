@@ -1,9 +1,9 @@
 # 优化与整改路线
 
-> **状态（2026-11-06）**：当前只默认启用 **KDE Plasma + Steam**；GNOME/Niri/Hyprland
+> **状态（2026-11-08）**：当前默认启用 **GNOME + Steam**；KDE/Niri/Hyprland
 > 通过注释开关手动启用。已移除 Denial、Wayland 冗余组件和 nixpkgs 版 Obsidian，
-> 改用官方 AppImage；OpenCode 改为 TUI；Flatpak 使用国内镜像并安装百度网盘。
-> 桌面细节见 `doc/desktops/`。
+> 改用官方 AppImage；OpenCode TUI 和 Desktop 都保留；Flatpak 使用国内镜像并安装
+> 百度网盘。桌面细节见 `doc/desktops/`。
 >
 > **历史状态（2026-10-31）**：单文件 → `hosts/` + `users/` + `common/` + `settings/` 的迁移
 > 已于 2026-10-24 完成（记录见第六节）。本文继续保留各阶段整改记录，已完成项在
@@ -34,10 +34,10 @@
 
 | # | 问题 | 位置 | 严重 | 阶段 | 状态 |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| D1 | Plasma、GNOME、Hyprland、niri 同时启用：闭包大；askpass 冲突只能靠 `mkForce` 压住；portal 有 gnome/gtk/kde 三套，`gtk` 还重复；gnome-keyring 和 kwallet 同时启用 | 已移除 `desktop-sessions.nix`；默认仅 KDE+Steam | 🟡 | P1 | ✅ |
+| D1 | Plasma、GNOME、Hyprland、niri 同时启用：闭包大；askpass 冲突只能靠 `mkForce` 压住；portal 有 gnome/gtk/kde 三套，`gtk` 还重复；gnome-keyring 和 kwallet 同时启用 | 已移除 `desktop-sessions.nix`；默认仅 GNOME+Steam | 🟡 | P1 | ✅ |
 | D2 | `plasma6.enable` 写了两次 | 已合并到 `desktop.nix` | 🟢 | P0 | ✅ |
-| D3 | 注释过时："桌面环境：KDE Plasma 6"、"日常仍默认 Plasma"，实际默认会话是 niri；"xserver 是为了 XWayland"的说法不对 | 桌面状态与注释已按 KDE 默认重写 | 🟢 | P0 | ✅ |
-| D4 | `services.libinput` 只对 X11 生效，niri/KWin/GNOME 下都不起作用，niri 里又重复配置了触控板 | 保留为 X11/KDE 兜底；可选 Niri 已独立配置 | 🟢 | P1 | ◐ |
+| D3 | 注释过时："桌面环境：KDE Plasma 6"、"日常仍默认 Plasma"，实际默认会话是 niri；"xserver 是为了 XWayland"的说法不对 | 桌面状态与注释已按 GNOME 默认重写 | 🟢 | P0 | ✅ |
+| D4 | `services.libinput` 只对 X11 生效，niri/KWin/GNOME 下都不起作用，niri 里又重复配置了触控板 | 保留为 X11/GNOME 兜底；可选 Niri 已独立配置 | 🟢 | P1 | ◐ |
 | D5 | niri 的 KDL 配置是纯字符串，写错要到登录才发现 | 可选 Niri 配置保留，启用前需 `niri validate` | 🟡 | P3 | ◐ |
 
 ### 1.3 包与功能
@@ -205,7 +205,7 @@ services.openssh = {
 
 当前不再使用 `desktop-sessions.nix`：
 
-- 默认只启用 KDE Plasma 和 Steam；
+- 默认只启用 GNOME 和 Steam；
 - GNOME、Niri + DMS、Hyprland 以注释开关保留在
   `common/nixos/desktop.nix`；
 - Niri/Hyprland 的 Home Manager imports 和 DMS 配置在
@@ -225,7 +225,7 @@ waybar mako waypaper hyprlock swaybg swaylock-effects
 swayidle wlogout wlsunset fuzzel uwsm rofi tofi
 ```
 
-KDE 默认会话不再依赖这些额外组件；可选桌面需要时再单独加回。
+GNOME 默认会话不再依赖这些额外组件；可选桌面需要时再单独加回。
 
 ### P1-3. 清理无效和重复的包（P5）
 
