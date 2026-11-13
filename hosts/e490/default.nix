@@ -21,6 +21,7 @@ in {
     ../../common/nixos/printing.nix
     ../../common/nixos/systemd.nix
     ../../common/nixos/performance.nix
+    ../../common/nixos/localsend.nix
   ];
 
   # 主机名来自 variables.nix，保证磁盘/SSH/mDNS 名称一致。
